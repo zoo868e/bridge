@@ -19,6 +19,8 @@ def getcurr(DDS, score):
     ret = np.corrcoef(x, y)
     return ret[1][0]
 
+
+# the structure of result in Calculator is [Spade, Heart, Diamond, Club, NT]
 class Calculator():
     def __init__(self, HCPlist = basicHCP, Longlist = basicLONG, Shortlist = basicSHORT):
         self.HCPlist = HCPlist
@@ -154,6 +156,8 @@ class Calculator():
                             re = 1
                         else:
                             re = 2
+                    elif lenb == 3:
+                        re = 0
 #                print("re = ", re)
                 r += re
             ret.append(12 - r)
