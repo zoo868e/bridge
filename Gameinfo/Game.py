@@ -52,6 +52,7 @@ class Game():
             elif sn == l[0] and  (self.SouthDDS[i] + self.NorthDDS[i]) / 2 > ddswin[0]:
                 ddswin[0] = (self.SouthDDS[i] + self.NorthDDS[i]) / 2
                 suit[0] = i
+                l[0] = sn
 
             if we > l[1]:
                 l[1] = we
@@ -60,6 +61,7 @@ class Game():
             elif we == l[1] and  (self.WestDDS[i] + self.EastDDS[i]) / 2 > ddswin[1]:
                 ddswin[1] = (self.WestDDS[i] + self.EastDDS[i]) / 2
                 suit[1] = i
+                l[1] = we
         return [[suit[0], l[0], ddswin[0]], [suit[1], l[1], ddswin[1]]]
 
 
