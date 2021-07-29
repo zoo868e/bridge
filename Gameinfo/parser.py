@@ -12,7 +12,7 @@ def parse_score(row_score):
         ret.append(one_suit.copy())
     return ret
 
-def parse_score_matrix(filename):
+def parse_score_matrix_file(filename):
     f = open(filename)
     rowdata = f.read()
     f.close()
