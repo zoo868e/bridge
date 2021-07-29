@@ -1,8 +1,15 @@
 import numpy as np
 import math
-#[SuitHCP[spade, heart, diamond, club], NTHCP[spade, heart, diamond, club]]
-basicHCP = [[[0,4,0,0,0,0,0,0,0,0,0,1,2,3], [0,4,0,0,0,0,0,0,0,0,0,1,2,3], [0,4,0,0,0,0,0,0,0,0,0,1,2,3], [0,4,0,0,0,0,0,0,0,0,0,1,2,3]],\
-        [[0,4,0,0,0,0,0,0,0,0,0,1,2,3], [0,4,0,0,0,0,0,0,0,0,0,1,2,3], [0,4,0,0,0,0,0,0,0,0,0,1,2,3], [0,4,0,0,0,0,0,0,0,0,0,1,2,3]]]
+#[HCP name, SuitHCP[spade, heart, diamond, club], NTHCP[spade, heart, diamond, club]]
+basicHCP = ["basic",
+        [[0,4,0,0,0,0,0,0,0,0,0,1,2,3],
+            [0,4,0,0,0,0,0,0,0,0,0,1,2,3],
+            [0,4,0,0,0,0,0,0,0,0,0,1,2,3],
+            [0,4,0,0,0,0,0,0,0,0,0,1,2,3]],
+        [[0,4,0,0,0,0,0,0,0,0,0,1,2,3],
+            [0,4,0,0,0,0,0,0,0,0,0,1,2,3],
+            [0,4,0,0,0,0,0,0,0,0,0,1,2,3],
+            [0,4,0,0,0,0,0,0,0,0,0,1,2,3]]]
 #[spade, heart, diamond, club]
 basicLONG = [[[0,0,0,0,0,1,2,3,4,5,6,7,8,9], [0,0,0,0,0,1,2,3,4,5,6,7,8,9], [0,0,0,0,0,1,2,3,4,5,6,7,8,9], [0,0,0,0,0,1,2,3,4,5,6,7,8,9]],\
         [[0,0,0,0,0,1,2,3,4,5,6,7,8,9], [0,0,0,0,0,1,2,3,4,5,6,7,8,9], [0,0,0,0,0,1,2,3,4,5,6,7,8,9], [0,0,0,0,0,1,2,3,4,5,6,7,8,9]]]
@@ -23,7 +30,8 @@ def getcurr(DDS, score):
 # the structure of result in Calculator is [Spade, Heart, Diamond, Club, NT]
 class Calculator():
     def __init__(self, HCPlist = basicHCP, Longlist = basicLONG, Shortlist = basicSHORT):
-        self.HCPlist = HCPlist
+        self.HCPname = HCPlist[0]
+        self.HCPlist = HCPlist[1:]
         self.Longlist = Longlist
         self.Shortlist = Shortlist
         self.south = []
@@ -47,6 +55,16 @@ class Calculator():
         WE = self.we.copy()
         WE.insert(0, "WE score:")
         return [S, N, W, E, NS, WE]
+    def setHCPlist(self, HCPlist):
+        self.HCPname = HCPlist[0]
+        self.HCPlist = HCPlist[1:]
+
+    def setLonglist(self, Longlist):
+        self.Longlist = Longlist
+
+    def setShortlist(self, Shortlist):
+        self.Shortlist = Shortlist
+
     def HCP(self, Game):
         self.south = self.p_HCP(Game.South)
         self.west = self.p_HCP(Game.West)
@@ -201,3 +219,26 @@ class Calculator():
                 r += 1
             ret.append(r)
         return ret
+
+
+if __name__ == "__main__":
+    import parser as ps
+    import Game as Game
+    import sys
+    # Add the data folder to path
+    sys.path.append("~/bridge/data")
+    # import the score matrix
+    scorematrix = ps.parse_score_matrix_file("data/score_matrix.txt")
+    # Load the data
+    f = open("data/test")
+    rowdata = f.read()
+    f.close()
+    board = Game.loadDDSresult(rowdata)
+    cal = Calculator(HCPlist = scorematrix[2])
+    print(cal.HCPname)
+    cal.HCP(board[0])
+    print(cal.getscore())
+    cal.setHCPlist(scorematrix[0])
+    print(cal.HCPname)
+    cal.HCP(board[0])
+    print(cal.getscore())
