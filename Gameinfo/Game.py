@@ -35,9 +35,9 @@ class Game():
     def getplayer(self):
         return [self.South, self.North, self.West, self.East]
     def long(self):
-        suit = [-1, -1]
+        suit = [[], []]
         l = [-1, -1]
-        ddswin = [-1, -1]
+        ddswin = [[], []]
         s = self.South.hand.distributed
         w = self.West.hand.distributed
         n = self.North.hand.distributed
@@ -47,21 +47,22 @@ class Game():
             we = w[i] + e[i]
             if sn > l[0]:
                 l[0] = sn
-                suit[0] = i
-                ddswin[0] = (self.SouthDDS[i] + self.NorthDDS[i]) / 2
-            elif sn == l[0] and  (self.SouthDDS[i] + self.NorthDDS[i]) / 2 > ddswin[0]:
-                ddswin[0] = (self.SouthDDS[i] + self.NorthDDS[i]) / 2
-                suit[0] = i
-                l[0] = sn
-
+                suit[0].clear()
+                suit[0].append(i)
+                ddswin[0].clear()
+                ddswin[0].append((self.SouthDDS[i] + self.NorthDDS[i]) / 2)
+            elif sn == l[0]:
+                ddswin[0].append((self.SouthDDS[i] + self.NorthDDS[i]) / 2)
+                suit[0].append(i)
             if we > l[1]:
                 l[1] = we
-                suit[1] = i
-                ddswin[1] = (self.WestDDS[i] + self.EastDDS[i]) / 2
-            elif we == l[1] and  (self.WestDDS[i] + self.EastDDS[i]) / 2 > ddswin[1]:
-                ddswin[1] = (self.WestDDS[i] + self.EastDDS[i]) / 2
-                suit[1] = i
-                l[1] = we
+                suit[1].clear()
+                suit[1].append(i)
+                ddswin[1].clear()
+                ddswin[1].append((self.WestDDS[i] + self.EastDDS[i]) / 2)
+            elif we == l[1]:
+                ddswin[1].append((self.WestDDS[i] + self.EastDDS[i]) / 2)
+                suit[1].append(i)
         return [[suit[0], l[0], ddswin[0]], [suit[1], l[1], ddswin[1]]]
 
 
@@ -137,11 +138,14 @@ def loadres(DDSresult):
     return [South, North, West, East]
 
 if __name__ == '__main__':
-    file = open("./DDSresult.txt")
+    import sys
+    sys.path.append("~/bridge/data")
+    file = open("data/test")
     rowdata = file.read()
     file.close()
     board = loadDDSresult(rowdata)
     print("end load")
-    for j in range(len(board[:2])):
+    for j in range(len(board)):
         for i in board[j].getgame():
             print(i)
+        print(board[j].longgest)
