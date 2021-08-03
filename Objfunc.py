@@ -91,12 +91,23 @@ class corrobj():
         rowdata = file.read()
         file.close()
         self.data = Gameinfo.Game.loadDDSresult(rowdata)
-    def filter(self):
+    def filter(self, board_size = 1000):
+        import random
         tooshort = 0
         self.DDS.clear()
         self.board.clear()
         self.score.clear()
+        random.shuffle(self.data)
         for i in self.data:
+            if len(self.board) == board_size:
+                break
+            elif len(self.board) > board_size:
+                while len(self.board) > board_size:
+                    self.board.pop()
+                    self.DDS.pop()
+                    self.pos.pop()
+                    self.suit.pop()
+                break
             ns_maxlong = [i.longgest[0][0][0], i.longgest[0][2][0]]
             we_maxlong = [i.longgest[1][0][0], i.longgest[1][2][0]]
             for s in range(len(i.longgest[0][0])):
@@ -266,7 +277,7 @@ def main():
     C.loader("data/test")
     C.filter()
 #    unittest.main()
-    GA.GA(C.getcorr, 0, 4, 42, 50, 1000)
+    GA.GA(C.getcorr, 0, 1, 42, 50, 1000)
 
 if __name__ == "__main__":
     main()
