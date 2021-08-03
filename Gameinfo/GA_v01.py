@@ -357,6 +357,7 @@ def GA(objf, lb, ub, dim, popSize, iters):
     cp = 1  # crossover Probability
     mp = 0.01  # Mutation Probability
     keep = 2  # elitism parameter: how many of the best individuals to keep from one generation to the next
+    print("keep = ", keep)
 
     if not isinstance(lb, list):
         lb = [lb] * dim
@@ -368,7 +369,10 @@ def GA(objf, lb, ub, dim, popSize, iters):
     bestScore = float("inf")
 
     ga = numpy.zeros((popSize, dim))
-    for i in range(dim):
+    z = [0 for x in range(dim - 28)]
+    for i in range(popSize):
+        ga[i] = [*random.choice(scorematrix)[1][0], *random.choice(scorematrix)[2][0], *z]
+    for i in range(28, dim):
         ga[:, i] = numpy.random.uniform(
             0, 1, popSize) * (ub[i] - lb[i]) + lb[i]
     convergence_curve = numpy.zeros(iters)
@@ -399,7 +403,7 @@ def GA(objf, lb, ub, dim, popSize, iters):
                    ' the best fitness is ' + str(bestScore)])
 
     print("bestIndividual=")
-    print(bestIndividual)
+    print(ga[0])
 
 
 if __name__ == "__main__":
@@ -407,3 +411,10 @@ if __name__ == "__main__":
     sys.path.append("~/bridge/data")
     scorematrix = ps.parse_score_matrix_file("data/GA_init_score_matrix.txt")
     print(len(scorematrix))
+    a = numpy.zeros((10, 42))
+    print(a)
+    z = [0 for x in range(42 - 28)]
+    for i in range(len(a)):
+        a[i] = [*random.choice(scorematrix)[1][0], *random.choice(scorematrix)[2][0], *z]
+        print(a[i])
+    print(a)
