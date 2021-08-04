@@ -39,7 +39,7 @@ class corrobj():
         self.scorer()
         x = np.array(self.DDS)
         y = np.array(self.score)
-        return 1 - np.corrcoef(x, y)[1][0]
+        return np.corrcoef(x, y)[1][0]
     def scorer(self):
         self.score.clear()
         for i in range(len(self.board)):
@@ -273,11 +273,32 @@ class TestObj(unittest.TestCase):
 
 def main():
     import Gameinfo.GA_v01 as GA
+    import Gameinfo.parser as ps
+    import numpy
     C = corrobj()
-    C.loader("data/test")
+    C.loader("data/DDSresult.txt")
     C.filter()
+    thousand = []
+    five = []
 #    unittest.main()
-    GA.GA(C.getcorr, 0, 1, 42, 50, 1000)
+#    GA.GA(C.getcorr, 0, 1, 42, 50, 1000)
+    for i in range(1000):
+        print("Calculating the", i, "-th correlation coefficient in 1000 random games.")
+        C.filter(1000)
+        C.scorer()
+        x = numpy.array(C.DDS)
+        y = numpy.array(C.score)
+        thousand.append(np.corrcoef(x, y)[0][1])
+    for i in range(1000):
+        print("Calculating the", i, "-th correlation coefficient in 5000 random games.")
+        C.filter(5000)
+        C.scorer()
+        x = np.array(C.DDS)
+        y = np.array(C.score)
+        five.append(np.corrcoef(x, y)[0][1])
+    print("The standard deviation of a thousand correlation coefficients calculated from one thousand data", np.std(thousand, ddof=1))
+    print("The standard deviation of a thousand correlation coefficients calculated from five thousand data", np.std(five, ddof=1))
+    print("The standard deviation of two thousand correlation coefficients calculated from five thousand data and one thousand data respectively", np.std([*five, *thousand], ddof=1))
 
 if __name__ == "__main__":
     main()
