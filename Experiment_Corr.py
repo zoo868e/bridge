@@ -15,6 +15,7 @@ if __name__ == "__main__":
     import Gameinfo.calculate as Gamefunc
     import Gameinfo.CurrExperiment as Currgetter
     import Gameinfo.parser as ps
+    import Gameinfo.Objfunc as Objf
     import math
     import sys
     # Add the data folder to path
@@ -34,4 +35,3 @@ if __name__ == "__main__":
     fname = ["HCP", "Long", "Short", "Pavlicek", "Loser"]
     # Run the experiment
     runExperiment(board, Currgetter.LongestSuit20210715, scorematrix, func, calculator)
-    runExperiment(board, Currgetter.LongestSuit20210729, scorematrix, func, calculator)
