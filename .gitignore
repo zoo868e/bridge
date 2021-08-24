@@ -9,3 +9,6 @@ tOriginal
 lookup
 totest.py
 *.png
+*[Rr]esult*
+*RESULT*
+GA84v2
