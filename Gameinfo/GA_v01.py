@@ -398,12 +398,13 @@ def GA(objf, lb, ub, dim, popSize, iters):
 
         convergence_curve[l] = bestScore
 
-        if (l % 1 == 0):
-            print(['At iteration ' + str(l+1) +
-                   ' the best fitness is ' + str(bestScore)])
+#        if (l % 1 == 0):
+#            print(['At iteration ' + str(l+1) +
+#                   ' the best fitness is ' + str(bestScore)])
 
     print("bestIndividual=")
-    print(ga[0])
+    print(ga[0] * 4)
+    print("bestScore", 1 - bestScore)
 
 
 if __name__ == "__main__":
