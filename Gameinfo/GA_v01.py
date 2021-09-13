@@ -271,7 +271,7 @@ def clearDups(Population, lb, ub):
     return newPopulation
 
 
-def calculateCost(objf, population, popSize, lb, ub):
+def calculateCost(objf, population, popSize, lb, ub, process, CORNOT):
     """
     It calculates the fitness value of each individual in the population
 
@@ -287,6 +287,10 @@ def calculateCost(objf, population, popSize, lb, ub):
         lower bound limit list
     ub: list
         Upper bound limit list
+    process: Popen
+        The subprocess that calculate the cost
+    CORNOT: bool
+        Use the C++ subprocess or not
 
     Returns
     -------
@@ -301,7 +305,15 @@ def calculateCost(objf, population, popSize, lb, ub):
         population[i] = numpy.clip(population[i], lb, ub)
 
         # Calculate objective function for each search agent
-        scores[i] = objf(population[i, :])
+        if CORNOT == True:
+            scores[i] = 1 - objf(process, population[i, :])
+            if scores[i] == 3:
+                print(population[i, :])
+                print(stdoutreadint(process))
+                print(stdoutreadint(process))
+                print(stdoutreadint(process))
+        else:
+            scores[i] = objf(population[i, :])
 
     return scores
 
@@ -331,7 +343,7 @@ def sortPopulation(population, scores):
     return population, scores
 
 
-def GA(objf, lb, ub, dim, popSize, iters):
+def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best):
     """
     This is the main method which implements GA
 
@@ -349,15 +361,22 @@ def GA(objf, lb, ub, dim, popSize, iters):
         Number of chrmosomes in a population
     iters: int
         Number of iterations / generations of GA
+    CORNOT: bool
+        True for use C++ subprocess
+        False for not use
 
     """
 
     import Gameinfo.parser as ps
+    from subprocess import Popen, PIPE
+    import time
+    start_time = time.time()
     scorematrix = ps.parse_score_matrix_file("data/GA_init_score_matrix.txt")
     cp = 1  # crossover Probability
     mp = 0.01  # Mutation Probability
     keep = 2  # elitism parameter: how many of the best individuals to keep from one generation to the next
     print("keep = ", keep)
+    process = Popen(['./subprocessC', '2'], stdin=PIPE, stdout=PIPE)
 
     if not isinstance(lb, list):
         lb = [lb] * dim
@@ -370,9 +389,9 @@ def GA(objf, lb, ub, dim, popSize, iters):
 
     ga = numpy.zeros((popSize, dim))
     z = [0 for x in range(dim - 28)]
-    for i in range(popSize):
-        ga[i] = [*random.choice(scorematrix)[1][0], *random.choice(scorematrix)[2][0], *z]
-    for i in range(28, dim):
+#    for i in range(popSize):
+#        ga[i] = [*random.choice(scorematrix)[1][0], *random.choice(scorematrix)[2][0], *z]
+    for i in range(dim):
         ga[:, i] = numpy.random.uniform(
             0, 1, popSize) * (ub[i] - lb[i]) + lb[i]
     convergence_curve = numpy.zeros(iters)
@@ -382,19 +401,29 @@ def GA(objf, lb, ub, dim, popSize, iters):
     for l in range(iters):
 
         # crossover
+#        start_time = time.time()
         ga = crossoverPopulaton(ga, scores, popSize, cp, keep)
+#        print("Cost", time.time() - start_time, "seconds to crossover")
 
         # mutation
+#       start_time = time.time()
         mutatePopulaton(ga, popSize, mp, keep, lb, ub)
+#        print("Cost", time.time() - start_time, "seconds to mutation")
 
+#        start_time = time.time()
         ga = clearDups(ga, lb, ub)
+#        print("Cost", time.time() - start_time, "seconds to remove the duplicate")
 
-        scores = calculateCost(objf, ga, popSize, lb, ub)
+#        start_time = time.time()
+        scores = calculateCost(objf, ga, popSize, lb, ub, process, CORNOT)
+#        print("Cost", time.time() - start_time, "seconds to calculate the fitness")
 
         bestScore = min(scores)
 
         # Sort from best to worst
+#        start_time = time.time()
         ga, scores = sortPopulation(ga, scores)
+#        print("Cost", time.time() - start_time, "seconds to sort the population")
 
         convergence_curve[l] = bestScore
 
@@ -402,9 +431,37 @@ def GA(objf, lb, ub, dim, popSize, iters):
 #            print(['At iteration ' + str(l+1) +
 #                   ' the best fitness is ' + str(bestScore)])
 
-    print("bestIndividual=")
-    print(ga[0] * 4)
+    if 1 - bestScore > best:
+        print("bestIndividual=")
+        print(ga[0])
+    else:
+        print("not better, ignore it")
     print("bestScore", 1 - bestScore)
+    print("Cost", time.time() - start_time, "seconds")
+    print("----------------------------------------------")
+    return 1 - bestScore
+
+def stdoutreadint(process):
+    ret = process.stdout.readline()
+    try:
+        return float(str(ret)[2:-3])
+    except:
+        print(str(ret))
+        return str(ret)
+    return float(str(ret)[2:-3])
+
+def listtostdin(l):
+    s = str(l[0])
+    for i in l[1:]:
+        s += " " + str(i)
+    s += "\n"
+    return s
+
+def ObjfCorr(P, l):
+    s = listtostdin(l)
+    P.stdin.write(s.encode())
+    P.stdin.flush()
+    return stdoutreadint(P)
 
 
 if __name__ == "__main__":
