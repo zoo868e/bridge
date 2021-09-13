@@ -64,7 +64,7 @@ class corrobj():
 
         Output
         ----
-        A correlation coefficient
+        1 - correlation coefficient
         """
         self.set_scorematrix(scorematrix)
         self.scorer()
@@ -285,6 +285,19 @@ class corrobj():
                 self.suit.append(we_suit)
                 self.DDS.append(we_ddswin)
                 self.pos.append("WE")
+    def makedatasetforC(self):
+        """
+            Make the data set file that C++ can use
+        """
+        f = open("./data/dataForC", "w")
+        for i in range(len(self.board)):
+            s = ""
+            if self.pos[i] == "WE":
+                s += handtostring(self.board[i].East) + " " + handtostring(self.board[i].West) + " " + str(self.DDS[i]) + " " + str(self.suit[i]) + " 0\n"
+            else:
+                s += handtostring(self.board[i].South) + " " + handtostring(self.board[i].North) + " " + str(self.DDS[i]) + " " + str(self.suit[i]) + " 0\n"
+            f.write(s)
+        f.close()
 
 class TestObj(unittest.TestCase):
     def setUp(self):
@@ -415,21 +428,66 @@ class TestObj(unittest.TestCase):
             self.assertEqual(self.obj.score[i], answer[i])
 
 
+def cardtostring(card):
+    if card == 1:
+        return "A"
+    elif card == 13:
+        return "K"
+    elif card == 12:
+        return "Q"
+    elif card == 11:
+        return "J"
+    elif card == 10:
+        return "T"
+    else:
+        return str(card)
 
+def handtostring(player):
+    s = ""
+    count = 1
+    for i in player.hand.getcard():
+        for j in i:
+            s += cardtostring(j)
+        if count < 4:
+            s += "."
+        count += 1
+    return s
 
+def stdoutreadint(process):
+    ret = process.stdout.readline()
+    try:
+        return float(str(ret)[2:-3])
+    except:
+        return str(ret)
+    return float(str(ret)[2:-3])
 
+def listtostdin(l):
+    s = str(l[0])
+    for i in l[1:]:
+        s += " " + str(i)
+    s += "\n"
+    return s
 
 
 def main():
     import Gameinfo.GA_v01 as GA
     import Gameinfo.parser as ps
     import numpy
+    from subprocess import Popen, PIPE
     C = corrobj()
     C.loader("data/DDSresult.txt")
-    for k in range(10):
-        print("Turn: ", k + 1)
+    best = 0
+    for i in range(50):
+        print("Turn: ", i + 1)
         C.filter(5000)
-        GA.GA(C.getcorr, 0, 1, 42, 50, 1000)
+        C.makedatasetforC()
+        tmp = GA.GA(GA.ObjfCorr, 0, 4, 17, 50, 1000, True, best)
+        if tmp > best:
+            best = tmp
+#        GA.GA(C.getcorr, 0, 1, 42, 50, 1000, False)
+#    for k in range(10):
+#        print("Turn: ", k + 1)
+#        C.filter(5000)
     ### for calculate the correlation coefficient of result of GA.
 #    C.filter(2 * len(C.data))
 #    f = open("data/GA84result")
