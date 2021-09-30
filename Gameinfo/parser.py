@@ -31,7 +31,25 @@ def parse_score_matrix_file(filename):
         ret.append(one_matrix.copy())
     return ret
 
+def parse_result_score(filename):
+    f = open(filename)
+    rowdata = f.read()
+    f.close()
+    data = rowdata.splitlines()
+    ret = []
+    temp = []
+    for i in data:
+        if i[0] == '-':
+            ret.append(temp.copy())
+            temp.clear()
+            continue
+        if i[0] == 'H':
+            temp.append(i)
+        else:
+            temp.append(float(i))
+    return ret
+
 if __name__ == "__main__":
-    result = parse_score_matrix("data/score_matrix.txt")
+    result = parse_result_score("./09151116")
     for i in result:
-        print(i[0])
+        print(i)
