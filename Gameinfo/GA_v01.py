@@ -312,8 +312,9 @@ def calculateCost(objf, population, popSize, lb, ub, process, CORNOT):
                 print(stdoutreadint(process))
                 print(stdoutreadint(process))
                 print(stdoutreadint(process))
+                exit()
         else:
-            scores[i] = objf(population[i, :])
+            scores[i] = 1 - objf(population[i, :])
 
     return scores
 
@@ -343,7 +344,7 @@ def sortPopulation(population, scores):
     return population, scores
 
 
-def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best):
+def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID):
     """
     This is the main method which implements GA
 
@@ -364,6 +365,10 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best):
     CORNOT: bool
         True for use C++ subprocess
         False for not use
+    best: float
+        The best score during the whole experiment
+    formulaID: int
+        The formula ID will enter in C subprocess
 
     """
 
@@ -376,7 +381,7 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best):
     mp = 0.01  # Mutation Probability
     keep = 2  # elitism parameter: how many of the best individuals to keep from one generation to the next
     print("keep = ", keep)
-    process = Popen(['./subprocessC', '2'], stdin=PIPE, stdout=PIPE)
+    process = Popen(['./subprocessC', str(formulaID)], stdin=PIPE, stdout=PIPE)
 
     if not isinstance(lb, list):
         lb = [lb] * dim
@@ -431,15 +436,36 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best):
 #            print(['At iteration ' + str(l+1) +
 #                   ' the best fitness is ' + str(bestScore)])
 
-    if 1 - bestScore > best:
-        print("bestIndividual=")
-        print(ga[0])
-    else:
-        print("not better, ignore it")
-    print("bestScore", 1 - bestScore)
+    print("bestScore =", 1 - bestScore)
+    for i in ga[0]:
+        print("{:.4g}".format(i), end = " ")
+#    if 1 - bestScore > best:
+#        print("bestIndividual=")
+#        for i in ga[0]:
+#            print("{:.4g}".format(i), end = " ")
+#    else:
+#        print("not better, ignore it")
+    print("")
+#    printbestIndividual(ga[0])
+#    print("bestScore:{:.4g}".format(1 - bestScore))
     print("Cost", time.time() - start_time, "seconds")
     print("----------------------------------------------")
-    return 1 - bestScore
+    process.terminate()
+    return [1 - bestScore, ga[0]]
+
+def printbestIndividual(ans):
+    l = []
+    for i in ans:
+        l.append(round(i, 4))
+    print('HCP[1]:%.4g'%4)
+    print('HCP[2-8]:%.4g'%l[0])
+    print('HCP[9-10]:%.4g'%l[1])
+    print('HCP[11]:%.4g'%l[2])
+    print('HCP[12]:%.4g'%l[3])
+    print('HCP[13]:%.4g'%l[4])
+    for i in range(5, len(l), 2):
+        print("{:.4g} {:.4g}".format(l[i], l[i + 1]))
+
 
 def stdoutreadint(process):
     ret = process.stdout.readline()
