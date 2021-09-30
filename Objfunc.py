@@ -285,11 +285,11 @@ class corrobj():
                 self.suit.append(we_suit)
                 self.DDS.append(we_ddswin)
                 self.pos.append("WE")
-    def makedatasetforC(self):
+    def makedatasetforC(self, filename):
         """
             Make the data set file that C++ can use
         """
-        f = open("./data/dataForC", "w")
+        f = open("./data/" + filename, "w")
         for i in range(len(self.board)):
             s = ""
             if self.pos[i] == "WE":
@@ -476,14 +476,21 @@ def main():
     from subprocess import Popen, PIPE
     C = corrobj()
     C.loader("data/DDSresult.txt")
+
+#   for train the argument
     best = 0
-    for i in range(50):
-        print("Turn: ", i + 1)
-        C.filter(5000)
+    for i in range(1, 6):
+        print("--------------------------------")
+        C.filter(i * 1000)
         C.makedatasetforC()
-        tmp = GA.GA(GA.ObjfCorr, 0, 4, 17, 50, 1000, True, best)
-        if tmp > best:
-            best = tmp
+        best = 0
+        for j in range(20):
+            print("Turn: ", j, "\nHave", i * 1000, "datas")
+            # tmp = [bestScore, [individuals of best score]]
+            tmp = GA.GA(GA.ObjfCorr, 0, 4, 17, 50, 1000, True, best, 2)
+            if tmp[0] > best:
+                best = tmp[0]
+
 #        GA.GA(C.getcorr, 0, 1, 42, 50, 1000, False)
 #    for k in range(10):
 #        print("Turn: ", k + 1)
@@ -526,6 +533,13 @@ def main():
 #    print("The standard deviation of a thousand correlation coefficients calculated from one thousand data", np.std(thousand, ddof=1))
 #    print("The standard deviation of a thousand correlation coefficients calculated from five thousand data", np.std(five, ddof=1))
 #    print("The standard deviation of two thousand correlation coefficients calculated from five thousand data and one thousand data respectively", np.std([*five, *thousand], ddof=1))
+def listtostdin(l):
+    s = str(l[0])
+    for i in l[1:]:
+        s += " " + str(i)
+    s += "\n"
+    return s
+
 
 if __name__ == "__main__":
     main()
