@@ -104,12 +104,17 @@ class Experiment{
 		vector<double> score;
 		vector<double> DDS;
 		int formulaid;
+		vector<vector<double>> FormulaArgumentList;
 		double HCPlist[2][14];
 		double lenlist[2][14];
 		double Hlenlist[2][14];
 		double Dlenlist[2][14];
 		double f1list[2][6];
 		double f2list[2][6];
+		double f_suitHCP[2][2];
+		double f_long[2][2];
+		double f_short[2][2];
+		double f_dist[2][3];
 		Experiment(vector<Team> teams, int formulaid = 0){
 			this->teams = teams;
 			this->formulaid = formulaid;
@@ -146,8 +151,15 @@ class Experiment{
 		double pformula1(Player p, int suit);
 		double formula2(Team t);
 		double pformula2(Player p, int suit);
+		double formula3(Team t);
+		double pformula3(Player p, int suit);
+		double formula4(Team t);
+		double pformula4(Player p, int suit);
+		double formula5(Team t);
+		double pformula5(Player p, int suit);
 		double suitHCP(Player p, int suit);
 		double longformula(Player p, int suit);
 		double shortformula(Player p, int suit);
+		double distributeformula(Player p, int suit);
 };
 #endif

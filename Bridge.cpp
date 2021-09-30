@@ -154,10 +154,98 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 		this->HCPlist[1][12] = scorematrix[3];
 		this->HCPlist[1][13] = scorematrix[4];
 		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
 		for(int i = 0;i < 6;i++){
-			this->f2list[0][i] = scorematrix[5 + i]; 	// If is trump suit
-			this->f2list[1][i] = scorematrix[11 + i];	// If not trump suit
+			this->FormulaArgumentList[0].push_back(scorematrix[5 + i]); 	// If is trump suit
+			this->FormulaArgumentList[1].push_back(scorematrix[11 + i]);	// If not trump suit
 		}
+		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
+		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
+		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
+		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
+		this->f_long[0][0] = this->FormulaArgumentList[0][2];
+		this->f_long[0][1] = this->FormulaArgumentList[0][3];
+		this->f_long[1][0] = this->FormulaArgumentList[1][2];
+		this->f_long[1][1] = this->FormulaArgumentList[1][3];
+		this->f_short[0][0] = this->FormulaArgumentList[0][4];
+		this->f_short[0][1] = this->FormulaArgumentList[0][5];
+		this->f_short[1][0] = this->FormulaArgumentList[1][4];
+		this->f_short[1][1] = this->FormulaArgumentList[1][5];
+//		cout << "Set correctly\n";
+	}
+	else if(s == 9 && this->formulaid == 3){
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->FormulaArgumentList[0].push_back(scorematrix[5]);
+		this->FormulaArgumentList[0].push_back(scorematrix[6]);
+		this->FormulaArgumentList[1].push_back(scorematrix[7]);
+		this->FormulaArgumentList[1].push_back(scorematrix[8]);
+		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
+		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
+		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
+		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
+	}
+	else if(s == 11 && this->formulaid == 4){
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->FormulaArgumentList[0].push_back(scorematrix[5]);
+		this->FormulaArgumentList[0].push_back(scorematrix[6]);
+		this->FormulaArgumentList[0].push_back(scorematrix[7]);
+		this->FormulaArgumentList[1].push_back(scorematrix[8]);
+		this->FormulaArgumentList[1].push_back(scorematrix[9]);
+		this->FormulaArgumentList[1].push_back(scorematrix[10]);
+		this->f_dist[0][0] = this->FormulaArgumentList[0][0];
+		this->f_dist[0][1] = this->FormulaArgumentList[0][1];
+		this->f_dist[0][2] = this->FormulaArgumentList[0][2];
+		this->f_dist[1][0] = this->FormulaArgumentList[1][0];
+		this->f_dist[1][1] = this->FormulaArgumentList[1][1];
+		this->f_dist[1][2] = this->FormulaArgumentList[1][2];
+	}
+	else if(s == 15 && this->formulaid == 5){
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->FormulaArgumentList[0].push_back(scorematrix[5]);
+		this->FormulaArgumentList[0].push_back(scorematrix[6]);
+		this->FormulaArgumentList[1].push_back(scorematrix[7]);
+		this->FormulaArgumentList[1].push_back(scorematrix[8]);
+		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
+		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
+		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
+		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
+		this->FormulaArgumentList[0].push_back(scorematrix[9]);
+		this->FormulaArgumentList[0].push_back(scorematrix[10]);
+		this->FormulaArgumentList[0].push_back(scorematrix[11]);
+		this->FormulaArgumentList[1].push_back(scorematrix[12]);
+		this->FormulaArgumentList[1].push_back(scorematrix[13]);
+		this->FormulaArgumentList[1].push_back(scorematrix[14]);
+		this->f_dist[0][0] = this->FormulaArgumentList[0][2];
+		this->f_dist[0][1] = this->FormulaArgumentList[0][3];
+		this->f_dist[0][2] = this->FormulaArgumentList[0][4];
+		this->f_dist[1][0] = this->FormulaArgumentList[1][2];
+		this->f_dist[1][1] = this->FormulaArgumentList[1][3];
+		this->f_dist[1][2] = this->FormulaArgumentList[1][4];
 	}
 	else{
 		cerr << "--Wrong size of scorematrix--" << endl;
@@ -177,14 +265,46 @@ void Experiment::scorer(){
 	switch(this->formulaid){
 	case 1:
 		for(int i = 0;i < (int)this->teams.size();i++){
-			this->score.push_back(this->formula1(this->teams[i]));
+			double result;
+			result = this->formula1(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
 		}
 		break;
 	case 2:
 		for(int i = 0;i < (int)this->teams.size();i++){
-			this->score.push_back(this->formula2(this->teams[i]));
+//			cout << "teams[" << i << "] score set correctly\n";
+//			this->score.push_back(this->formula2(this->teams[i]));
+			double result;
+			result = this->formula2(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
 		}
 		break;
+	case 3:
+		for(int i = 0;i < (int)this->teams.size();i++){
+//			this->score.push_back(this->formula3(this->teams[i]));
+			double result;
+			result = this->formula3(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+	case 4:
+		for(int i = 0;i < (int)this->teams.size();i++){
+//			this->score.push_back(this->formula3(this->teams[i]));
+			double result;
+			result = this->formula4(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+	case 5:
+		for(int i = 0;i < (int)this->teams.size();i++){
+//			this->score.push_back(this->formula3(this->teams[i]));
+			double result;
+			result = this->formula5(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
 	default:
 		for(int i = 0;i < (int)this->teams.size();i++){
 			double ret = 0;
@@ -222,11 +342,90 @@ double Experiment::formula2(Team t){
 }
 
 double Experiment::pformula2(Player p, int suit){
+	/*	score = HCP + a * pow(suitHCP, b) + c * pow(Long, d) + e * pow(Short, f)
+	 * */
 	double ret = 0;
 	ret += this->pHCP(p, 4);
 	ret += this->suitHCP(p, suit);
 	ret += this->longformula(p, suit);
 	ret += this->shortformula(p, suit);
+/*
+	vector<vector<int>> hand = p.hand.getcard();
+	for(auto x:hand){
+		for(auto y:x)cout << y << " ";
+		cout << " | ";
+	}
+	cout << ", score " << endl;
+	cout << this->pHCP(p, 4) << endl;
+	cout << this->suitHCP(p, suit) << endl;
+	cout << this->longformula(p, suit) << endl;
+	cout << this->shortformula(p, suit) << endl;
+	cout << "---------------\n";
+	*/
+	return ret;
+}
+
+double Experiment::formula3(Team t){
+	double ret = 0;
+	ret += pformula3(t.player[0], t.suit);
+	ret += pformula3(t.player[1], t.suit);
+	return ret;
+}
+
+double Experiment::pformula3(Player p, int suit){
+	/* score = HCP + a * pow(suitHCP, b)
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	ret += this->suitHCP(p, suit);
+	return ret;
+}
+
+double Experiment::formula4(Team t){
+	double ret = 0;
+	ret += pformula4(t.player[0], t.suit);
+	ret += pformula4(t.player[1], t.suit);
+	return ret;
+}
+
+double Experiment::pformula4(Player p, int suit){
+	/* score = HCP + distribute formula
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	ret += this->distributeformula(p, suit);
+	return ret;
+}
+
+double Experiment::formula5(Team t){
+	double ret = 0;
+	ret += pformula5(t.player[0], t.suit);
+	ret += pformula5(t.player[1], t.suit);
+	return ret;
+}
+
+double Experiment::pformula5(Player p, int suit){
+	/* score = HCP + distribute formula
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	ret += this->suitHCP(p, suit);
+	ret += this->distributeformula(p, suit);
+	return ret;
+}
+
+double Experiment::distributeformula(Player p, int suit){
+	/* ret = sum of a * pow(abs(length - base), b)
+	 * a, base and b are the trained argument
+	 * */
+	double ret = 0;
+	vector<int> h = p.hand.distributed;
+	for(int i = 0;i < 4;i++){
+		int id = i == suit ? 0 : 1;
+		double t = 0;
+		t = this->f_dist[id][0] * pow(fabs(h[i] - f_dist[id][1]), f_dist[id][2]);
+		ret += t;
+	}
 	return ret;
 }
 
@@ -243,7 +442,7 @@ double Experiment::suitHCP(Player p, int suit){
 		double t = 0;
 		double currentsuitHCP = 0;
 		for(auto x:h[i])currentsuitHCP += this->HCPlist[1][x];
-		t = this->f2list[id][0] * pow(currentsuitHCP, this->f2list[id][1]);
+		t = this->f_suitHCP[id][0] * pow(currentsuitHCP, this->f_suitHCP[id][1]);
 		ret += t;
 	}
 	return ret;
@@ -262,7 +461,7 @@ double Experiment::longformula(Player p, int suit){
 		double t = 0;
 		if(distributed[i] < 5)continue;
 		int id = i == suit ? 0:1;
-		t = this->f2list[id][2] * pow(distributed[i] - 4, this->f2list[id][3]);
+		t = this->f_long[id][0] * pow(distributed[i] - 4, this->f_long[id][1]);
 		ret += t;
 	}
 	return ret;
@@ -281,7 +480,7 @@ double Experiment::shortformula(Player p, int suit){
 		double t = 0;
 		if(distributed[i] > 2)continue;
 		int id = i == suit ? 0:1;
-		t = this->f2list[id][4] * pow(3 - distributed[i], this->f2list[id][5]);
+		t = this->f_short[id][0] * pow(3 - distributed[i], this->f_short[id][1]);
 		ret += t;
 	}
 	return ret;
