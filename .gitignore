@@ -17,3 +17,4 @@ totest.py
 GA84v2
 [0-9]*
 totestdataset
+*.o
