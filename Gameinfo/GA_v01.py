@@ -381,7 +381,7 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID):
     mp = 0.01  # Mutation Probability
     keep = 2  # elitism parameter: how many of the best individuals to keep from one generation to the next
     print("keep = ", keep)
-    process = Popen(['./subprocessC', str(formulaID)], stdin=PIPE, stdout=PIPE)
+    process = Popen(['./subprocesstest', str(formulaID)], stdin=PIPE, stdout=PIPE)
 
     if not isinstance(lb, list):
         lb = [lb] * dim
