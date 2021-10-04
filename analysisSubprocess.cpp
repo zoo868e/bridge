@@ -32,14 +32,20 @@ int main(int argc, char* argv[]){
 		}
 		else{
 			validate.scorer();
+			// Find the gap of continuous win tricks
 			dividedTeam = classifyByDoubleDummyResult(validate.teams);
-			int count = 0;
-			for(int i = 0;i < 7;i++){
-				count += dividedTeam[i].size();
-				cout << "DDSwin = " << i + 1 << " have " << dividedTeam[i].size() << "teams" << endl;
-			}
-			cout << "Total " << count << " teams" << endl;
 			vector<map<double, int>> cTT = countEachScoreAppearTime(dividedTeam);
+			vector<int> maxTimes = maximumAppearTimesOfEachScore(cTT);
+			vector<double> gaps = edgeOfEachScore(maxTimes);
+			// Find the gap between the predicted win tricks and DDS
+			map<int, int> result = gapOfWholeDataSet(validate.teams, gaps);
+			int check = 0;
+			for(auto item:result){
+				check += item.second;
+				cout << "distance = " << item.first << ", occur " << item.second << " times" << ". Take up " << (double)item.second / validate.teams.size() * 100 << "\% of whole Data Set\n";
+			}
+			cout << "There is " << check << " datas in Data Set\n";
+//			makeGapEPS(cTT, "ana.py");
 		}
 	}
 }
