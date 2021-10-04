@@ -1,11 +1,11 @@
 CC=g++
-CXXFLAGS=-std=c++17
+CXXFLAGS=-std=c++17 -O3
 dep:
 	gcc -lstdc++ -M *.cpp > dep
 
 -include dep 
 
-all: analysisSubprocess subprocesstest Bridge Analysis DataSetReader
+all: analysisSubprocess subprocesstest
 
 analysisSubprocess:analysisSubprocess.o Bridge.o Analysis.o DataSetReader.o
 subprocesstest:subprocesstest.o Bridge.o Analysis.o DataSetReader.o
