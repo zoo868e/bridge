@@ -475,21 +475,29 @@ def main():
     import numpy
     from subprocess import Popen, PIPE
     C = corrobj()
+    filename = "dataForC";
     C.loader("data/DDSresult.txt")
+    formulaID = 2
+    formulaPara = [26, 17, 9, 11, 15]
 
 #   for train the argument
     best = 0
     for i in range(1, 6):
         print("--------------------------------")
         C.filter(i * 1000)
-        C.makedatasetforC()
+        C.makedatasetforC(filename)
         best = 0
+        process = Popen(['./analysisSubprocess', "./data/" + filename, str(formulaID)], stdin=PIPE, stdout=PIPE)
         for j in range(20):
             print("Turn: ", j, "\nHave", i * 1000, "datas")
             # tmp = [bestScore, [individuals of best score]]
             tmp = GA.GA(GA.ObjfCorr, 0, 4, 17, 50, 1000, True, best, 2)
             if tmp[0] > best:
                 best = tmp[0]
+            runSubprocess(process, tmp[1])
+            print("-------------")
+        process.terminate()
+
 
 #        GA.GA(C.getcorr, 0, 1, 42, 50, 1000, False)
 #    for k in range(10):
@@ -528,18 +536,28 @@ def main():
 #        C.filter(5000)
 #        C.scorer()
 #        x = np.array(C.DDS)
-#        y = np.array(C.score)
+#        y = np.array(C.score)0.5723 0.6518 1.214 1.725 2.626 1.42 1.449 0.0234 0.2352 0.5945 2.699 3.409 1.083 0.8197 0.1542 2.555 1.669
 #        five.append(np.corrcoef(x, y)[0][1])
 #    print("The standard deviation of a thousand correlation coefficients calculated from one thousand data", np.std(thousand, ddof=1))
 #    print("The standard deviation of a thousand correlation coefficients calculated from five thousand data", np.std(five, ddof=1))
 #    print("The standard deviation of two thousand correlation coefficients calculated from five thousand data and one thousand data respectively", np.std([*five, *thousand], ddof=1))
 def listtostdin(l):
-    s = str(l[0])
+    s = str(round(l[0], 4))
     for i in l[1:]:
-        s += " " + str(i)
+        s += " " + str(round(i, 4))
     s += "\n"
     return s
-
+def runSubprocess(P, l):
+    s = listtostdin(l)
+    P.stdin.write(s.encode())
+    P.stdin.flush()
+    stdoutreadline(P)
+def stdoutreadline(P):
+    ret = P.stdout.readline()
+    i = str(ret)
+    print(i[2:-3])
+    if i[2] != "T":
+        stdoutreadline(P)
 
 if __name__ == "__main__":
     main()
