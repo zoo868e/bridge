@@ -64,6 +64,16 @@ vector<double> edgeOfEachScore(const vector<int> maxAppearTimes){
 	return ret;
 }
 
+vector<double> edgeOfEachScore(const vector<double> maxAppearTimes){
+	/*	input : the maximum appear times of score in each win tricks.
+	 *	return the edge of each adjacent win tricks.
+	 * */
+	vector<double> ret;
+	for(int i = 1;i < (int)maxAppearTimes.size();i++){
+		ret.push_back(maxAppearTimes[i - 1] + ((double)(maxAppearTimes[i] - maxAppearTimes[i - 1])) / 2);
+	}
+	return ret;
+}
 int distanceOfPredictAndDDS(const Team team, const vector<double> gaps){
 	/*	input : the particular data and the gaps between the adjacent win tricks
 	 *	return the distance of predict win tricks and Double Dummy Result
@@ -84,20 +94,39 @@ map<int, int> gapOfWholeDataSet(const vector<Team> teams, const vector<double> g
 		ret[distanceOfPredictAndDDS(team, gaps)]++;
 	return ret;
 }
-void makeGapEPS(const vector<map<double, int>> EachScoreAppearTime, const string filename){
-	/*	Haven't complete
+vector<double> meanAppearTimesOfEachScore(const vector<map<double, int>> EachScoreAppearTimes){
+	 /*	input : the appear times of each score between every win tricks.
+	 *	return the mean number of appear times of each score between every win tricks.
 	 * */
-	ofstream f;
-	f.open(filename);
-	for(auto x:EachScoreAppearTime){
-		for(auto z:x)
-			f << z.first << ":" << z.second << " ";
-		f << endl;
+	vector<double> ret;
+	for(auto x:EachScoreAppearTimes){
+		double sumofscore = 0, sumoftimes = 0;
+		for(auto appear:x){
+			sumofscore += appear.first * appear.second;
+			sumoftimes += appear.second;
+		}
+		ret.push_back(sumofscore / sumoftimes);
 	}
-	f.close();
-	for(auto x:EachScoreAppearTime){
-		cout << "__________________________\n";
-		for(auto z:x)
-			cout << "Score = " << z.first << ", occur " << z.second << " times.\n";
+	return ret;
+}
+vector<int> middleAppearTimesOfEachScore(const vector<map<double, int>> EachScoreAppearTimes){
+	 /*	input : the appear times of each score between every win tricks.
+	 *	return the middle number of appear times of each score between every win tricks.
+	 * */
+	vector<int> ret;
+	for(auto x:EachScoreAppearTimes){
+		int c = 0;
+		for(auto item:x){
+			c += item.second;
+		}
+		int tc = 0;
+		for(auto item:x){
+			tc += item.second;
+			if(tc >= c / 2){
+				ret.push_back(item.first);
+				break;
+			}
+		}
 	}
+	return ret;
 }
