@@ -479,6 +479,8 @@ def main():
     C.loader("data/DDSresult.txt")
     formulaID = 2
     formulaPara = [26, 17, 9, 11, 15]
+    checkerProcess = Popen(['./accuracyChecker', "./data/wholedataForC", str(formulaID)], stdin=PIPE, stdout=PIPE)
+    exitProcess = 'END'
 
 #   for train the argument
     best = 0
@@ -487,7 +489,7 @@ def main():
         C.filter(i * 1000)
         C.makedatasetforC(filename)
         best = 0
-        process = Popen(['./analysisSubprocess', "./data/" + filename, str(formulaID)], stdin=PIPE, stdout=PIPE)
+        process = Popen(['./analysisSubprocess', "./data/" + filename, str(formulaID), str(i * 1000) + "dataExperiment.eps"], stdin=PIPE, stdout=PIPE)
         for j in range(20):
             print("Turn: ", j, "\nHave", i * 1000, "datas")
             # tmp = [bestScore, [individuals of best score]]
@@ -495,7 +497,9 @@ def main():
             if tmp[0] > best:
                 best = tmp[0]
             runSubprocess(process, tmp[1])
-            print("-------------")
+            runSubprocess(checkerProcess, tmp[1])
+        process.stdin.write(exitProcess.encode())
+        process.stdin.flush()
         process.terminate()
 
 
@@ -556,7 +560,7 @@ def stdoutreadline(P):
     ret = P.stdout.readline()
     i = str(ret)
     print(i[2:-3])
-    if i[2] != "T":
+    if i[2] != "-":
         stdoutreadline(P)
 
 if __name__ == "__main__":
