@@ -1,5 +1,5 @@
 #include"DataSetReader.h"
-void loadfile(string filename, vector<Team> &team){
+void loadTeam(string filename, vector<Team> &team){
 	/* The first argument in file is the hand card of player 1 
 	 * Second argument in file is the hand card of player 2
 	 * Third argument in file is the number of win tricks
@@ -35,6 +35,42 @@ void loadfile(string filename, vector<Team> &team){
 
 }
 
+void loadGame(string filename, vector<Game> &games){
+	fstream f;
+	f.open(filename, ios::in);
+	string s;
+	vector<string> info, hand;
+	string dds;
+	/* the players card */
+	vector<vector<vector<int>>> p;
+	vector<string> aPlayer;
+	vector<Player> players;
+	while(getline(f, s)){
+		p.clear();
+		p.resize(4, vector<vector<int>>(4));
+		players.clear();
+		info = split(s, "|");
+		hand = split(split(info[0], ":")[1], " ");
+		dds = info[1];
+		for(int i = 0;i < 4;i++){
+			/* different player*/
+			aPlayer = split(hand[i], ".");
+			for(int j = 0;j < 4;j++){
+				/* different suit*/
+				for(int l = 0;l < (int)aPlayer[j].size();l++){
+					p[i][j].push_back(cardtoint(aPlayer[j][l]));
+				}
+				sort(p[i][j].begin(), p[i][j].end());
+			}
+		}
+		for(auto x:p){
+			players.push_back(Player(Hand(x[0], x[1], x[2], x[3])));
+		}
+		vector<vector<int>> afterT = stringDDStoINT(dds);
+		games.push_back(Game(players[2], players[3], players[0], players[1], afterT));
+	}
+}
+
 vector<string> split(const string &str, const string & delim){
 	vector<string> res;
 	if("" == str)return res;
@@ -52,6 +88,24 @@ vector<string> split(const string &str, const string & delim){
 	return res;
 }
 
+vector<vector<int>> stringDDStoINT(string text){
+	/*	return the DDS result
+	 *	spade, Heart, Diamond, Club, No Trump, ...
+	 *	|____________________________________|, ...
+	 *					North
+	 *	North, East, South, West
+	 * */
+	vector<vector<int>> ret(4, vector<int>(5, 0));
+	vector<string> suit = split(text, "@");
+	vector<string> hand;
+	for(int i = 0;i < 5;i++){
+		hand = split(suit[i], ",");
+		for(int j = 0;j < 4;j++){
+			ret[j][i] = stoi(hand[j]);
+		}
+	}
+	return ret;
+}
 int cardtoint(char c){
 	switch(c){
 	case 'A':
