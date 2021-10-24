@@ -1,4 +1,4 @@
-#include"./Bridge.cpp"
+#include"./Bridge.h"
 #define ll long long int
 
 using namespace std;
@@ -7,7 +7,7 @@ vector<string> split(const string &, const string &);
 int cardtoint(char);
 double correlationCoefficient(vector<double> X, vector<double> Y, int n);
 
-void loadfile(string filename, vector<Team> &team){
+void loadTeam(string filename, vector<Team> &team){
 	/* The first argument in file is the hand card of player 1 
 	 * Second argument in file is the hand card of player 2
 	 * Third argument in file is the number of win tricks
@@ -130,7 +130,7 @@ bool useformula(string s){
 int main(int argc, char* argv[]){
 	string filename = "./data/wholedataForC";
 	vector<Team> team;
-	loadfile(filename, team);
+	loadTeam(filename, team);
 	/*
 	cout << team.size() << endl;
 	for(auto x:team){

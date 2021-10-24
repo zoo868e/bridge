@@ -6,7 +6,7 @@ using namespace std;
 int main(int argc, char* argv[]){
 	string filename = "./data/dataForC";
 	vector<Team> team;
-	loadfile(filename, team);
+	loadTeam(filename, team);
 	/*
 	cout << team.size() << endl;
 	for(auto x:team){

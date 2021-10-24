@@ -82,9 +82,9 @@ class Team{
 		double DDSwin;
 		int maker;
 		double score;
-		Team(Player a, Player b, double DDS = 0, int suit = 0, int maker = 0){
-			this->player[0] = a;
-			this->player[1] = b;
+		Team(Player declarer, Player dummy, double DDS = 0, int suit = 0, int maker = 0){
+			this->player[0] = declarer;
+			this->player[1] = dummy;
 			this->suit = suit;
 			this->DDSwin = DDS;
 			this->maker = maker;
@@ -100,6 +100,7 @@ class Team{
 class Experiment{
 	public:
 		vector<Team> teams;
+		vector<Game> games;
 		vector<double> score;
 		vector<double> DDS;
 		int formulaid;

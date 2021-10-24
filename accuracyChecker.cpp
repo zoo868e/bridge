@@ -5,13 +5,13 @@
 using namespace std;
 int main(int argc, char* argv[]){
 	vector<Team> teams;
-	if(argc < 2){
+	if(argc <= 2){
 		cerr << "You miss some parameters, you have to give me tow parameters" << endl;
 		cerr << "./analysis [data set filename] [formula ID wanna validate]" << endl;
 		return 1;
 	}
 	string filename = argv[1];
-	loadfile(filename, teams);
+	loadTeam(filename, teams);
 	Experiment validate(teams);
 	validate.setformulaid(stoi(argv[2]));
 	vector<string> scorematrix_string;

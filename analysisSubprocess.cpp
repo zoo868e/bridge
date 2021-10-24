@@ -13,7 +13,7 @@ int main(int argc, char* argv[]){
 		return 1;
 	}
 	string filename = argv[1];
-	loadfile(filename, teams);
+	loadTeam(filename, teams);
 	Experiment validate(teams);
 	validate.setformulaid(stoi(argv[2]));
 	string epsFilename = argv[3];

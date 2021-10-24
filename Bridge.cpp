@@ -38,6 +38,9 @@ pair<vector<Player>, vector<vector<int>>> Game::getGame(){
 }
 
 void Game::Set_long(){
+	/*	{[North and South], [West and East]}
+	 *	[length of longest suit, the suit, the win tricks]
+	 * */
 	vector<float> NS, WE;
 	NS.resize(3);
 	WE.resize(3);
