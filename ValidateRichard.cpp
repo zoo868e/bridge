@@ -40,24 +40,6 @@ vector<string> getSuitandResult(fstream &f){
 		return ret;
 	}
 }
-vector<vector<int>> stringDDStoINT(string text){
-	/*	return the DDS result
-	 *	spade, Heart, Diamond, Club, No Trump, ...
-	 *	|____________________________________|, ...
-	 *					North
-	 *	North, East, South, West
-	 * */
-	vector<vector<int>> ret(4, vector<int>(5, 0));
-	vector<string> suit = split(text, "@");
-	vector<string> hand;
-	for(int i = 0;i < 5;i++){
-		hand = split(suit[i], ",");
-		for(int j = 0;j < 4;j++){
-			ret[j][i] = stoi(hand[j]);
-		}
-	}
-	return ret;
-}
 vector<int> disOfDDSandReality(vector<vector<int>> dds, vector<vector<int>> aGame){
 	vector<int> ret;
 	/*
@@ -113,6 +95,7 @@ map<int, double> showValidateResult(map<int, int> validatedData){
 	for(auto x:validatedData){
 		ret[x.first] = round(x.second * 1000 / totalResult) / 1000;
 	}
+	for(auto x:ret)cout << "dis = " << x.first << ", accounts for " << x.second * 100 << "%\n";
 	return ret;
 }
 void plotMyHistogram(Gnuplot &gp, map<int, double> data){
