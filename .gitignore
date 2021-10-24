@@ -33,3 +33,5 @@ ccr0.1n=10.eps
 subprocesstest
 *.eps
 ValidateRichard
+accuracyChecker
+analysisByFourHand
