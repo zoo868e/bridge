@@ -70,6 +70,45 @@ void loadGame(string filename, vector<Game> &games){
 		games.push_back(Game(players[2], players[3], players[0], players[1], afterT));
 	}
 }
+void loadPartialGames(string filename, vector<PartialGame> &partialgames){
+	/* The arguments are split by space.
+	 * The first four argument are the hand of each player.
+	 * The order is North, East, South and West.
+	 * The fifth argument is the longest suit's DDS result.
+	 * The sixth argument is the longest suit.
+	 * The seventh argument is the position of declarer.
+	 * */
+	fstream f;
+	f.open(filename, ios::in);
+	string s;
+	vector<string> vs;
+	while(getline(f, s))vs.push_back(s);
+	for(auto x:vs){
+		vector<string> info = split(x, " ");
+		vector<vector<vector<int>>> hand(4, vector<vector<int>>(4));
+		vector<string> strhand1 = split(info[0], "."), strhand2 = split(info[1], ".");
+		vector<string> strhand;
+		Player player[4];
+		double DDS = atof(info[4].c_str());
+		int suit = atoi(info[5].c_str());
+		int maker = info[6].c_str()[0] == 'W' ? 1:0;
+		for(int i = 0;i < 4;i++){
+			strhand = split(info[i], ".");
+			for(int j = 0;j < 4;j++){
+				for(auto x:strhand[j])
+					hand[i][j].push_back(cardtoint(x));
+				sort(hand[i][j].begin(), hand[i][j].end());
+			}
+		}
+		for(int i = 0;i < 4;i++){
+			player[i] = Player(Hand(hand[i][0], hand[i][1], hand[i][2], hand[i][3]));
+		}
+		partialgames.push_back(PartialGame(player, DDS, suit, maker));
+	}
+	f.close();
+
+
+}
 
 vector<string> split(const string &str, const string & delim){
 	vector<string> res;
