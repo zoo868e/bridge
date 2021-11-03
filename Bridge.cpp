@@ -257,6 +257,15 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 	return 0;
 }
 
+int Experiment::Set_FixFormulaArgumentList(vector<double> FixArgument){
+	/*	Set the argument.
+	 *	If there are more than one formula, check the argumnet number first.
+	 * */
+	this->FixFormulaArgumentList = FixArgument;
+	if(FixArgument.size() != 2)return FixArgument.size();
+	return 0;
+}
+
 void Experiment::scorer(){
 	/* Fill up the score list by new formula parameter
 	 * formulaid = 
@@ -316,6 +325,73 @@ void Experiment::scorer(){
 			this->score.push_back(ret);
 		}
 		break;
+	}
+}
+
+void Experiment::GameScorer(){
+	/*	This is the scorer for games.
+	 *	It will calculate the score of each player in each contract.
+	 *	But we only have a good formula for suit contract.
+	 *	So just use the same formula and argument for no trump too.
+	 *
+	 *	The order of players is North, East, South and West.
+	 *	So do the matrix of ScoreForPlayers.
+	 * */
+	switch(this->formulaid){
+	case 1:
+		for(auto &game:this->games){
+			for(int i = 0;i < 4;i++){
+				for(int j = 0;j < 5;j++){
+					game.ScoreForPlayers[i][j] = pformula1(game.Players[i], j);
+				}
+			}
+		}
+	case 2:
+		for(auto &game:this->games){
+			for(int i = 0;i < 4;i++){
+				for(int j = 0;j < 5;j++){
+					game.ScoreForPlayers[i][j] = pformula2(game.Players[i], j);
+				}
+			}
+		}
+	}
+}
+void Experiment::PartialGamePreScorer(){
+	/*	This is the pre scorer for partial games(which already know the declarer, contract suit and DDS result).
+	 *	So there is no No Trump contract.
+	 *	And use the argument that had trained to calculate the individual score.
+	 * */
+	switch(this->formulaid){
+		case 2:
+			for(PartialGame &game:this->Partialgames){
+				for(int i = 0;i < 4;i++){
+					game.player[i].score = pformula2(game.player[i], game.suit);
+//					cout << game.player[i].score << endl;
+				}
+			}
+			break;
+		default:
+			cerr << "Input formulaID = " << this->formulaid << endl;
+			cerr << "Wrong formulaID! If you wanna use formula, you have to implement it!\n";
+			break;
+	}
+}
+void Experiment::PartialGameTrainScorer(){
+	/*	This score is use to calculate the final score that after fixed.
+	 *	And append to the list Experiment::score.
+	 *	The list will calculate the final correlation coefficient.
+	 * */
+	this->score.clear();
+	double pscore = 0;
+	for(auto &game:Partialgames){
+		pscore = 0;
+		if(game.maker)
+			pscore = game.player[1].score + game.player[3].score;
+		else 
+			pscore = game.player[0].score + game.player[2].score;
+		pscore += this->FixFormula1(game);
+		this->score.push_back(pscore);
+		game.score = pscore;
 	}
 }
 
@@ -521,5 +597,23 @@ double Experiment::pLongShort(Player p, int suit){
 		if(suit == i)id = 0;
 		ret += this->lenlist[id][p.hand.distributed[i]];
 	}
+	return ret;
+}
+double Experiment::FixFormula1(PartialGame game){
+	/*	This formula is my first idea that can fix the score by opponent's hand.
+	 *	fixscore = a * pow((N - S) * (E - W), b)
+	 *	If the maker is WE, then you have to return -fixscore.
+	 * */
+	double dis[2];
+	double ret = 1;
+	for(int i = 0;i < 2;i++){
+		dis[i] = game.player[i].score - game.player[i + 2].score;
+	}
+	if((dis[0] > 0 && dis[1] < 0) || (dis[0] < 0 && dis[1] > 0))
+		ret = -1;
+	else ret = 1;
+	ret = (pow(fabs(dis[0]) * fabs(dis[1]), this->FixFormulaArgumentList[1]) * (this->FixFormulaArgumentList[0])) * ret;
+	int maker = game.maker;
+	if(maker)ret *= -1;
 	return ret;
 }
