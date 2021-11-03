@@ -1,11 +1,15 @@
 #include"Bridge.h"
 
 vector<vector<Team>> classifyByDoubleDummyResult(const vector<Team> &teams);
+vector<vector<PartialGame>> classifyByDoubleDummyResult(const vector<PartialGame> &games);
 vector<map<double, int>> countEachScoreAppearTime(const vector<vector<Team>> &teams);
+vector<map<double, int>> countEachScoreAppearTime(const vector<vector<PartialGame>> &games);
 vector<int> maximumAppearTimesOfEachScore(const vector<map<double, int>>);
 vector<double> edgeOfEachScore(const vector<int>);
 vector<double> edgeOfEachScore(const vector<double>);
 int distanceOfPredictAndDDS(const Team, const vector<double>);
+int distanceOfPredictAndDDS(const PartialGame, const vector<double>);
 map<int, int> gapOfWholeDataSet(const vector<Team>, const vector<double>);
+map<int, int> gapOfWholeDataSet(const vector<PartialGame>, const vector<double>);
 vector<double> meanAppearTimesOfEachScore(const vector<map<double, int>>);
 vector<int> middleAppearTimesOfEachScore(const vector<map<double, int>>);
