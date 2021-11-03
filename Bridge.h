@@ -40,13 +40,16 @@ class Player{
 	public:
 		string position;
 		Hand hand;
+		double score;
 		Player(Hand hand, string position = "Dontcare"){
 			this->hand = hand;
 			this->position = position;
+			this->score = 0;
 		}
 		Player(){
 			this->hand = Hand();
 			this->position = "None";
+			this->score = 0;
 		}
 		pair<Hand, string> getPlayer();
 };
@@ -60,6 +63,8 @@ class Game{
 		vector<int> WestDDS;
 		vector<int> NorthDDS;
 		vector<int> EastDDS;
+		vector<Player> Players;
+		vector<vector<double>> ScoreForPlayers = vector<vector<double>>(4, vector<double>(5));
 		pair<vector<float>, vector<float>> longest;
 		Game(Player south, Player west, Player north, Player east, vector<vector<int>> DDSresult){
 			this->South = south;
@@ -70,6 +75,7 @@ class Game{
 			this->WestDDS = DDSresult[1];
 			this->NorthDDS = DDSresult[2];
 			this->EastDDS = DDSresult[3];
+			this->Players = {north, east, south, west};
 		}
 		vector<Player> getPlayer();
 		pair<vector<Player>, vector<vector<int>>> getGame();
@@ -97,12 +103,30 @@ class Team{
 			this->maker = 0;
 		}
 };
+class PartialGame{
+	public:
+		Player player[4];
+		int suit;
+		double DDSwin;
+		int maker;
+		double score;
+		PartialGame(Player *player, double DDS = 0, int suit = 0, int maker = 0){
+			for(int i = 0;i < 4;i++)
+				this->player[i] = player[i];
+			this->suit = suit;
+			this->DDSwin = DDS;
+			// maker = {NS, WE}
+			this->maker = maker;
+		}
+};
 class Experiment{
 	public:
 		vector<Team> teams;
 		vector<Game> games;
+		vector<PartialGame> Partialgames;
 		vector<double> score;
 		vector<double> DDS;
+		vector<double> FixFormulaArgumentList;
 		int formulaid;
 		vector<vector<double>> FormulaArgumentList;
 		double HCPlist[2][14];
@@ -134,8 +158,22 @@ class Experiment{
 				DDS.push_back(teams[i].DDSwin);
 			}
 		}
+		Experiment(vector<PartialGame> partialgames, int formulaid = 0){
+			this->Partialgames = partialgames;
+			this->formulaid = formulaid;
+			for(int i = 0;i < (int)partialgames.size();i++)
+				DDS.push_back(partialgames[i].DDSwin);
+		}
+		Experiment(vector<Game> games, int formulaid = 0){
+			this->games = games;
+			this->formulaid = formulaid;
+		}
 		int Set_scorematrix(vector<double> scorematrix);
+		int Set_FixFormulaArgumentList(vector<double> FixArgument);
 		void scorer();
+		void GameScorer();
+		void PartialGamePreScorer();
+		void PartialGameTrainScorer();
 		void setformulaid(int formulaid){
 			this->formulaid = formulaid;
 		}
@@ -161,5 +199,6 @@ class Experiment{
 		double longformula(Player p, int suit);
 		double shortformula(Player p, int suit);
 		double distributeformula(Player p, int suit);
+		double FixFormula1(PartialGame game);
 };
 #endif
