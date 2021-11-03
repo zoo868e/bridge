@@ -8,7 +8,7 @@ dep:
 
 -include dep 
 
-all: analysisSubprocess subprocesstest accuracyChecker ValidateRichard checkWholeCorr analysisByFourHand
+all: analysisSubprocess subprocesstest accuracyChecker ValidateRichard checkWholeCorr analysisByFourHand TraversFourPlayersEST
 
 ValidateRichard:ValidateRichard.o Bridge.o Analysis.o DataSetReader.o epsMaker.o 
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -18,6 +18,7 @@ subprocesstest:subprocesstest.o Bridge.o Analysis.o DataSetReader.o
 accuracyChecker:accuracyChecker.o Bridge.o Analysis.o DataSetReader.o
 checkWholeCorr:check_whole_corr.o Bridge.o
 analysisByFourHand: analysisByFourHand.o Bridge.o DataSetReader.o
+TraversFourPlayersEST: TraversFourPlayersEST.o Bridge.o DataSetReader.o Analysis.o
 clean:
 	-find . -type f -name "*.o" -exec rm {} \;
 	-find . -type f -name "dep" -exec rm {} \;
