@@ -16,7 +16,8 @@ int main(int argc, char** argv){
 	loadPartialGames(argv[1], partialgames);
 	Experiment PartialgameExperiment(partialgames, atoi(argv[2]));
 	PartialgameExperiment.Set_scorematrix(ArgumentOfFormulaTwo);
-	PartialgameExperiment.PartialGamePreScorer();
+	PartialgameExperiment.setFixformulaid(3);
+//	PartialgameExperiment.PartialGamePreScorer();
 	/*
 	for(auto game:PartialgameExperiment.Partialgames){
 		for(auto player:game.player){
@@ -46,7 +47,8 @@ int main(int argc, char** argv){
 		}
 		int ercode = PartialgameExperiment.Set_FixFormulaArgumentList(scorematrix);
 		if(ercode){
-			cerr << "--Wrong size of scorematrix-- Size = " << ercode << endl;
+			cerr << "--Wrong size of scorematrix--" << endl;
+			cerr << "Need " << PartialgameExperiment.FixFormulaArgumentSize[PartialgameExperiment.formulaid] << " parameters and you give " << ercode << " parameters." << endl;
 		}
 		else{
 			PartialgameExperiment.PartialGameTrainScorer();
