@@ -344,7 +344,7 @@ def sortPopulation(population, scores):
     return population, scores
 
 
-def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID):
+def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, TrainFile):
     """
     This is the main method which implements GA
 
@@ -369,7 +369,8 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID):
         The best score during the whole experiment
     formulaID: int
         The formula ID will enter in C subprocess
-
+    TrainFile: string
+        The file name of the trainning file
     """
 
     import Gameinfo.parser as ps
@@ -380,7 +381,8 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID):
     mp = 0.01  # Mutation Probability
     keep = 2  # elitism parameter: how many of the best individuals to keep from one generation to the next
     print("keep = ", keep)
-    process = Popen(['./analysisByFourHand', './data/testPartialGame', str(formulaID)], stdin=PIPE, stdout=PIPE)
+    process = Popen(['./analysisByFourHand', './data/' + str(TrainFile), str(formulaID)], stdin=PIPE, stdout=PIPE)
+    print('./data/' + str(TrainFile))
 
     if not isinstance(lb, list):
         lb = [lb] * dim
@@ -436,7 +438,7 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID):
 
     print("bestScore =", 1 - bestScore)
     for i in ga[0]:
-        print("{:.4g}".format(i - 4), end = " ")
+        print("{:.4g}".format(i), end = " ")
 #    if 1 - bestScore > best:
 #        print("bestIndividual=")
 #        for i in ga[0]:
