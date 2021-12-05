@@ -497,16 +497,29 @@ def main():
     import Gameinfo.GA_v_Fourguys as GA
     import Gameinfo.parser as ps
     import numpy
+    import time
+    import os
     from subprocess import Popen, PIPE
     C = corrobj()
     filename = "testPartialGame";
     C.loader("data/DDSresult.txt")
     best = 0
+    process = Popen(['./check_whole_corr_Fixed', '2'], stdin=PIPE, stdout=PIPE)
+    folder = str(time.time())
+    os.mkdir('data/' + folder)
     for i in range(1, 6):
-        C.filter(i * 1000)
-        C.makedataofgameforC(filename)
-        print("Turn:", i, "\nHave", i * 1000, "datas")
-        tmp = GA.GA(GA.ObjfCorr, 0, 8, 2, 50, 1000, True, best, 2)
+        for j in range(1, 20):
+            start_time = str(time.time())
+            filename = folder + '/.' + start_time
+            C.filter(i * 1000)
+            C.makedataofgameforC(filename)
+            print("Turn:", j, "\nHave", i * 1000, "datas")
+            tmp = GA.GA(GA.ObjfCorr, 0, 4, 10, 50, 100, True, best, 2, filename)
+            check_in = tmp[1]
+            process.stdin.write(listtostdin(check_in).encode())
+            process.stdin.flush()
+            print("The coefficient correlation of whole data: ", end = "")
+            print(stdoutreadint(process))
 
 if __name__ == "__main__":
     main()
