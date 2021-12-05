@@ -4,6 +4,8 @@
 
 using namespace std;
 
+static const double basicHCP[14] = {0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3};
+static const double basiclen[14] = {3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 class Hand{
 	public:
 		vector<int> spade;
@@ -41,15 +43,28 @@ class Player{
 		string position;
 		Hand hand;
 		double score;
+		double HCP;
 		Player(Hand hand, string position = "Dontcare"){
 			this->hand = hand;
 			this->position = position;
 			this->score = 0;
+			this->HCP = 0;
+			for(auto suit:hand.getcard()){
+				for(auto card:suit){
+					this->HCP += basicHCP[card];
+				}
+			}
 		}
 		Player(){
 			this->hand = Hand();
 			this->position = "None";
 			this->score = 0;
+			this->HCP = 0;
+			for(auto suit:hand.getcard()){
+				for(auto card:suit){
+					this->HCP += basicHCP[card];
+				}
+			}
 		}
 		pair<Hand, string> getPlayer();
 };
@@ -105,8 +120,8 @@ class Team{
 };
 class PartialGame{
 	public:
-		Player player[4];
-		int suit;
+		Player player[4];	//{North, East, South, West}
+		int suit;			//{Spade, Heart, Diamond, Club}
 		double DDSwin;
 		int maker;
 		double score;
@@ -119,6 +134,7 @@ class PartialGame{
 			this->maker = maker;
 		}
 };
+
 class Experiment{
 	public:
 		vector<Team> teams;
@@ -128,6 +144,8 @@ class Experiment{
 		vector<double> DDS;
 		vector<double> FixFormulaArgumentList;
 		int formulaid;
+		int Fixformulaid;
+		const vector<int> FixFormulaArgumentSize = {0, 2, 4, 10};
 		vector<vector<double>> FormulaArgumentList;
 		double HCPlist[2][14];
 		double lenlist[2][14];
@@ -139,11 +157,13 @@ class Experiment{
 		double f_long[2][2];
 		double f_short[2][2];
 		double f_dist[2][3];
+		double f_fixsuitHCP[2];
+		double early_hand[14];
+		double late_hand[14];
 		Experiment(vector<Team> teams, int formulaid = 0){
 			this->teams = teams;
 			this->formulaid = formulaid;
-			double basicHCP[14] = {0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3};
-			double basiclen[14] = {3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+			this->Fixformulaid = 1;
 			for(int i = 0;i < 14;i++){
 				this->HCPlist[0][i] = basicHCP[i];
 				this->HCPlist[1][i] = basicHCP[i];
@@ -177,6 +197,10 @@ class Experiment{
 		void setformulaid(int formulaid){
 			this->formulaid = formulaid;
 		}
+		void setFixformulaid(int Fixformulaid){
+			this->Fixformulaid = Fixformulaid;
+		}
+		int ExposeSuit(Player);
 	private:
 		double HCP(Team t);
 		double pHCP(Player p, int suit);
@@ -196,9 +220,17 @@ class Experiment{
 		double formula5(Team t);
 		double pformula5(Player p, int suit);
 		double suitHCP(Player p, int suit);
+		double singlesuitHCP(Player p, int suit);
 		double longformula(Player p, int suit);
 		double shortformula(Player p, int suit);
+		double singleshortformula(Player p, int suit);
 		double distributeformula(Player p, int suit);
 		double FixFormula1(PartialGame game);
+		double FixFormula2(PartialGame game);
+		double FixFormula3(PartialGame game);
+		double p_FixFormula3(Player, int, int, int);
+		double FixsuitHCP(Player, int, int, int);
+		double Fix_early_HCP(Player, int);
+		double Fix_late_HCP(Player, int);
 };
 #endif

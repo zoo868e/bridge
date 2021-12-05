@@ -259,10 +259,29 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 
 int Experiment::Set_FixFormulaArgumentList(vector<double> FixArgument){
 	/*	Set the argument.
-	 *	If there are more than one formula, check the argumnet number first.
+	 *	Check the argumnet number first if there are more than one formula
 	 * */
+	const int size = FixArgument.size();
+	if(this->FixFormulaArgumentSize[this->Fixformulaid] != size)return size;
 	this->FixFormulaArgumentList = FixArgument;
-	if(FixArgument.size() != 2)return FixArgument.size();
+	if(this->Fixformulaid == 3){
+		this->early_hand[1] = 4;
+		this->late_hand[1] = 4;
+		for(auto i = 2;i < 9;i++){
+			this->early_hand[i] = FixArgument[0];
+			this->late_hand[i] = FixArgument[5];
+		}
+		this->early_hand[9] = FixArgument[1];
+		this->late_hand[9] = FixArgument[6];
+		this->early_hand[10] = FixArgument[1];
+		this->late_hand[10] = FixArgument[6];
+		this->early_hand[11] = FixArgument[2];
+		this->late_hand[11] = FixArgument[7];
+		this->early_hand[12] = FixArgument[3];
+		this->late_hand[12] = FixArgument[8];
+		this->early_hand[13] = FixArgument[4];
+		this->late_hand[13] = FixArgument[9];
+	}
 	return 0;
 }
 
@@ -346,6 +365,7 @@ void Experiment::GameScorer(){
 				}
 			}
 		}
+		break;
 	case 2:
 		for(auto &game:this->games){
 			for(int i = 0;i < 4;i++){
@@ -354,6 +374,7 @@ void Experiment::GameScorer(){
 				}
 			}
 		}
+		break;
 	}
 }
 void Experiment::PartialGamePreScorer(){
@@ -370,6 +391,41 @@ void Experiment::PartialGamePreScorer(){
 				}
 			}
 			break;
+		case -1:
+			for(PartialGame &game:this->Partialgames){
+				for(int i = 0;i < 4;i++){
+					game.player[i].score = pHCP(game.player[i], 5);
+				}
+			}
+			break;
+		case -2:
+			for(PartialGame &game:this->Partialgames){
+				for(int i = 0;i < 4;i++){
+					game.player[i].score = suitHCP(game.player[i], game.suit);
+				}
+			}
+			break;
+		case -3:
+			for(PartialGame &game:this->Partialgames){
+				for(int i = 0;i < 4;i++){
+					game.player[i].score = longformula(game.player[i], game.suit);
+				}
+			}
+			break;
+		case -4:
+			for(PartialGame &game:this->Partialgames){
+				for(int i = 0;i < 4;i++){
+					game.player[i].score = shortformula(game.player[i], game.suit);
+				}
+			}
+			break;
+		case -5:
+			for(PartialGame &game:this->Partialgames){
+				for(int i = 0;i < 4;i++){
+					game.player[i].score = pHCP(game.player[i], 5) + longformula(game.player[i], game.suit) + shortformula(game.player[i], game.suit);
+				}
+			}
+			break;
 		default:
 			cerr << "Input formulaID = " << this->formulaid << endl;
 			cerr << "Wrong formulaID! If you wanna use formula, you have to implement it!\n";
@@ -383,18 +439,57 @@ void Experiment::PartialGameTrainScorer(){
 	 * */
 	this->score.clear();
 	double pscore = 0;
-	for(auto &game:Partialgames){
-		pscore = 0;
-		if(game.maker)
-			pscore = game.player[1].score + game.player[3].score;
-		else 
-			pscore = game.player[0].score + game.player[2].score;
-		pscore += this->FixFormula1(game);
-		this->score.push_back(pscore);
-		game.score = pscore;
+	if(this->Fixformulaid == 2){
+		for(auto &game:Partialgames){
+			pscore = 0;
+			if(game.maker)
+				pscore = game.player[1].score + game.player[3].score;
+			else 
+				pscore = game.player[0].score + game.player[2].score;
+			pscore += this->FixFormula2(game);
+			this->score.push_back(pscore);
+			game.score = pscore;
+		}
+	}
+	else if(this->Fixformulaid == 3){
+		for(auto &game:Partialgames){
+			pscore = FixFormula3(game);
+			this->score.push_back(pscore);
+			game.score = pscore;
+		}
 	}
 }
 
+int Experiment::ExposeSuit(Player player){
+	/*	If player's hand HCP is large or exist a length of suit is long
+	 *	then the player may make a bid to let another players know what
+	 *	suit is longest suit in his hand.
+	 *	
+	 *	This function is check if the HCP >= 13 or (HCP >= 11 and exist a length
+	 *	of suit is >= 5).
+	 *	If so, return the longest suit, other wise return 4(means no any information expose).
+	 * */
+	int ret = 4, longestLen = 0;
+	vector<int> dist = player.hand.distributed;
+	if(player.HCP >= 13){
+		for(int i = 0;i < 4;i++){
+			if(dist[i] > longestLen){
+				longestLen = dist[i];
+				ret = i;
+			}
+		}
+	}
+	else if(player.HCP >= 11){
+		longestLen = 4;
+		for(int i = 0;i < 4;i++){
+			if(dist[i] > longestLen){
+				longestLen = dist[i];
+				ret = i;
+			}
+		}
+	}
+	return ret;
+}
 double Experiment::formula1(Team t){
 	double ret = 0;
 	ret += pformula1(t.player[0], t.suit);
@@ -600,20 +695,176 @@ double Experiment::pLongShort(Player p, int suit){
 	return ret;
 }
 double Experiment::FixFormula1(PartialGame game){
-	/*	This formula is my first idea that can fix the score by opponent's hand.
-	 *	fixscore = a * pow((N - S) * (E - W), b)
-	 *	If the maker is WE, then you have to return -fixscore.
-	 * */
+	//	This formula is my first idea that can fix the score by opponent's hand.
+	//	fixscore = a * pow((N - S) * (E - W), b)
+	//	If the maker is WE, then you have to return -fixscore.
+	//	Idea is good but can't get better.
+	
 	double dis[2];
 	double ret = 1;
 	for(int i = 0;i < 2;i++){
 		dis[i] = game.player[i].score - game.player[i + 2].score;
 	}
+	//	This is calculate in NS site
 	if((dis[0] > 0 && dis[1] < 0) || (dis[0] < 0 && dis[1] > 0))
 		ret = -1;
 	else ret = 1;
 	ret = (pow(fabs(dis[0]) * fabs(dis[1]), this->FixFormulaArgumentList[1]) * (this->FixFormulaArgumentList[0])) * ret;
+	//	So it should change to WE site if it need
 	int maker = game.maker;
 	if(maker)ret *= -1;
+	return ret;
+}
+double Experiment::FixFormula2(PartialGame game){
+	/*	The fix formula2 is fix the score that get from suitHCP and short formula
+	 *	set OsuitHCP = original suitHCP with specific suit, Oshort = original short score
+	 *				   with specific suit too.
+	 *	Then the return value is 
+	 *		-a*pow(OsuitHCP, b) + c*pow(Oshort, d)
+	 *	Because the suitHCP have to decrease when the right player have long(or strong)
+	 *	suit at specific suit.
+	 *	And in short formula situation, If we don't have that suit means the opponent can't
+	 *	get any tricks from this suit(we can win the tricks by other suit).
+	 * */
+	double ret = 0;
+	int maker = game.maker;
+	//	suit1 is the information of North or the information of East
+	//	suit2 is the information of South or the information of West
+	int suit1, suit2;
+	if(!maker){
+		suit1 = ExposeSuit(game.player[3]);
+		suit2 = ExposeSuit(game.player[1]);
+	}
+	else{
+		suit1 = ExposeSuit(game.player[0]);
+		suit2 = ExposeSuit(game.player[2]);
+	}
+	double NE_HCP, SW_HCP, NE_short, SW_short;
+	NE_HCP = singlesuitHCP(game.player[game.maker], suit1);
+	SW_HCP = singlesuitHCP(game.player[game.maker + 2], suit2);
+	NE_short = singleshortformula(game.player[game.maker], suit1);
+	SW_short = singleshortformula(game.player[game.maker + 2], suit2);
+	double NE_FIX = FixFormulaArgumentList[2] * pow(NE_short, FixFormulaArgumentList[3])- FixFormulaArgumentList[0] * pow(NE_HCP, FixFormulaArgumentList[1]);
+	double SW_FIX = FixFormulaArgumentList[2] * pow(SW_short, FixFormulaArgumentList[3])- FixFormulaArgumentList[0] * pow(SW_HCP, FixFormulaArgumentList[1]);
+	ret = NE_FIX + SW_FIX;
+	return ret;
+}
+double Experiment::singlesuitHCP(Player p, int suit){
+	/* Return the score that each HCP in a specific suit can get
+	 * score = a * pow(HCP, b)
+	 * a and b are the argument that be trained
+	 * */
+	double ret = 0;
+	vector<vector<int>> h = p.hand.getcard();
+	for(int i = 0;i < 4;i++){
+		if(i != suit)continue;
+		double currentsuitHCP = 0;
+		for(auto x:h[i])currentsuitHCP += this->HCPlist[1][x];
+		ret = this->f_suitHCP[1][0] * pow(currentsuitHCP, this->f_suitHCP[1][1]);
+	}
+	return ret;
+}
+
+
+double Experiment::singleshortformula(Player p, int suit){
+	/* Return the score of a length in a specific suit can get
+	 * score = a * pow(3 - suit length, b)
+	 * 3 also can be an argument but we will fix it now
+	 * a and b are the argument that be trained
+	 * */
+	double ret = 0;
+	vector<int> distributed = p.hand.distributed;
+	for(int i = 0;i < 4;i++){
+		if(i != suit)continue;
+		double t = 0;
+		if(distributed[i] > 2)continue;
+		t = this->f_short[1][0] * pow(3 - distributed[i], this->f_short[1][1]);
+		ret += t;
+	}
+	return ret;
+}
+
+double Experiment::FixFormula3(PartialGame game){
+	/*	The fix formula3 is a formula that just change the HCP to a new one
+	 *	If we change the HCP, suitHCP will change too.
+	 *	So we have to calculate the new score between makers.
+	 * */
+	double ret = 0;
+	int maker = game.maker;
+	vector<int> expSuit(4, 4);
+	for(int i = 0;i < 4;i++){
+		expSuit[i] = ExposeSuit(game.player[i]);
+	}
+	if(maker){
+		ret += p_FixFormula3(game.player[1], game.suit, expSuit[0], expSuit[2]);
+		ret += p_FixFormula3(game.player[3], game.suit, expSuit[2], expSuit[0]);
+	}
+	else{
+		ret += p_FixFormula3(game.player[0], game.suit, expSuit[3], expSuit[1]);
+		ret += p_FixFormula3(game.player[2], game.suit, expSuit[1], expSuit[3]);
+	}
+	return ret;
+}
+
+double Experiment::p_FixFormula3(Player player, int suit, int early_suit, int late_suit){
+	double ret = 0;
+	double hcp = 0;
+	auto hand = player.hand.getcard();
+	// calculate the HCP
+	for(int i = 0;i < 4;i++){
+		if(i == late_suit){
+			for(auto card:hand[i]){
+				hcp += this->late_hand[card];
+			}
+		}
+		else if(i == early_suit){
+			for(auto card:hand[i]){
+				hcp += this->early_hand[card];
+			}
+		}
+		else{
+			for(auto card:hand[i]){
+				hcp += this->HCPlist[1][card];
+			}
+		}
+	}
+	ret += hcp;
+	ret += FixsuitHCP(player, suit, early_suit, late_suit);
+	ret += longformula(player, suit);
+	ret += shortformula(player, suit);
+	return ret;
+}
+
+double Experiment::Fix_early_HCP(Player player, int suit){
+	double ret = 0;
+	auto card = player.hand.getcard();
+	for(auto x:card[suit])
+		ret += this->early_hand[x];
+	return ret;
+}
+double Experiment::Fix_late_HCP(Player player, int suit){
+	double ret = 0;
+	auto card = player.hand.getcard();
+	for(auto x:card[suit])
+		ret += this->late_hand[x];
+	return ret;
+}
+double Experiment::FixsuitHCP(Player player, int suit, int early_suit, int late_suit){
+	int ret = 0, temp = 0, id;
+	auto hand = player.hand.getcard();
+	for(int i = 0;i < 4;i++){
+		temp = 0;
+		id = i != suit;
+		if(i == late_suit){
+			temp = Fix_late_HCP(player, late_suit);
+		}
+		else if(i == early_suit){
+			temp = Fix_early_HCP(player, early_suit);
+		}
+		else{
+			for(auto card:hand[i])temp += HCPlist[1][card];
+		}
+		ret += this->f_suitHCP[id][0] * pow(temp, this->f_suitHCP[id][1]);
+	}
 	return ret;
 }
