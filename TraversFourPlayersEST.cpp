@@ -66,7 +66,7 @@ int main(int argc, char** argv){
 		for(int j = 0;j <= 100;j++){
 			di = (double)i / 100;
 			dj = (double)j / 100;
-			if(di == 0){
+			if(i == 0){
 				cout << di << " " << dj << " " << zero_ans << endl;
 				f << di << " " << dj << " " << zero_ans << endl;
 				f0 << di << " " << dj << " " << Zero0 << endl;
@@ -75,9 +75,9 @@ int main(int argc, char** argv){
 				cout << "gap = 1 :" << di << " " << dj << " " << Zero1 << endl;
 				f2 << di << " " << dj << " " << Zero2 << endl;
 				cout << "gap = 2 :" << di << " " << dj << " " << Zero2 << endl;
-				f0 << di << " " << dj << " " << Zero0 + Zero1 << endl;
+				f01 << di << " " << dj << " " << Zero0 + Zero1 << endl;
 				cout << "gap = 0 + 1 :" << di << " " << dj << " " << Zero0 + Zero1 << endl;
-				f0 << di << " " << dj << " " << Zero0 + Zero1 + Zero2 << endl;
+				f012 << di << " " << dj << " " << Zero0 + Zero1 + Zero2 << endl;
 				cout << "gap = 0 + 1 + 2:" << di << " " << dj << " " << Zero0 + Zero1 + Zero2 << endl;
 				continue;
 			}
