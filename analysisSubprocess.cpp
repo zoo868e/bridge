@@ -39,6 +39,7 @@ int main(int argc, char* argv[]){
 		}
 		else{
 			validate.scorer();
+			cout << getcorr(validate) << endl;
 			// Find the gap of continuous win tricks
 			dividedTeam = classifyByDoubleDummyResult(validate.teams);
 			vector<map<double, int>> cTT = countEachScoreAppearTime(dividedTeam);
