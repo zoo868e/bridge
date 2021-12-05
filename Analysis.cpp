@@ -128,6 +128,17 @@ int distanceOfPredictAndDDS(const Team team, const vector<double> gaps){
 	}
 	return abs(DDS - predict);
 }
+int realvalueOfPredictAndDDS(const Team team, const vector<double> gaps){
+	/*	input : the particular data and the gaps between the adjacent win tricks
+	 *	return the distance of predict win tricks and Double Dummy Result
+	 * */
+	int DDS = round(team.DDSwin), predict = 7, score = team.score;
+	for(auto x:gaps){
+		if(score < x)break;
+		predict++;
+	}
+	return DDS - predict;
+}
 int distanceOfPredictAndDDS(const PartialGame game, const vector<double> gaps){
 	/*	input : the particular data and the gaps between the adjacent win tricks
 	 *	return the distance of predict win tricks and Double Dummy Result
@@ -139,22 +150,43 @@ int distanceOfPredictAndDDS(const PartialGame game, const vector<double> gaps){
 	}
 	return abs(DDS - predict);
 }
-map<int, int> gapOfWholeDataSet(const vector<Team> teams, const vector<double> gaps){
+int realvalueOfPredictAndDDS(const PartialGame game, const vector<double> gaps){
+	/*	input : the particular data and the gaps between the adjacent win tricks
+	 *	return the distance of predict win tricks and Double Dummy Result
+	 * */
+	int DDS = round(game.DDSwin), predict = 7, score = game.score;
+	for(auto x:gaps){
+		if(score < x)break;
+		predict++;
+	}
+	return DDS - predict;
+}
+map<int, int> gapOfWholeDataSet(const vector<Team> teams, const vector<double> gaps, bool RealValue){
 	/*	input : the whole data and the gaps between the adjacent win tricks
 	 *	return the count of each distance between predict win tricks and Double Dummy Result
 	 * */
 	map<int, int> ret;
-	for(auto team:teams)
-		ret[distanceOfPredictAndDDS(team, gaps)]++;
+	if(!RealValue)
+		for(auto team:teams)
+			ret[distanceOfPredictAndDDS(team, gaps)]++;
+	else{
+		for(auto team:teams)
+			ret[realvalueOfPredictAndDDS(team, gaps)]++;
+	}
 	return ret;
 }
-map<int, int> gapOfWholeDataSet(const vector<PartialGame> games, const vector<double> gaps){
+map<int, int> gapOfWholeDataSet(const vector<PartialGame> games, const vector<double> gaps, bool RealValue){
 	/*	input : the whole data and the gaps between the adjacent win tricks
 	 *	return the count of each distance between predict win tricks and Double Dummy Result
 	 * */
 	map<int, int> ret;
-	for(auto game:games)
-		ret[distanceOfPredictAndDDS(game, gaps)]++;
+	if(!RealValue)
+		for(auto game:games)
+			ret[distanceOfPredictAndDDS(game, gaps)]++;
+	else{
+		for(auto game:games)
+			ret[realvalueOfPredictAndDDS(game, gaps)]++;
+	}
 	return ret;
 }
 vector<double> meanAppearTimesOfEachScore(const vector<map<double, int>> EachScoreAppearTimes){
@@ -193,3 +225,7 @@ vector<int> middleAppearTimesOfEachScore(const vector<map<double, int>> EachScor
 	}
 	return ret;
 }
+/*map<int, int> test(const vector<int> c, const vector<double> d, bool RealValue){
+	map<int, int> a;
+	return a;
+}*/
