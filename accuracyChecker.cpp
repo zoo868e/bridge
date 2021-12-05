@@ -36,10 +36,11 @@ int main(int argc, char* argv[]){
 			// Find the gap of continuous win tricks
 			dividedTeam = classifyByDoubleDummyResult(validate.teams);
 			vector<map<double, int>> cTT = countEachScoreAppearTime(dividedTeam);
-			vector<int> maxTimes = maximumAppearTimesOfEachScore(cTT);
-			vector<double> gaps = edgeOfEachScore(maxTimes);
+			vector<int> middleTimes = middleAppearTimesOfEachScore(cTT);
+			vector<double> meanTimes = meanAppearTimesOfEachScore(cTT);
+			vector<double> gaps = edgeOfEachScore(meanTimes);
 			// Find the gap between the predicted win tricks and DDS
-			map<int, int> result = gapOfWholeDataSet(validate.teams, gaps);
+			map<int, int> result = gapOfWholeDataSet(validate.teams, gaps, true);
 			int check = 0;
 			for(auto item:result){
 				check += item.second;
