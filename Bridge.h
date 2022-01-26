@@ -44,15 +44,22 @@ class Player{
 		Hand hand;
 		double score;
 		double HCP;
+		double HCP_suit[4];
 		Player(Hand hand, string position = "Dontcare"){
 			this->hand = hand;
 			this->position = position;
 			this->score = 0;
 			this->HCP = 0;
-			for(auto suit:hand.getcard()){
-				for(auto card:suit){
+			memset(HCP_suit, 0, sizeof(HCP_suit));
+			int tempHCP;
+			auto handcard = hand.getcard();
+			for(int i = 0;i < 4;i++){
+				tempHCP = 0;
+				for(auto card:handcard[i]){
 					this->HCP += basicHCP[card];
+					tempHCP += basicHCP[card];
 				}
+				this->HCP_suit[i] = tempHCP;
 			}
 		}
 		Player(){
@@ -146,6 +153,7 @@ class Experiment{
 		int formulaid;
 		int Fixformulaid;
 		const vector<int> FixFormulaArgumentSize = {0, 2, 4, 10};
+		const vector<int> FormulaArgumentSize = {0, 26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23};
 		vector<vector<double>> FormulaArgumentList;
 		double HCPlist[2][14];
 		double lenlist[2][14];
@@ -156,14 +164,21 @@ class Experiment{
 		double f_suitHCP[2][2];
 		double f_long[2][2];
 		double f_short[2][2];
+		double tf_long[2][3];
+		double tf_short[2][3];
 		double f_dist[2][3];
 		double f_fixsuitHCP[2];
 		double early_hand[14];
 		double late_hand[14];
+		double f_distributedistance[3];
+		vector<double> long4card;
+		double distributedistance(Team &t);
 		Experiment(vector<Team> teams, int formulaid = 0){
 			this->teams = teams;
 			this->formulaid = formulaid;
 			this->Fixformulaid = 1;
+			this->long4card.clear();
+			this->long4card.resize(2);
 			for(int i = 0;i < 14;i++){
 				this->HCPlist[0][i] = basicHCP[i];
 				this->HCPlist[1][i] = basicHCP[i];
@@ -203,7 +218,7 @@ class Experiment{
 		int ExposeSuit(Player);
 	private:
 		double HCP(Team t);
-		double pHCP(Player p, int suit);
+		double pHCP(Player &p, int suit);
 		double LongShort(Team t);
 		double pLongShort(Player p, int suit);
 		double Highlen(Team t);
@@ -219,10 +234,28 @@ class Experiment{
 		double pformula4(Player p, int suit);
 		double formula5(Team t);
 		double pformula5(Player p, int suit);
+		double formula6(Team t);
+		double pformula6(Player p, int suit);
+		double formula7(Team &t);
+		double pformula7(Player &p, int suit);
+		double formula8(Team &t);
+		double pformula8(Player &p, int suit);
+		double formula9(Team &t);
+		double pformula9(Player &p, int suit);
+		double formula10(Team &t);
+		double pformula10(Player &p, int suit);
+		double formula11(Team &t);
+//		double distributedistance(Team &t);
+		double distributedistance_v2(Team &t);
 		double suitHCP(Player p, int suit);
+		double FASTsuitHCP(Player p, int suit);
 		double singlesuitHCP(Player p, int suit);
 		double longformula(Player p, int suit);
+		double Editinglongformula(Player p, int suit);
 		double shortformula(Player p, int suit);
+		double discreteshort(Player p, int suit);
+		double TrainLong(Player p, int suit);
+		double TrainShort(Player p, int suit);
 		double singleshortformula(Player p, int suit);
 		double distributeformula(Player p, int suit);
 		double FixFormula1(PartialGame game);
