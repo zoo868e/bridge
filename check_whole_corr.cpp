@@ -152,6 +152,22 @@ int main(int argc, char* argv[]){
 	}*/
 	Experiment E = Experiment(team);
 	if(argc > 1)E.setformulaid(stoi(argv[1]));
+	if(E.formulaid == 6){
+		int size = E.teams.size();
+		for(int i = 0;i < size;i++){
+			for(int j = 0;j < 2;j++){
+				int ps = 0;
+				auto hand = E.teams[i].player[j].hand.getcard();
+				for(int k = 0;k < 4;k++){
+					int a = 0;
+					for(int c:hand[k])a += basicHCP[c];
+					ps += a;
+					E.teams[i].player[j].HCP_suit[k] = a;
+				}
+				E.teams[i].player[j].HCP = ps;
+			}
+		}
+	}
 	/*
 	for(int i = 0;i < (int)E.score.size();i++){
 		cout << "DDS: " << E.DDS[i] << ", score: " << E.score[i] << endl;
@@ -161,7 +177,7 @@ int main(int argc, char* argv[]){
 	string s;
 	vector<string> scorematrixb;
 	vector<double> scorematrix;
-	string trained_file_name = "./0921_f3";
+	string trained_file_name = "./result/trained_1209";
 	vector<string> trained_argument = load_trained_file(trained_file_name);
 	for(auto s:trained_argument){
 		scorematrixb.clear();
