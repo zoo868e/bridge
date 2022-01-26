@@ -175,7 +175,6 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 		this->f_short[0][1] = this->FormulaArgumentList[0][5];
 		this->f_short[1][0] = this->FormulaArgumentList[1][4];
 		this->f_short[1][1] = this->FormulaArgumentList[1][5];
-//		cout << "Set correctly\n";
 	}
 	else if(s == 9 && this->formulaid == 3){
 		this->FormulaArgumentList.clear();
@@ -233,22 +232,196 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 		this->FormulaArgumentList[0].push_back(scorematrix[6]);
 		this->FormulaArgumentList[1].push_back(scorematrix[7]);
 		this->FormulaArgumentList[1].push_back(scorematrix[8]);
-		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
-		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
-		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
-		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
 		this->FormulaArgumentList[0].push_back(scorematrix[9]);
 		this->FormulaArgumentList[0].push_back(scorematrix[10]);
 		this->FormulaArgumentList[0].push_back(scorematrix[11]);
 		this->FormulaArgumentList[1].push_back(scorematrix[12]);
 		this->FormulaArgumentList[1].push_back(scorematrix[13]);
 		this->FormulaArgumentList[1].push_back(scorematrix[14]);
+		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
+		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
+		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
+		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
 		this->f_dist[0][0] = this->FormulaArgumentList[0][2];
 		this->f_dist[0][1] = this->FormulaArgumentList[0][3];
 		this->f_dist[0][2] = this->FormulaArgumentList[0][4];
 		this->f_dist[1][0] = this->FormulaArgumentList[1][2];
 		this->f_dist[1][1] = this->FormulaArgumentList[1][3];
 		this->f_dist[1][2] = this->FormulaArgumentList[1][4];
+	}
+	else if(this->formulaid == 6 && s == 12){
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
+		for(int i = 0;i < 6;i++){
+			this->FormulaArgumentList[0].push_back(scorematrix[i]);
+			this->FormulaArgumentList[1].push_back(scorematrix[i + 6]);
+		}
+		for(int i = 0;i < 2;i++){
+			for(int j = 0;j < 2;j++){
+				this->f_suitHCP[i][j] = this->FormulaArgumentList[i][j];
+				this->f_long[i][j] = this->FormulaArgumentList[i][j + 2];
+				this->f_short[i][j] = this->FormulaArgumentList[i][j + 4];
+			}
+		}
+	}
+	else if(s == 19 && this->formulaid == 7){
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
+		for(int i = 0;i < 6;i++){
+			this->FormulaArgumentList[0].push_back(scorematrix[5 + i]); 	// If is trump suit
+			this->FormulaArgumentList[1].push_back(scorematrix[11 + i]);	// If not trump suit
+		}
+		this->long4card[0] = scorematrix[17];
+		this->long4card[1] = scorematrix[18];
+		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
+		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
+		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
+		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
+		this->f_long[0][0] = this->FormulaArgumentList[0][2];
+		this->f_long[0][1] = this->FormulaArgumentList[0][3];
+		this->f_long[1][0] = this->FormulaArgumentList[1][2];
+		this->f_long[1][1] = this->FormulaArgumentList[1][3];
+		this->f_short[0][0] = this->FormulaArgumentList[0][4];
+		this->f_short[0][1] = this->FormulaArgumentList[0][5];
+		this->f_short[1][0] = this->FormulaArgumentList[1][4];
+		this->f_short[1][1] = this->FormulaArgumentList[1][5];
+//		cout << "Set correctly\n";
+	}
+	else if(s == 21 && this->formulaid == 8){
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
+		for(int i = 0;i < 8;i++){
+			this->FormulaArgumentList[0].push_back(scorematrix[5 + i]); 	// If is trump suit
+			this->FormulaArgumentList[1].push_back(scorematrix[13 + i]);	// If not trump suit
+		}
+		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
+		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
+		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
+		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
+		this->tf_long[0][0] = this->FormulaArgumentList[0][2];
+		this->tf_long[0][1] = this->FormulaArgumentList[0][3];
+		this->tf_long[0][2] = this->FormulaArgumentList[0][4];
+		this->tf_long[1][0] = this->FormulaArgumentList[1][2];
+		this->tf_long[1][1] = this->FormulaArgumentList[1][3];
+		this->tf_long[1][2] = this->FormulaArgumentList[1][4];
+		this->tf_short[0][0] = this->FormulaArgumentList[0][5];
+		this->tf_short[0][1] = this->FormulaArgumentList[0][6];
+		this->tf_short[0][2] = this->FormulaArgumentList[0][7];
+		this->tf_short[1][0] = this->FormulaArgumentList[1][5];
+		this->tf_short[1][1] = this->FormulaArgumentList[1][6];
+		this->tf_short[1][2] = this->FormulaArgumentList[1][7];
+	}
+	else if(s == 21 && this->formulaid == 9){
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
+		for(int i = 0;i < 8;i++){
+			this->FormulaArgumentList[0].push_back(scorematrix[5 + i]); 	// If is trump suit
+			this->FormulaArgumentList[1].push_back(scorematrix[13 + i]);	// If not trump suit
+		}
+		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
+		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
+		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
+		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
+		this->tf_long[0][0] = this->FormulaArgumentList[0][2];
+		this->tf_long[0][1] = this->FormulaArgumentList[0][3];
+		this->tf_long[0][2] = this->FormulaArgumentList[0][4];
+		this->tf_long[1][0] = this->FormulaArgumentList[1][2];
+		this->tf_long[1][1] = this->FormulaArgumentList[1][3];
+		this->tf_long[1][2] = this->FormulaArgumentList[1][4];
+		this->tf_short[0][0] = this->FormulaArgumentList[0][5];
+		this->tf_short[0][1] = this->FormulaArgumentList[0][6];
+		this->tf_short[0][2] = this->FormulaArgumentList[0][7];
+		this->tf_short[1][0] = this->FormulaArgumentList[1][5];
+		this->tf_short[1][1] = this->FormulaArgumentList[1][6];
+		this->tf_short[1][2] = this->FormulaArgumentList[1][7];
+	}
+	else if(s == 24 && this->formulaid == 10){
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
+		for(int i = 0;i < 8;i++){
+			this->FormulaArgumentList[0].push_back(scorematrix[5 + i]); 	// If is trump suit
+			this->FormulaArgumentList[1].push_back(scorematrix[13 + i]);	// If not trump suit
+		}
+		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
+		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
+		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
+		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
+		this->tf_long[0][0] = this->FormulaArgumentList[0][2];
+		this->tf_long[0][1] = this->FormulaArgumentList[0][3];
+		this->tf_long[0][2] = this->FormulaArgumentList[0][4];
+		this->tf_long[1][0] = this->FormulaArgumentList[1][2];
+		this->tf_long[1][1] = this->FormulaArgumentList[1][3];
+		this->tf_long[1][2] = this->FormulaArgumentList[1][4];
+		this->tf_short[0][0] = this->FormulaArgumentList[0][5];
+		this->tf_short[0][1] = this->FormulaArgumentList[0][6];
+		this->tf_short[0][2] = this->FormulaArgumentList[0][7];
+		this->tf_short[1][0] = this->FormulaArgumentList[1][5];
+		this->tf_short[1][1] = this->FormulaArgumentList[1][6];
+		this->tf_short[1][2] = this->FormulaArgumentList[1][7];
+		this->f_distributedistance[0] = scorematrix[21];
+		this->f_distributedistance[1] = scorematrix[22];
+		this->f_distributedistance[2] = scorematrix[23];
+	}
+	else if(s == 23 && this->formulaid == 11){
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->FormulaArgumentList.clear();
+		this->FormulaArgumentList.resize(2);
+		for(int i = 0;i < 8;i++){
+			this->FormulaArgumentList[0].push_back(scorematrix[5 + i]); 	// If is trump suit
+			this->FormulaArgumentList[1].push_back(scorematrix[13 + i]);	// If not trump suit
+		}
+		this->f_suitHCP[0][0] = this->FormulaArgumentList[0][0];
+		this->f_suitHCP[0][1] = this->FormulaArgumentList[0][1];
+		this->f_suitHCP[1][0] = this->FormulaArgumentList[1][0];
+		this->f_suitHCP[1][1] = this->FormulaArgumentList[1][1];
+		this->tf_long[0][0] = this->FormulaArgumentList[0][2];
+		this->tf_long[0][1] = this->FormulaArgumentList[0][3];
+		this->tf_long[0][2] = this->FormulaArgumentList[0][4];
+		this->tf_long[1][0] = this->FormulaArgumentList[1][2];
+		this->tf_long[1][1] = this->FormulaArgumentList[1][3];
+		this->tf_long[1][2] = this->FormulaArgumentList[1][4];
+		this->tf_short[0][0] = this->FormulaArgumentList[0][5];
+		this->tf_short[0][1] = this->FormulaArgumentList[0][6];
+		this->tf_short[0][2] = this->FormulaArgumentList[0][7];
+		this->tf_short[1][0] = this->FormulaArgumentList[1][5];
+		this->tf_short[1][1] = this->FormulaArgumentList[1][6];
+		this->tf_short[1][2] = this->FormulaArgumentList[1][7];
+		this->f_distributedistance[0] = scorematrix[21];
+		this->f_distributedistance[1] = scorematrix[22];
 	}
 	else{
 		cerr << "--Wrong size of scorematrix--" << endl;
@@ -320,6 +493,7 @@ void Experiment::scorer(){
 			this->score.push_back(result);
 			this->teams[i].score = result;
 		}
+		break;
 	case 4:
 		for(int i = 0;i < (int)this->teams.size();i++){
 //			this->score.push_back(this->formula3(this->teams[i]));
@@ -328,6 +502,7 @@ void Experiment::scorer(){
 			this->score.push_back(result);
 			this->teams[i].score = result;
 		}
+		break;
 	case 5:
 		for(int i = 0;i < (int)this->teams.size();i++){
 //			this->score.push_back(this->formula3(this->teams[i]));
@@ -336,12 +511,62 @@ void Experiment::scorer(){
 			this->score.push_back(result);
 			this->teams[i].score = result;
 		}
+		break;
+	case 6:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula6(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+	case 7:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula7(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+	case 8:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula8(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+	case 9:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula9(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+	case 10:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula10(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+	case 11:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula11(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
 	default:
 		for(int i = 0;i < (int)this->teams.size();i++){
 			double ret = 0;
 			ret += this->HCP(teams[i]);
 			ret += this->LongShort(teams[i]);
 			this->score.push_back(ret);
+			this->teams[i].score = ret;
 		}
 		break;
 	}
@@ -498,6 +723,8 @@ double Experiment::formula1(Team t){
 }
 
 double Experiment::pformula1(Player p, int suit){
+	/*	score = HCP + a * (card_value(1~13) - b) + c * (card_value(1~13) - d) * pow(e, f)
+	 * */
 	double ret = 0;
 	vector<vector<int>> h = p.hand.getcard();
 	for(int i = 0;i < 4;i++){
@@ -523,19 +750,6 @@ double Experiment::pformula2(Player p, int suit){
 	ret += this->suitHCP(p, suit);
 	ret += this->longformula(p, suit);
 	ret += this->shortformula(p, suit);
-/*
-	vector<vector<int>> hand = p.hand.getcard();
-	for(auto x:hand){
-		for(auto y:x)cout << y << " ";
-		cout << " | ";
-	}
-	cout << ", score " << endl;
-	cout << this->pHCP(p, 4) << endl;
-	cout << this->suitHCP(p, suit) << endl;
-	cout << this->longformula(p, suit) << endl;
-	cout << this->shortformula(p, suit) << endl;
-	cout << "---------------\n";
-	*/
 	return ret;
 }
 
@@ -579,12 +793,145 @@ double Experiment::formula5(Team t){
 }
 
 double Experiment::pformula5(Player p, int suit){
-	/* score = HCP + distribute formula
+	/* score = HCP + suitHCP + distribute formula
 	 * */
 	double ret = 0;
 	ret += this->pHCP(p, 4);
 	ret += this->suitHCP(p, suit);
 	ret += this->distributeformula(p, suit);
+	return ret;
+}
+
+double Experiment::formula6(Team t){
+	double ret = 0;
+	ret += pformula6(t.player[0], t.suit);
+	ret += pformula6(t.player[1], t.suit);
+	return ret;
+}
+
+double Experiment::pformula6(Player p, int suit){
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	ret += this->FASTsuitHCP(p, suit);
+	ret += this->longformula(p, suit);
+	ret += this->shortformula(p, suit);
+	return ret;
+}
+
+double Experiment::formula7(Team &t){
+	double ret = 0;
+	ret += pformula7(t.player[0], t.suit);
+	ret += pformula7(t.player[1], t.suit);
+	return ret;
+}
+double Experiment::pformula7(Player &p, int suit){
+	/*	After calculate the HCP, we have the HCP each suit
+	 *	So we can use the result of that to calculate the suitHCP
+	 *	score = HCP + suitHCP + editinglongformula(have fixed score when player have four card)
+	 *	+ short
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	ret += this->FASTsuitHCP(p, suit);
+	ret += this->Editinglongformula(p, suit);
+	ret += this->shortformula(p, suit);
+	p.score = ret;
+	return ret;
+}
+
+double Experiment::formula8(Team &t){
+	double ret = 0;
+	ret += pformula8(t.player[0], t.suit);
+	ret += pformula8(t.player[1], t.suit);
+	return ret;
+}
+double Experiment::pformula8(Player &p, int suit){
+	/*	Training the length of long formula and short formula
+	 *	score = HCP + suitHCP + TrainLong + TrainShort
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	ret += this->FASTsuitHCP(p, suit);
+	ret += this->TrainLong(p, suit);
+	ret += this->TrainShort(p, suit);
+	p.score = ret;
+	return ret;
+}
+double Experiment::formula9(Team &t){
+	double ret = 0;
+	ret += pformula9(t.player[0], t.suit);
+	ret += pformula9(t.player[1], t.suit);
+	return ret;
+}
+double Experiment::pformula9(Player &p, int suit){
+	/*	Training the discrete score matrix for short card
+	 *	score = HCP + suitHCP + TrainLong + Discrete short
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	ret += this->FASTsuitHCP(p, suit);
+	ret += this->TrainLong(p, suit);
+	ret += this->discreteshort(p, suit);
+	p.score = ret;
+	return ret;
+}
+double Experiment::formula10(Team &t){
+	/*	Add the formula that scoring the trump distance between two player
+	 * */
+	double ret = 0;
+	ret += pformula10(t.player[0], t.suit);
+	ret += pformula10(t.player[1], t.suit);
+	ret += this->distributedistance(t);
+	return ret;
+}
+double Experiment::pformula10(Player &p, int suit){
+	/*	Training the discrete score matrix for short card
+	 *	score = HCP + suitHCP + TrainLong + Discrete short
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	ret += this->FASTsuitHCP(p, suit);
+	ret += this->TrainLong(p, suit);
+	ret += this->discreteshort(p, suit);
+	p.score = ret;
+	return ret;
+}
+double Experiment::formula11(Team &t){
+	/*	Change the way to calculate the score
+	 * */
+	double ret = 0;
+	ret += pformula10(t.player[0], t.suit);
+	ret += pformula10(t.player[1], t.suit);
+	ret -= this->distributedistance_v2(t);
+	return ret;
+}
+double Experiment::Editinglongformula(Player p, int suit){
+	/*	If the length is less than 4, ret += 0
+	 *	else if the length is equal to 4, ret += a fixed value
+	 *	else ret += a * pow(length - 4, b)
+	 * */
+	double ret = 0;
+	vector<int> distributed = p.hand.distributed;
+	string s[4] = {"spade", "heart", "diamond", "club"};
+	for(int i = 0;i < 4;i++){
+		int id = (i != suit);
+		double t = 0;
+		if(distributed[i] < 4)continue;
+		else if(distributed[i] == 4)ret += this->long4card[id];
+		else{
+			t = this->f_long[id][0] * pow(distributed[i] - 4, this->f_long[id][1]);
+			ret += t;
+		}
+	}
+	return ret;
+}
+double Experiment::FASTsuitHCP(Player p, int suit){
+	double ret = 0;
+	int id;
+	for(int i = 0;i < 4;i++){
+		id = i != suit;
+		ret += this->f_suitHCP[id][0] * pow(p.HCP_suit[i], this->f_suitHCP[id][1]);
+	}
 	return ret;
 }
 
@@ -597,7 +944,7 @@ double Experiment::distributeformula(Player p, int suit){
 	for(int i = 0;i < 4;i++){
 		int id = i == suit ? 0 : 1;
 		double t = 0;
-		t = this->f_dist[id][0] * pow(fabs(h[i] - f_dist[id][1]), f_dist[id][2]);
+		t = this->f_dist[id][0] * pow(fabs(h[i] - this->f_dist[id][1]), this->f_dist[id][2]);
 		ret += t;
 	}
 	return ret;
@@ -612,7 +959,7 @@ double Experiment::suitHCP(Player p, int suit){
 	vector<vector<int>> h = p.hand.getcard();
 	string s[4] = {"spade", "heart", "diamond", "club"};
 	for(int i = 0;i < 4;i++){
-		int id = i == suit ? 0:1;
+		int id = (i != suit);
 		double t = 0;
 		double currentsuitHCP = 0;
 		for(auto x:h[i])currentsuitHCP += this->HCPlist[1][x];
@@ -634,7 +981,7 @@ double Experiment::longformula(Player p, int suit){
 	for(int i = 0;i < 4;i++){
 		double t = 0;
 		if(distributed[i] < 5)continue;
-		int id = i == suit ? 0:1;
+		int id = (i != suit);
 		t = this->f_long[id][0] * pow(distributed[i] - 4, this->f_long[id][1]);
 		ret += t;
 	}
@@ -653,8 +1000,57 @@ double Experiment::shortformula(Player p, int suit){
 	for(int i = 0;i < 4;i++){
 		double t = 0;
 		if(distributed[i] > 2)continue;
-		int id = i == suit ? 0:1;
+		int id = (i != suit);
 		t = this->f_short[id][0] * pow(3 - distributed[i], this->f_short[id][1]);
+		ret += t;
+	}
+	return ret;
+}
+
+double Experiment::discreteshort(Player p, int suit){
+	/*	Return the sum of the score that each length in a suit can get
+	 *	the score is discrete value
+	 * */
+	double ret = 0;
+	int id;
+	for(int i = 0;i < 4;i++){
+		id = (i != suit);
+		if(p.hand.distributed[i] > 2)continue;
+		else ret += tf_short[id][p.hand.distributed[i]];
+	}
+	return ret;
+}
+
+
+double Experiment::TrainLong(Player p, int suit){
+	/* Return the sum of the score that each length in a suit can get
+	 * score = a * pow(suit length - b, c)
+	 * */
+	double ret = 0;
+	vector<int> distributed = p.hand.distributed;
+	string s[4] = {"spade", "heart", "diamond", "club"};
+	for(int i = 0;i < 4;i++){
+		double t = 0;
+		int id = (i != suit);
+		if(distributed[i] < tf_long[id][2])continue;
+		t = this->tf_long[id][0] * pow(double(distributed[i])- tf_long[id][2], this->tf_long[id][1]);
+		ret += t;
+	}
+	return ret;
+}
+
+double Experiment::TrainShort(Player p, int suit){
+	/* Return the sum of the score that each length in a suit can get
+	 * score = a * pow(b - suit length, c)
+	 * */
+	double ret = 0;
+	vector<int> distributed = p.hand.distributed;
+	string s[4] = {"spade", "heart", "diamond", "club"};
+	for(int i = 0;i < 4;i++){
+		double t = 0;
+		int id = (i != suit);
+		if(distributed[i] > tf_short[id][2])continue;
+		t = this->tf_short[id][0] * pow(tf_short[id][2] - distributed[i], this->tf_short[id][1]);
 		ret += t;
 	}
 	return ret;
@@ -667,13 +1063,15 @@ double Experiment::HCP(Team t){
 	return ret;
 }
 
-double Experiment::pHCP(Player p, int suit){
-	double ret = 0;
+double Experiment::pHCP(Player &p, int suit){
+	double ret = 0, partial_score;
 	vector<vector<int>> h = p.hand.getcard();
 	for(int i = 0;i < 4;i++){
-		int id = 1;
-		if(i == suit)id = 0;
-		for(auto x:h[i])ret += this->HCPlist[id][x];
+		int id = (i != suit);
+		partial_score = 0;
+		for(auto x:h[i])partial_score += this->HCPlist[id][x];
+		p.HCP_suit[i] = partial_score;
+		ret += partial_score;
 	}
 	return ret;
 }
@@ -867,4 +1265,15 @@ double Experiment::FixsuitHCP(Player player, int suit, int early_suit, int late_
 		ret += this->f_suitHCP[id][0] * pow(temp, this->f_suitHCP[id][1]);
 	}
 	return ret;
+}
+double Experiment::distributedistance(Team &t){
+	int dis = abs(t.player[0].hand.distributed[t.suit] - t.player[1].hand.distributed[t.suit]);
+	int sign = 1;
+	if(dis > f_distributedistance[1])sign = -1;
+	return sign * f_distributedistance[0] * pow(fabs(f_distributedistance[1] - dis), f_distributedistance[2]);
+}
+
+double Experiment::distributedistance_v2(Team &t){
+	int dis = abs(t.player[0].hand.distributed[t.suit] - t.player[1].hand.distributed[t.suit]);
+	return f_distributedistance[0] * pow(dis, f_distributedistance[1]);
 }
