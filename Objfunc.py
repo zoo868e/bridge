@@ -245,6 +245,7 @@ class corrobj():
         self.DDS.clear()
         self.board.clear()
         self.score.clear()
+        self.suit.clear()
         self.pos.clear()
         random.shuffle(self.data)
         for i in self.data:
@@ -474,11 +475,15 @@ def main():
     import Gameinfo.parser as ps
     import numpy
     from subprocess import Popen, PIPE
+    if len(sys.argv) < 2:
+        sys.stderr.write("python Objfunc.py Formula_ID DataSet")
+        sys.exit("Need more argument to train the parameters")
     C = corrobj()
     filename = "dataForC";
-    C.loader("data/DDSresult.txt")
-    formulaID = 2
-    formulaPara = [26, 17, 9, 11, 15]
+    C.loader(str(sys.argv[2]))
+    formulaID = int(sys.argv[1])
+    formulaPara = [26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23]
+    ub = 4
     checkerProcess = Popen(['./accuracyChecker', "./data/wholedataForC", str(formulaID)], stdin=PIPE, stdout=PIPE)
     exitProcess = 'END'
 
@@ -488,19 +493,19 @@ def main():
         print("--------------------------------")
         C.filter(i * 1000)
         C.makedatasetforC(filename)
-        best = 0
-        process = Popen(['./analysisSubprocess', "./data/" + filename, str(formulaID), str(i * 1000) + "dataExperiment.eps"], stdin=PIPE, stdout=PIPE)
-        for j in range(20):
+#        process = Popen(['./analysisSubprocess', "./data/" + filename, str(formulaID), str(i * 1000) + "dataExperimentFormula6.eps"], stdin=PIPE, stdout=PIPE)
+        for j in range(5):
+            best = 0
             print("Turn: ", j, "\nHave", i * 1000, "datas")
             # tmp = [bestScore, [individuals of best score]]
-            tmp = GA.GA(GA.ObjfCorr, 0, 4, 17, 50, 1000, True, best, 2)
+            tmp = GA.GA(GA.ObjfCorr, 0, ub, formulaPara[formulaID - 1], 50, 1000, True, best, formulaID)
             if tmp[0] > best:
                 best = tmp[0]
-            runSubprocess(process, tmp[1])
+#            runSubprocess(process, tmp[1])
             runSubprocess(checkerProcess, tmp[1])
-        process.stdin.write(exitProcess.encode())
-        process.stdin.flush()
-        process.terminate()
+#        process.stdin.write(exitProcess.encode())
+#        process.stdin.flush()
+#        process.terminate()
 
 
 #        GA.GA(C.getcorr, 0, 1, 42, 50, 1000, False)
