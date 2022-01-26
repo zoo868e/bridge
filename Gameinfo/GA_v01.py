@@ -380,14 +380,16 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID):
     cp = 1  # crossover Probability
     mp = 0.01  # Mutation Probability
     keep = 2  # elitism parameter: how many of the best individuals to keep from one generation to the next
-    print("keep = ", keep)
-    process = Popen(['./subprocesstest', str(formulaID)], stdin=PIPE, stdout=PIPE)
+    print("keep = ", keep, "dim = ", dim, "formulaID = ", formulaID)
+    process = Popen(['./test', str(formulaID)], stdin=PIPE, stdout=PIPE)
 
     if not isinstance(lb, list):
         lb = [lb] * dim
     if not isinstance(ub, list):
         ub = [ub] * dim
 
+    print("upper bound:", ub)
+    print("lower bound:", lb)
     bestIndividual = numpy.zeros(dim)
     scores = numpy.random.uniform(0.0, 1.0, popSize)
     bestScore = float("inf")
