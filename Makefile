@@ -1,9 +1,13 @@
 CC=g++
-CXXFLAGS=-std=c++17 -O3 -g
+CXXFLAGS=-std=c++2a -O3 -g -fPIC
 LLLLLDFLAGS += -lboost_iostreams -lboost_system -lboost_filesystem
+LDFLAGS= -Wl,-rpath,$(pwd)
 LIBS = -L /usr/lib/x86_64-linux-gnu
-Tools = Bridge.o Analysis.o DataSetReader.o epsMaker.o
-target := analysisSubprocess subprocesstest accuracyChecker ValidateRichard check_whole_corr analysisByFourHand TraversFourPlayersEST TimesOfHCPScore HandCalculator check_whole_corr_Fixed test DistributionOfScoreAndDDSresult testFunc
+pwd = `pwd -P`
+Tools = libBridge.so libAnalysis.so libDataSetReader.so libepsMaker.so
+target := analysisSubprocess subprocesstest accuracyChecker ValidateRichard check_whole_corr analysisByFourHand TraversFourPlayersEST TimesOfHCPScore HandCalculator check_whole_corr_Fixed test DistributionOfScoreAndDDSresult testFunc ScoreCalculator accuracyCheckerwithinterval TeamScorer accuracyCheckergen
+OBJECTS = analysisSubprocess.o  subprocesstest.o  accuracyChecker.o  ValidateRichard.o  check_whole_corr.o analysisByFourHand.o  TraversFourPlayersEST.o  TimesOfHCPScore.o  HandCalculator.o  check_whole_corr_Fixed.o test.o  DistributionOfScoreAndDDSresult.o  testFunc.o ScoreCalculator.o accuracyCheckerwithinterval.o TeamScorer.o accuracyCheckergen.o
+
 dep:
 	gcc -lstdc++ -M *.cpp > dep
 
@@ -11,23 +15,23 @@ dep:
 
 all: $(target)
 
-ValidateRichard:ValidateRichard.o Bridge.o Analysis.o DataSetReader.o epsMaker.o 
-	$(CC) -o $@ $^ $(LLLLLDFLAGS)
-analysisSubprocess:analysisSubprocess.o Bridge.o Analysis.o DataSetReader.o epsMaker.o
-	$(CC) -o $@ $^ $(LLLLLDFLAGS)
-subprocesstest:subprocesstest.o Bridge.o Analysis.o DataSetReader.o 
-accuracyChecker:accuracyChecker.o Bridge.o Analysis.o DataSetReader.o
-check_whole_corr:check_whole_corr.o Bridge.o
-check_whole_corr_Fixed:check_whole_corr_Fixed.o Bridge.o DataSetReader.o
-analysisByFourHand: analysisByFourHand.o Bridge.o DataSetReader.o
-TraversFourPlayersEST: TraversFourPlayersEST.o Bridge.o DataSetReader.o Analysis.o
-TimesOfHCPScore: TimesOfHCPScore.o Bridge.o DataSetReader.o Analysis.o epsMaker.o
-	$(CC) -o $@ $^ $(LLLLLDFLAGS)
-HandCalculator: HandCalculator.o Bridge.o DataSetReader.o
-test: test.o Bridge.o DataSetReader.o
-DistributionOfScoreAndDDSresult: DistributionOfScoreAndDDSresult.o Bridge.o DataSetReader.o
-testFunc: testFunc.o Bridge.o DataSetReader.o
+tools: $(Tools)
+
+libBridge.so:Bridge.o
+	g++ -shared -o libBridge.so Bridge.o
+libAnalysis.so:Analysis.o
+	g++ -shared -o libAnalysis.so Analysis.o
+libDataSetReader.so:DataSetReader.o Bridge.o
+	g++ -shared -o libDataSetReader.so DataSetReader.o Bridge.o
+libepsMaker.so:epsMaker.o
+	g++ -shared -o libepsMaker.so epsMaker.o
+
+$(target): $(Tools)
+	$(CC) $(CXXFLAGS) -c -o $@.o $@.cpp 
+	$(CC) $(CXXFLAGS) $@.o -o $@ $(Tools) $(LDFLAGS) $(LLLLLDFLAGS)
+
 clean:
 	-rm $(target)
 	-find . -type f -name "*.o" -exec rm {} \;
 	-find . -type f -name "dep" -exec rm {} \;
+	-find . -type f -name "*.so" -exec rm {} \;

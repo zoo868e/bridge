@@ -475,8 +475,8 @@ def main():
     import numpy
     C = corrobj()
     filename = "wholedataForC";
-    C.loader("data/DDSresult.txt")
-    C.filter(1000000)
+    C.loader("data/ALLDDSresult.txt")
+    C.filter(10000000000)
     C.makedatasetforC(filename)
     print("down")
 

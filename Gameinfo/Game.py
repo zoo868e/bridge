@@ -50,18 +50,18 @@ class Game():
                 suit[0].clear()
                 suit[0].append(i)
                 ddswin[0].clear()
-                ddswin[0].append((self.SouthDDS[i] + self.NorthDDS[i]) / 2)
+                ddswin[0].append(max(self.SouthDDS[i], self.NorthDDS[i]))
             elif sn == l[0]:
-                ddswin[0].append((self.SouthDDS[i] + self.NorthDDS[i]) / 2)
+                ddswin[0].append(max(self.SouthDDS[i], self.NorthDDS[i]))
                 suit[0].append(i)
             if we > l[1]:
                 l[1] = we
                 suit[1].clear()
                 suit[1].append(i)
                 ddswin[1].clear()
-                ddswin[1].append((self.WestDDS[i] + self.EastDDS[i]) / 2)
+                ddswin[1].append(max(self.WestDDS[i], self.EastDDS[i]))
             elif we == l[1]:
-                ddswin[1].append((self.WestDDS[i] + self.EastDDS[i]) / 2)
+                ddswin[1].append(max(self.WestDDS[i], self.EastDDS[i]))
                 suit[1].append(i)
         return [[suit[0], l[0], ddswin[0]], [suit[1], l[1], ddswin[1]]]
 
@@ -123,6 +123,7 @@ def suitformat(card):
 # return DDS win record in s, w, e, n order
 # and every suit = [Spade, Heart, Diamond, Club, NT]
 def loadres(DDSresult):
+    import ast
     South = []
     North = []
     West = []
@@ -131,10 +132,10 @@ def loadres(DDSresult):
     res = DDSresult.split("@")
     for i in range(len(res)):
         data = res[i].split(",")
-        South.append(int(data[2]))
-        North.append(int(data[0]))
-        East.append(int(data[1]))
-        West.append(int(data[3]))
+        South.append(ast.literal_eval(data[2]))
+        North.append(ast.literal_eval(data[0]))
+        East.append(ast.literal_eval(data[1]))
+        West.append(ast.literal_eval(data[3]))
     return [South, North, West, East]
 
 if __name__ == '__main__':

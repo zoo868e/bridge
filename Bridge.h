@@ -110,20 +110,24 @@ class Team{
 		double DDSwin;
 		int maker;
 		double score;
-		Team(Player declarer, Player dummy, double DDS = 0, int suit = 0, int maker = 0){
-			this->player[0] = declarer;
-			this->player[1] = dummy;
+		int E_suit;
+		Team(Player North, Player South, double DDS = 0, int suit = 4, int maker = 0, int E_suit = 4){
+			this->player[0] = North;
+			this->player[1] = South;
 			this->suit = suit;
 			this->DDSwin = DDS;
 			this->maker = maker;
+			this->E_suit = E_suit;
 		}
 		Team(){
 			this->player[0] = Player();
 			this->player[1] = Player();
-			this->suit = 0;
+			this->suit = 4;
 			this->DDSwin = 0;
 			this->maker = 0;
+			this->E_suit = 4;
 		}
+		void ShowHand();
 };
 class PartialGame{
 	public:
@@ -153,7 +157,7 @@ class Experiment{
 		int formulaid;
 		int Fixformulaid;
 		const vector<int> FixFormulaArgumentSize = {0, 2, 4, 10};
-		const vector<int> FormulaArgumentSize = {0, 26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23};
+		const vector<int> FormulaArgumentSize = {0, 26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10, 32};
 		vector<vector<double>> FormulaArgumentList;
 		double HCPlist[2][14];
 		double lenlist[2][14];
@@ -171,7 +175,11 @@ class Experiment{
 		double early_hand[14];
 		double late_hand[14];
 		double f_distributedistance[3];
+		double called[2][2][6];
+		double called_len[2][4];
+		double AssestScore[14];
 		vector<double> long4card;
+		map<vector<vector<int>>, double> Honor;
 		double distributedistance(Team &t);
 		Experiment(vector<Team> teams, int formulaid = 0){
 			this->teams = teams;
@@ -192,6 +200,11 @@ class Experiment{
 			for(int i = 0;i < (int)teams.size();i++){
 				DDS.push_back(teams[i].DDSwin);
 			}
+			memset(this->AssestScore, 0, sizeof(this->AssestScore));
+			this->AssestScore[0] = 2;
+			this->AssestScore[1] = 1;
+			for(int i = 5;i < (int)(sizeof(this->AssestScore) / sizeof(double));i++)
+				this->AssestScore[i] = 1;
 		}
 		Experiment(vector<PartialGame> partialgames, int formulaid = 0){
 			this->Partialgames = partialgames;
@@ -216,6 +229,16 @@ class Experiment{
 			this->Fixformulaid = Fixformulaid;
 		}
 		int ExposeSuit(Player);
+		void foo();
+		void bar();
+		double HonorTrick(Player p, int suit);
+		double PlayingTrick(Player p, int suit);
+		double LosingTrickCount(Player p, int suit);
+		double AssestSystem(Player p, int suit);
+		double StaymanPointCount(Player p, int suit);
+		double RuleofThreeandFour(Player p, int suit);
+		double MoinsValue(Player p, int suit);
+		double PlusValue(Player p, int suit);
 	private:
 		double HCP(Team t);
 		double pHCP(Player &p, int suit);
@@ -245,6 +268,12 @@ class Experiment{
 		double formula10(Team &t);
 		double pformula10(Player &p, int suit);
 		double formula11(Team &t);
+		double formula12(Team &t);
+		double pformula12(Player &p, int suit);
+		double formula13(Team &t);
+		double pformula13(Player &p, int suit, int pos, int E_suit);
+		double formula14(Team &t);
+		double pformula14(Player &p, int suit, int pos, int E_suit);
 //		double distributedistance(Team &t);
 		double distributedistance_v2(Team &t);
 		double suitHCP(Player p, int suit);

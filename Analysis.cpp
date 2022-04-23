@@ -6,7 +6,7 @@ vector<vector<Team>> classifyByDoubleDummyResult(const vector<Team> &teams){
 	 * */
 	vector<vector<Team>> ret(7, vector<Team>());
 	for(auto team:teams){
-		ret[(int)ceil(team.DDSwin) - 7].push_back(team);
+		ret[(int)round(team.DDSwin) - 7].push_back(team);
 	}
 	/*
 	for(int i = 0;i < 7;i++){
@@ -21,7 +21,7 @@ vector<vector<PartialGame>> classifyByDoubleDummyResult(const vector<PartialGame
 	 * */
 	vector<vector<PartialGame>> ret(7, vector<PartialGame>());
 	for(auto game:games){
-		ret[(int)ceil(game.DDSwin) - 7].push_back(game);
+		ret[(int)round(game.DDSwin) - 7].push_back(game);
 	}
 	/*
 	for(int i = 0;i < 7;i++){
@@ -132,7 +132,7 @@ int realvalueOfPredictAndDDS(const Team team, const vector<double> gaps){
 	/*	input : the particular data and the gaps between the adjacent win tricks
 	 *	return the distance of predict win tricks and Double Dummy Result
 	 * */
-	int DDS = round(team.DDSwin), predict = 7, score = team.score;
+	int DDS = (int)round(team.DDSwin), predict = 7, score = team.score;
 	for(auto x:gaps){
 		if(score < x)break;
 		predict++;
@@ -143,7 +143,7 @@ int distanceOfPredictAndDDS(const PartialGame game, const vector<double> gaps){
 	/*	input : the particular data and the gaps between the adjacent win tricks
 	 *	return the distance of predict win tricks and Double Dummy Result
 	 * */
-	int DDS = round(game.DDSwin), predict = 7, score = game.score;
+	int DDS = (int)round(game.DDSwin), predict = 7, score = game.score;
 	for(auto x:gaps){
 		if(score < x)break;
 		predict++;
@@ -160,6 +160,14 @@ int realvalueOfPredictAndDDS(const PartialGame game, const vector<double> gaps){
 		predict++;
 	}
 	return DDS - predict;
+}
+int PredictWinTricks(const Team team, const vector<double> gaps){
+	int predict = 7, score = team.score;
+	for(int i = 0;i < 7;i++){
+		if(score < gaps[i])break;
+		predict++;
+	}
+	return predict;
 }
 map<int, int> gapOfWholeDataSet(const vector<Team> teams, const vector<double> gaps, bool RealValue){
 	/*	input : the whole data and the gaps between the adjacent win tricks
@@ -229,3 +237,20 @@ vector<int> middleAppearTimesOfEachScore(const vector<map<double, int>> EachScor
 	map<int, int> a;
 	return a;
 }*/
+
+
+vector<double> MeanOfScore(const vector<vector<Team>> &teams){
+	vector<double> temp, ret;
+	double total = 0;
+	int size = 0;
+	for(auto WinTricks:teams){
+		temp.clear();
+		size = WinTricks.size();
+		total = 0;
+		for(auto team:WinTricks){
+			total += team.score;
+		}
+		ret.push_back(total / size);
+	}
+	return ret;
+}

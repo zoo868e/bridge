@@ -1,5 +1,75 @@
 import Gameinfo.calculate as Gamefunc
 import Gameinfo.Game as Game
+def validateTheOldMethod20220311(board, calculator, func):
+    """
+    This function is doing the experiment that only count the longest suit and
+    the result of DDS is more than 6.
+    If there are two same length only calcutae the suit which have the most
+    win tricks.
+    If the tricks they win still same, then only calculate the biggest suit.
+    """
+    DDS = []
+    score = []
+    print("{:^20}".format(calculator.HCPname), end = " ")
+ 
+    for f in range(len(func)):
+        DDS.clear()
+        score.clear()
+        tooshort = 0
+        l = 0
+        correct = 0
+        one = 0
+        two = 0
+        for i in board:
+            func[f](i)
+            score.append(calculator.ns[0])
+            DDS.append(i.SouthDDS[0])
+        print('{:^10.4f}'.format(Gamefunc.getcurr(DDS, score)), end = " ")
+    print("")
+
+
+# calculate the correlation coefficient during Suit contract
+def LongestSuit20220324(board, calculator, func):
+    """
+    This function is doing the experiment that only count the longest suit and
+    the result of DDS is more than 6.
+    If there are two same length only calcutae the suit which have the most
+    win tricks.
+    If the tricks they win still same, then only calculate the biggest suit.
+    """
+    DDS = []
+    score = []
+    print("{:^20}".format(calculator.HCPname), end = " ")
+ 
+    for f in range(len(func)):
+        DDS.clear()
+        score.clear()
+        tooshort = 0
+        l = 0
+        correct = 0
+        one = 0
+        two = 0
+        for i in board:
+            func[f](i)
+            ns_maxlong = [i.longgest[0][0][0], i.longgest[0][2][0]]
+            for s in range(len(i.longgest[0][0])):
+                if i.longgest[0][2][s] > ns_maxlong[1]:
+                    ns_maxlong[0] = i.longgest[0][0][s]
+                    ns_maxlong[1] = i.longgest[0][2][s]
+            ns_suit = ns_maxlong[0]
+            ns_len = i.longgest[0][1]
+            ns_ddswin = ns_maxlong[1]
+            ns = calculator.ns
+            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[nw_suit] < 6:
+                tooshort += 1
+            else:
+                score.append(ns[ns_suit])
+                DDS.append(ns_ddswin)
+        print('{:^10.4f}'.format(Gamefunc.getcurr(DDS, score)), end = " ")
+    print("")
+
+
+
 # calculate the correlation coefficient during Suit contract
 def LongestSuit20210715(board, calculator, func):
     """

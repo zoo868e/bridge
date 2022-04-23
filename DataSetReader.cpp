@@ -1,10 +1,11 @@
 #include"DataSetReader.h"
 void loadTeam(string filename, vector<Team> &team){
-	/* The first argument in file is the hand card of player 1 
-	 * Second argument in file is the hand card of player 2
+	/* The first argument in file is the hand card of player at N
+	 * Second argument in file is the hand card of player at S
 	 * Third argument in file is the number of win tricks
 	 * Fourth argument in file indicate the trump suit
 	 * Fifth argument in file indicate who make this deal
+	 * Sixth argument in file indicate the suit that East called
 	 * */
 	fstream f;
 	f.open(filename, ios::in);
@@ -29,7 +30,11 @@ void loadTeam(string filename, vector<Team> &team){
 			sort(hand2[i].begin(), hand2[i].end());
 		}
 //		cout << info[2] << endl;
-		team.push_back(Team(Player(Hand(hand1[0], hand1[1], hand1[2], hand1[3])), Player(Hand(hand2[0], hand2[1], hand2[2], hand2[3])), atof(info[2].c_str()), stoi(info[3]), stoi(info[4])));
+
+		if(info.size() == 6)
+			team.push_back(Team(Player(Hand(hand1[0], hand1[1], hand1[2], hand1[3])), Player(Hand(hand2[0], hand2[1], hand2[2], hand2[3])), atof(info[2].c_str()), stoi(info[3]), stoi(info[4]), stoi(info[5])));
+		else
+			team.push_back(Team(Player(Hand(hand1[0], hand1[1], hand1[2], hand1[3])), Player(Hand(hand2[0], hand2[1], hand2[2], hand2[3])), atof(info[2].c_str()), stoi(info[3]), stoi(info[4])));
 	}
 	f.close();
 

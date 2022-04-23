@@ -3,6 +3,9 @@
 #include"bits/stdc++.h"
 #define ll long long int
 using namespace std;
+
+bool IsTOOSmall(Team t){return t.DDSwin < 7;}
+
 int main(int argc, char* argv[]){
 	vector<Team> teams;
 	if(argc <= 2){
@@ -30,14 +33,28 @@ int main(int argc, char* argv[]){
 			}
 		}
 	}
+	for(int i = 0;i < (int)validate.teams.size();i++){
+		if((int)round(validate.teams[i].DDSwin) >= 7)continue;
+		validate.teams.erase(validate.teams.begin() + i);
+		validate.DDS.erase(validate.DDS.begin() + i);
+		i--;
+	}
 	vector<string> scorematrix_string;
 	vector<double> scorematrix;
 	string s;
 	vector<vector<Team>> dividedTeam;
+	vector<map<double, double>> cTT;
+	vector<double> meanTimes, gaps;
+	map<int, int> result;
 	while(getline(cin, s)){
 		cout << "Here are the accurcy of large data set" << endl;
 		scorematrix_string.clear();
 		scorematrix.clear();
+		dividedTeam.clear();
+		cTT.clear();
+		meanTimes.clear();
+		gaps.clear();
+		result.clear();
 		scorematrix_string = split(s, " ");
 		for(int i = 0;i < (int)scorematrix_string.size();i++){
 			scorematrix.push_back(stod(scorematrix_string[i]));
@@ -52,16 +69,18 @@ int main(int argc, char* argv[]){
 			// Find the gap of continuous win tricks
 			cout << "The correlation coefficient is " << getcorr(validate) << endl;
 			dividedTeam = classifyByDoubleDummyResult(validate.teams);
-			vector<map<double, int>> cTT = countEachScoreAppearTime(dividedTeam);
-			vector<int> middleTimes = middleAppearTimesOfEachScore(cTT);
-			vector<double> meanTimes = meanAppearTimesOfEachScore(cTT);
-			vector<double> gaps = edgeOfEachScore(meanTimes);
+			cout << "divided Team is done!\n";
+//			cTT = countEachScoreAppearTime(dividedTeam);
+//			vector<int> middleTimes = middleAppearTimesOfEachScore(cTT);
+			meanTimes = MeanOfScore(dividedTeam);
+			gaps = edgeOfEachScore(meanTimes);
 			// Find the gap between the predicted win tricks and DDS
-			map<int, int> result = gapOfWholeDataSet(validate.teams, gaps, true);
+			result = gapOfWholeDataSet(validate.teams, gaps, true);
 			int check = 0;
 			for(auto item:result){
 				check += item.second;
-				cout << "distance = " << item.first << ", occur " << item.second << " times" << ". Take up " << (double)item.second / validate.teams.size() * 100 << "\% of whole Data Set\n";
+				if(abs(item.first) <= 3)
+					cout << "distance = " << item.first << ", occur " << item.second << " times" << ". Take up " << (double)item.second / validate.teams.size() * 100 << "\% of whole Data Set\n";
 			}
 			cout << "There is " << check << " datas in Data Set\n";
 			cout << "--------------------------------------------------------------------------" << endl;

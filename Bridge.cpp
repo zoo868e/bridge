@@ -1,5 +1,18 @@
 #include"Bridge.h"
 
+void Experiment::foo(){
+	cout << "You don't need re-link it" << endl;
+	vector<int> b;
+	for(int i = 0;i < 10;i++)
+		b.push_back(i);
+	for(auto x:b)
+		cout << x << " ";
+	cout << endl;
+}
+
+void Experiment::bar(){
+	cout << "1212121212" << endl;
+}
 vector<vector<int>> Hand::getcard(){
 	vector<vector<int>> ret;
 	ret.push_back(this->spade);
@@ -105,6 +118,7 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 	 * 	else: print the error message and terminate the process
 	 * */
 	int s = scorematrix.size();
+	/*
 	if(s == 28){
 		for(int i = 0;i < 14;i++){
 			this->HCPlist[0][i] = scorematrix[i];
@@ -141,7 +155,7 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 			this->Dlenlist[1][i] = scorematrix[98 + i];
 		}
 	}
-	else if(s == 26 && this->formulaid == 1){
+	else */if(s == 26 && this->formulaid == 1){
 		for(int i = 0;i < 14;i++)
 			this->HCPlist[0][0] = scorematrix[i];
 		for(int i = 0;i < 6;i++){
@@ -423,6 +437,76 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 		this->f_distributedistance[0] = scorematrix[21];
 		this->f_distributedistance[1] = scorematrix[22];
 	}
+	else if(s == 10 && this->formulaid == 12){
+		/*	The HCP only have the discrete card strength
+		 *	We get bonus strength from trump suit in long formula
+		 *	HCP[1][1]	=	4, it is real number
+		 *	HCP[1][2-8]	=	0
+		 *	HCP[1][9-T]	=	1
+		 *	HCP[1][J]	=	2
+		 *	HCP[1][Q]	=	3
+		 *	HCP[1][K]	=	4
+		 *	f_long		=	fixed long
+		 *				=	5, 6
+		 *	tf_short	=	training fixed short
+		 *				=	7, 8, 9
+		 **/
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->f_long[0][0] = scorematrix[5];
+		this->f_long[0][1] = scorematrix[6];
+		this->tf_short[0][0] = scorematrix[7];
+		this->tf_short[0][1] = scorematrix[8];
+		this->tf_short[0][2] = scorematrix[9];
+	}
+	else if(s == 32 && this->formulaid == 13){
+		/*	Set the fixed argument of formula 12 first
+		 *	called 	:= fine-tuning HCP
+		 *			00	:= for RHO of East, and called suit is not trump
+		 *			01	:= for LHO of East, and called suit is not trump
+		 *			10	:= for RHO of East, and called suit is trump
+		 *			11	:= for LHO of East, and called suit is trump
+		 *	called_len := fine-tuning length strength
+		 *			0	:= for RHO of East
+		 *			1	:= for LHO of East
+		 *	scorematrix:
+		 *		called[0][0] = 0-5
+		 *		called[0][1] = 6-11
+		 *		called[1][0] = 12-17
+		 *		called[1][1] = 18-23
+		 *		called_len[0] = 24-27
+		 *		called_len[1] = 28-31
+		 * */
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = 0.5;
+		this->HCPlist[1][10] = 0.5;
+		this->HCPlist[1][11] = 0.75;
+		this->HCPlist[1][12] = 1.5;
+		this->HCPlist[1][13] = 2.5;
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = 0.25;
+		this->f_long[0][0] = 1.4;
+		this->f_long[0][1] = 0;
+		this->tf_short[0][0] = 3;
+		this->tf_short[0][1] = 1.5;
+		this->tf_short[0][2] = 0.5;
+		for(int i = 0;i < 2;i++){
+			for(int j = 0;j < 2;j++){
+				for(int k = 0;k < 6;k++){
+					this->called[i][j][k] = scorematrix[i * 12 + j * 6 + k];
+				}
+			}
+		}
+		for(int i = 0;i < 2;i++){
+			for(int j = 0;j < 4;j++){
+				this->called_len[i][j] = scorematrix[i * 4 + j + 24];
+			}
+		}
+	}
 	else{
 		cerr << "--Wrong size of scorematrix--" << endl;
 		return s;
@@ -560,14 +644,24 @@ void Experiment::scorer(){
 			this->teams[i].score = result;
 		}
 		break;
-	default:
+	case 12:
 		for(int i = 0;i < (int)this->teams.size();i++){
-			double ret = 0;
-			ret += this->HCP(teams[i]);
-			ret += this->LongShort(teams[i]);
-			this->score.push_back(ret);
-			this->teams[i].score = ret;
+			double result;
+			result = this->formula12(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
 		}
+		break;
+	case 13:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula13(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+	default:
+		cerr << "The formula number haven't implement. Check your argument again!\n";
 		break;
 	}
 }
@@ -903,6 +997,116 @@ double Experiment::formula11(Team &t){
 	ret += pformula10(t.player[0], t.suit);
 	ret += pformula10(t.player[1], t.suit);
 	ret -= this->distributedistance_v2(t);
+	return ret;
+}
+double Experiment::formula12(Team &t){
+	double ret = 0;
+	ret += pformula12(t.player[0], t.suit);
+	ret += pformula12(t.player[1], t.suit);
+	return ret;
+}
+double Experiment::pformula12(Player &p, int suit){
+	/*	ret = HCP + long + short
+	 *	the feature long and short are not like the previous one, they don't have the exponential
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	for(int i = 0;i < 4;i++){
+		if(i == suit){
+			if(p.hand.distributed[i] > this->f_long[0][1]){
+				ret += this->f_long[0][0] * (p.hand.distributed[i] - this->f_long[0][1]);
+			}
+		}
+		else{
+			if(p.hand.distributed[i] < 3){
+				ret += this->tf_short[0][p.hand.distributed[i]];
+			}
+		}
+	}
+	return ret;
+}
+double Experiment::formula13(Team &t){
+	/*	ret = formula12 + fine-tuning of the called card
+	 * */
+	double ret = 0;
+	ret += pformula12(t.player[0], t.suit);
+	ret += pformula12(t.player[1], t.suit);
+	ret += pformula13(t.player[0], t.suit, 0, t.E_suit);
+	ret += pformula13(t.player[1], t.suit, 1, t.E_suit);
+	return ret;
+}
+double Experiment::pformula13(Player &p, int suit, int pos, int E_suit){
+	/*	ret = fine-tuning
+	 *	if you are north, and the east side player have called spade
+	 *	means your spade K without spade A may get nothing.
+	 *	So we have to fine-tuning the score matrix
+	 *	In another words, if you are South side player, and east called spade
+	 *	means you can dominate his K by your A.
+	 *	The things mentioned above is the experiment of contract bridge expert
+	 *	We may find this from the experimental.
+	 * */
+	double ret = 0;
+	if(E_suit == 4)return ret;
+	int same = suit == E_suit;
+	int i = 0;
+	vector<vector<int>> hand = p.hand.getcard();
+	for(auto card:hand[E_suit]){
+		if(card > 1 && card < 9)
+			i = 0;
+		else if(card == 1)
+			i = 5;
+		else if(card == 9 || card == 10)
+			i = 1;
+		else if(card == 11)
+			i = 2;
+		else if(card == 12)
+			i = 3;
+		else i = 4;
+		ret += called[same][pos][i];
+	}
+	if(same){
+		ret += called_len[pos][0] * p.hand.distributed[suit];
+	}
+	else{
+		ret += (p.hand.distributed[E_suit] > 2 ? 0:called_len[pos][p.hand.distributed[E_suit] + 1]);
+	}
+	return ret;
+}
+double Experiment::formula14(Team &t){
+	/*	ret = formula12 + fine-tuning of the called card
+	 * */
+	double ret = 0;
+	ret += pformula12(t.player[0], t.suit);
+	ret += pformula12(t.player[1], t.suit);
+	ret += pformula14(t.player[0], t.suit, 0, t.E_suit);
+	ret += pformula14(t.player[1], t.suit, 1, t.E_suit);
+	return ret;
+}
+double Experiment::pformula14(Player &p, int suit, int pos, int E_suit){
+	/*	ret = fine-tuning
+	 *	if you are north, and the east side player have called spade
+	 *	means your spade K without spade A may get nothing.
+	 *	So we have to fine-tuning the score matrix
+	 *	In another words, if you are South side player, and east called spade
+	 *	means you can dominate his K by your A.
+	 *	The things mentioned above is the experiment of contract bridge expert
+	 *	We may find this from the experimental.
+	 * */
+	double ret = 0;
+	int same = suit == E_suit;
+	int i = 0;
+	for(auto suit:p.hand.getcard()){
+		for(auto card:suit){
+			i = card == 1 ? 5:(card < 9 ? 0:(card < 11 ? 1:(card - 9)));
+			ret += called[pos][same][i];
+		}
+	}
+	if(same){
+		ret += called_len[pos][0] * p.hand.distributed[suit];
+	}
+	else{
+		ret += (p.hand.distributed[E_suit] > 2 ? 0:called_len[pos][p.hand.distributed[E_suit]]);
+	}
 	return ret;
 }
 double Experiment::Editinglongformula(Player p, int suit){
@@ -1276,4 +1480,97 @@ double Experiment::distributedistance(Team &t){
 double Experiment::distributedistance_v2(Team &t){
 	int dis = abs(t.player[0].hand.distributed[t.suit] - t.player[1].hand.distributed[t.suit]);
 	return f_distributedistance[0] * pow(dis, f_distributedistance[1]);
+}
+double Experiment::HonorTrick(Player p, int suit){
+	/*	Maybe use the Ely Culbertson's version
+	 * */
+	double ret = 0;
+	return ret;
+}
+double Experiment::PlayingTrick(Player p, int suit){
+	double ret = 0;
+	return ret;
+}
+double Experiment::LosingTrickCount(Player p, int suit){
+	double ret = 0;
+	return ret;
+}
+double Experiment::AssestSystem(Player p, int suit){
+	double ret = 0;
+	for(auto suit:p.hand.getcard()){
+		ret += this->AssestScore[suit.size()];
+	}
+	return ret;
+}
+double Experiment::StaymanPointCount(Player p, int suit){
+	double ret = 0;
+	return ret;
+}
+double Experiment::RuleofThreeandFour(Player p, int suit){
+	double ret = 0;
+	return ret;
+}
+double Experiment::MoinsValue(Player p, int suit){
+	double ret = 0;
+	return ret;
+}
+double Experiment::PlusValue(Player p, int suit){
+	double ret = 0;
+	int TenNine, TwoThreehonors;
+	for(auto suit:p.hand.getcard()){
+		TenNine = 0;
+		TwoThreehonors = 0;
+		for(auto card:suit){
+			switch(card){
+				case 1:
+					ret += 0.25;
+					TwoThreehonors++;
+					break;
+				case 9:
+				case 10:
+					TenNine++;
+					break;
+				case 12:
+				case 13:
+					TwoThreehonors++;
+					break;
+			}
+			if(TenNine == 2)ret += 0.5;
+			if(TwoThreehonors >= 2)ret += 0.5;
+		}
+	}
+	return ret;
+}
+void Team::ShowHand(){
+	cout << "N: ";
+	for(int i = 0;i < 2;i++){
+		vector<vector<int>> hand = this->player[i].hand.getcard();
+		for(int j = 0;j < 4;j++){
+			for(auto c:hand[j]){
+				switch(c){
+					case 1:
+						cout << "A";
+						break;
+					case 10:
+						cout << "T";
+						break;
+					case 11:
+						cout << "J";
+						break;
+					case 12:
+						cout << "Q";
+						break;
+					case 13:
+						cout << "K";
+						break;
+					default:
+						cout << c;
+						break;
+				}
+			}
+			if(j < 3)cout << ".";
+			else if(i == 1)cout << endl;
+			else cout << " ";
+		}
+	}
 }

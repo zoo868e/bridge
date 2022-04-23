@@ -239,6 +239,8 @@ class corrobj():
         ----
         board_size : The number to describe how much data the experiment may use
                      It is 1000 by default
+                     If board_size is a list instance, the element of the list means
+                     the particular number of each tricks.
         """
         import random
         tooshort = 0
@@ -248,10 +250,17 @@ class corrobj():
         self.suit.clear()
         self.pos.clear()
         random.shuffle(self.data)
+        board_is_list = isinstance(board_size, list)
+        print("board_is_list", board_is_list)
+        board_size_ret = [0 for x in range(14)]
+        if board_is_list == True:
+            size = sum(board_size)
+        else:
+            size = board_size
         for i in self.data:
-            if len(self.board) == board_size:
+            if len(self.board) == size:
                 break
-            elif len(self.board) > board_size:
+            elif len(self.board) > size:
                 while len(self.board) > board_size:
                     self.board.pop()
                     self.DDS.pop()
@@ -274,18 +283,23 @@ class corrobj():
             we_ddswin = we_maxlong[1]
             if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[nw_suit] < 6 or ns_ddswin < 7:
                 tooshort += 1
-            else:
+            elif board_is_list != True or board_size[ns_ddswin] > board_size_ret[ns_ddswin]:
                 self.board.append(i)
                 self.suit.append(ns_suit)
                 self.DDS.append(ns_ddswin)
                 self.pos.append("NS")
+                board_size_ret[ns_ddswin] += 1
             if we_len < 7 and i.West.hand.distributed[we_suit] < 6 and i.East.hand.distributed[we_suit] < 6 or we_ddswin < 7:
                 tooshort += 1
-            else:
+            elif board_is_list != True or board_size[we_ddswin] > board_size_ret[we_ddswin]:
                 self.board.append(i)
                 self.suit.append(we_suit)
                 self.DDS.append(we_ddswin)
                 self.pos.append("WE")
+                board_size_ret[we_ddswin] += 1
+        print("Distribute of tricks: ", board_size_ret)
+        for i in range(7, 14):
+            print(i, "tricks have ", board_size_ret[i], "times")
     def makedatasetforC(self, filename):
         """
             Make the data set file that C++ can use
@@ -299,6 +313,23 @@ class corrobj():
                 s += handtostring(self.board[i].South) + " " + handtostring(self.board[i].North) + " " + str(self.DDS[i]) + " " + str(self.suit[i]) + " 0\n"
             f.write(s)
         f.close()
+
+    def makedatasetforC_showdata(self, filename):
+        """
+            Make the data set file that C++ can use
+        """
+        f = open("./data/" + filename, "w")
+        for i in range(len(self.board)):
+            s = ""
+            if self.pos[i] == "WE":
+                s += handtostring(self.board[i].East) + " " + handtostring(self.board[i].West) + " " + str(self.DDS[i]) + " " + str(self.suit[i]) + " 0\n"
+                s += handtostring(self.board[i].South) + " " + handtostring(self.board[i].North) + " " + str(13 - self.DDS[i]) + " " + str(self.suit[i]) + " 0\n"
+            else:
+                s += handtostring(self.board[i].South) + " " + handtostring(self.board[i].North) + " " + str(self.DDS[i]) + " " + str(self.suit[i]) + " 0\n"
+                s += handtostring(self.board[i].East) + " " + handtostring(self.board[i].West) + " " + str(13 - self.DDS[i]) + " " + str(self.suit[i]) + " 0\n"
+            f.write(s)
+        f.close()
+
 
 class TestObj(unittest.TestCase):
     def setUp(self):
@@ -475,6 +506,11 @@ def main():
     import Gameinfo.parser as ps
     import numpy
     from subprocess import Popen, PIPE
+#    C = corrobj()
+#    C.loader("data/ALLDDSresult.txt")
+#    test = [0, 0, 0, 0, 0, 0, 0, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
+#    C.filter(test)
+#    C.makedatasetforC_showdata("test_list")
     if len(sys.argv) < 2:
         sys.stderr.write("python Objfunc.py Formula_ID DataSet")
         sys.exit("Need more argument to train the parameters")
