@@ -75,3 +75,6 @@ random_validate/RandomConclusion
 AccAndInterval
 AccAndInterval2
 random_validate/validate/*
+tempforoutput
+tempforinput
+nohup.out

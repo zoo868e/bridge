@@ -271,7 +271,7 @@ class corrobj():
             we_suit = we_maxlong[0]
             we_len = i.longgest[1][1]
             we_ddswin = we_maxlong[1]
-            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[nw_suit] < 6 or ns_ddswin < 7:
+            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[ns_suit] < 6 or ns_ddswin < 7:
                 tooshort += 1
             else:
                 self.board.append(i)

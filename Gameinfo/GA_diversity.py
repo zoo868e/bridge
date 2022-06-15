@@ -48,7 +48,7 @@ def crossoverPopulaton(population, scores, popSize, crossoverProbability, keep):
     return newPopulation
 
 
-def mutatePopulaton(population, popSize, mutationProbability, keep, b):
+def mutatePopulaton(population, popSize, mutationProbability, keep, b, mutation_rate):
     """
     The mutation of all individuals
 
@@ -68,6 +68,8 @@ def mutatePopulaton(population, popSize, mutationProbability, keep, b):
         lower bound limit list
     ub: list
         Upper bound limit list
+    mutation_rate:  list float
+        The mutation probability of each individuals
 
     Returns
     -------
@@ -76,7 +78,7 @@ def mutatePopulaton(population, popSize, mutationProbability, keep, b):
     for i in range(keep, popSize):
         # Mutation
         offspringMutationProbability = random.uniform(0.0, 1.0)
-        if offspringMutationProbability < mutationProbability:
+        if offspringMutationProbability < mutation_rate[i]:
             mutation(population[i], len(population[i]), b)
 
 
@@ -393,6 +395,7 @@ def GA(objf, b, dim, popSize, iters, CORNOT, best, formulaID, record = False, da
     cp = 1  # crossover Probability
     mp = 0.01  # Mutation Probability
     keep = 2  # elitism parameter: how many of the best individuals to keep from one generation to the next
+    minD = 0.04
     print("keep = ", keep, "dim = ", dim, "formulaID = ", formulaID)
     process = Popen(['./test', str(formulaID)], stdin=PIPE, stdout=PIPE)
 
@@ -404,6 +407,7 @@ def GA(objf, b, dim, popSize, iters, CORNOT, best, formulaID, record = False, da
     bestIndividual = numpy.zeros(dim)
     scores = numpy.random.uniform(0.0, 1.0, popSize)
     bestScore = float("inf")
+    mutate_count = 0
 
     ga = numpy.array([[numpy.random.choice(x) for x in b] for i in range(popSize)])
 #    for i in range(popSize):
@@ -431,9 +435,17 @@ def GA(objf, b, dim, popSize, iters, CORNOT, best, formulaID, record = False, da
         ga = crossoverPopulaton(ga, scores, popSize, cp, keep)
 #        print("Cost", time.time() - start_time, "seconds to crossover")
 
+        # check the diversity
+        D = diversity_guided(ga, dim, b)
+        print("D = ", D)
+        if D < minD:
+            mutate_count += 1
+        # mutation rate
+            mutation_rate = mutationP(scores, mp)
+
         # mutation
 #       start_time = time.time()
-        mutatePopulaton(ga, popSize, mp, keep, b)
+            mutatePopulaton(ga, popSize, mp, keep, b, mutation_rate)
 #        print("Cost", time.time() - start_time, "seconds to mutation")
 
 #        start_time = time.time()
@@ -458,10 +470,11 @@ def GA(objf, b, dim, popSize, iters, CORNOT, best, formulaID, record = False, da
 
         convergence_curve[l] = bestScore
 
-#        if (l % 1 == 0):
-#            print(['At iteration ' + str(l+1) +
-#                   ' the best fitness is ' + str(bestScore)])
+        if (l % 1 == 0):
+            print(['At iteration ' + str(l+1) +
+                   ' the best fitness is ' + str(bestScore)])
 
+    print("mutate times: ", mutate_count)
     print("bestScore =", 1 - bestScore)
     for i in ga[0]:
         print("{:.4g}".format(i), end = " ")
@@ -519,15 +532,42 @@ def ObjfCorr(P, l):
     return stdoutreadint(P)
 
 
+def diversity_guided(population, dim, b):
+#   P = population size
+#   L = the length of the diagonal in the search space
+#   length of the diagonal = sqrt(a1*a1 + a2*a2 + a3*a3 + ... an * an)
+    mean_p = numpy.mean(population, axis = 0)
+    P = len(population)
+    L = pow(sum(len(x) * len(x) for x in b), 0.5)
+    D = 1 / (P * L)
+    dis_all_pop = 0
+    for pop in population:
+        dis_all_pop = dis_all_pop + pow(sum(pow(pop[x] - mean_p[x], 2) for x in range(len(pop))), 0.5)
+    D = D * dis_all_pop
+    return D
+
+def mutationP(score, mp):
+    avg = numpy.mean(score)
+    maxscore = max(score)
+    temp = maxscore - avg
+    ret = [mp for x in range(len(score))]
+    for i in range(len(score)):
+        if score[i] >= avg:
+            ret[i] = ret[i] * (maxscore - score[i]) / temp
+    return ret
+
+
 if __name__ == "__main__":
-    import parser as ps
-    sys.path.append("~/bridge/data")
-    scorematrix = ps.parse_score_matrix_file("data/GA_init_score_matrix.txt")
-    print(len(scorematrix))
-    a = numpy.zeros((10, 42))
-    print(a)
-    z = [0 for x in range(42 - 28)]
-    for i in range(len(a)):
-        a[i] = [*random.choice(scorematrix)[1][0], *random.choice(scorematrix)[2][0], *z]
-        print(a[i])
-    print(a)
+    b = [y for y in range(11)]
+    print(mutationP(b, 1))
+#    import parser as ps
+#    sys.path.append("~/bridge/data")
+#    scorematrix = ps.parse_score_matrix_file("data/GA_init_score_matrix.txt")
+#    print(len(scorematrix))
+#    a = numpy.zeros((10, 42))
+#    print(a)
+#    z = [0 for x in range(42 - 28)]
+#    for i in range(len(a)):
+#        a[i] = [*random.choice(scorematrix)[1][0], *random.choice(scorematrix)[2][0], *z]
+#        print(a[i])
+#    print(a)

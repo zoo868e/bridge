@@ -281,7 +281,7 @@ class corrobj():
             we_suit = we_maxlong[0]
             we_len = i.longgest[1][1]
             we_ddswin = we_maxlong[1]
-            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[nw_suit] < 6 or ns_ddswin < 7:
+            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[ns_suit] < 6 or ns_ddswin < 7:
                 tooshort += 1
             elif board_is_list != True or board_size[ns_ddswin] > board_size_ret[ns_ddswin]:
                 self.board.append(i)
@@ -547,7 +547,7 @@ def main():
         sys.stderr.write("python Called_exp.py Formula_ID DataSet\n")
         sys.exit("Need more argument to train the parameters")
     formulaID = int(sys.argv[1])
-    formulaPara = [26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10, 32]
+    formulaPara = [26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10, 32, 32, 15]
     checkerProcess = Popen(['./accuracyChecker', "./data/EastOpened.exp", str(formulaID)], stdin=PIPE, stdout=PIPE)
     exitProcess = 'END'
     filename = "dataForC";

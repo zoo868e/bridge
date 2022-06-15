@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
 	vector<double> scorematrix;
 	string s;
 	vector<vector<Team>> dividedTeam;
-	vector<map<double, double>> cTT;
+	vector<map<double, int>> cTT;
 	vector<double> meanTimes, gaps;
 	map<int, int> result;
 	while(getline(cin, s)){
@@ -73,6 +73,7 @@ int main(int argc, char* argv[]){
 //			cTT = countEachScoreAppearTime(dividedTeam);
 //			vector<int> middleTimes = middleAppearTimesOfEachScore(cTT);
 			meanTimes = MeanOfScore(dividedTeam);
+//			meanTimes = meanAppearTimesOfEachScore(cTT);
 			gaps = edgeOfEachScore(meanTimes);
 			// Find the gap between the predicted win tricks and DDS
 			result = gapOfWholeDataSet(validate.teams, gaps, true);

@@ -102,7 +102,7 @@ vector<double> edgeOfEachScore(const vector<int> maxAppearTimes){
 	 * */
 	vector<double> ret;
 	for(int i = 1;i < (int)maxAppearTimes.size();i++){
-		ret.push_back(maxAppearTimes[i - 1] + ((double)(maxAppearTimes[i] - maxAppearTimes[i - 1])) / 2);
+		ret.push_back(round((maxAppearTimes[i - 1] + ((double)(maxAppearTimes[i] - maxAppearTimes[i - 1])) / 2) * 100) / 100);
 	}
 	return ret;
 }
@@ -113,7 +113,7 @@ vector<double> edgeOfEachScore(const vector<double> maxAppearTimes){
 	 * */
 	vector<double> ret;
 	for(int i = 1;i < (int)maxAppearTimes.size();i++){
-		ret.push_back(maxAppearTimes[i - 1] + ((double)(maxAppearTimes[i] - maxAppearTimes[i - 1])) / 2);
+		ret.push_back(round((maxAppearTimes[i - 1] + ((double)(maxAppearTimes[i] - maxAppearTimes[i - 1])) / 2) * 100) / 100);
 	}
 	return ret;
 }
@@ -121,7 +121,8 @@ int distanceOfPredictAndDDS(const Team team, const vector<double> gaps){
 	/*	input : the particular data and the gaps between the adjacent win tricks
 	 *	return the distance of predict win tricks and Double Dummy Result
 	 * */
-	int DDS = round(team.DDSwin), predict = 7, score = team.score;
+	int DDS = round(team.DDSwin), predict = 7;
+	double score = team.score;
 	for(auto x:gaps){
 		if(score < x)break;
 		predict++;
@@ -132,7 +133,8 @@ int realvalueOfPredictAndDDS(const Team team, const vector<double> gaps){
 	/*	input : the particular data and the gaps between the adjacent win tricks
 	 *	return the distance of predict win tricks and Double Dummy Result
 	 * */
-	int DDS = (int)round(team.DDSwin), predict = 7, score = team.score;
+	int DDS = (int)round(team.DDSwin), predict = 7;
+	double score = team.score;
 	for(auto x:gaps){
 		if(score < x)break;
 		predict++;
@@ -143,7 +145,8 @@ int distanceOfPredictAndDDS(const PartialGame game, const vector<double> gaps){
 	/*	input : the particular data and the gaps between the adjacent win tricks
 	 *	return the distance of predict win tricks and Double Dummy Result
 	 * */
-	int DDS = (int)round(game.DDSwin), predict = 7, score = game.score;
+	int DDS = (int)round(game.DDSwin), predict = 7;
+	double score = game.score;
 	for(auto x:gaps){
 		if(score < x)break;
 		predict++;
@@ -154,7 +157,8 @@ int realvalueOfPredictAndDDS(const PartialGame game, const vector<double> gaps){
 	/*	input : the particular data and the gaps between the adjacent win tricks
 	 *	return the distance of predict win tricks and Double Dummy Result
 	 * */
-	int DDS = round(game.DDSwin), predict = 7, score = game.score;
+	int DDS = round(game.DDSwin), predict = 7;
+	double score = game.score;
 	for(auto x:gaps){
 		if(score < x)break;
 		predict++;
@@ -162,7 +166,8 @@ int realvalueOfPredictAndDDS(const PartialGame game, const vector<double> gaps){
 	return DDS - predict;
 }
 int PredictWinTricks(const Team team, const vector<double> gaps){
-	int predict = 7, score = team.score;
+	int predict = 7;
+	double score = team.score;
 	for(int i = 0;i < 7;i++){
 		if(score < gaps[i])break;
 		predict++;

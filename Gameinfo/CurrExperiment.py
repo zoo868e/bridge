@@ -60,7 +60,7 @@ def LongestSuit20220324(board, calculator, func):
             ns_len = i.longgest[0][1]
             ns_ddswin = ns_maxlong[1]
             ns = calculator.ns
-            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[nw_suit] < 6:
+            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[ns_suit] < 6:
                 tooshort += 1
             else:
                 score.append(ns[ns_suit])
@@ -111,7 +111,7 @@ def LongestSuit20210715(board, calculator, func):
             we_ddswin = we_maxlong[1]
             ns = calculator.ns
             we = calculator.we
-            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[nw_suit] < 6 or ns_ddswin < 7:
+            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[ns_suit] < 6 or ns_ddswin < 7:
                 tooshort += 1
             else:
                 score.append(ns[ns_suit])
@@ -164,7 +164,7 @@ def LongestSuit20210729(board, calculator, func):
             ns = calculator.ns
             we = calculator.we
             for s in range(len(ns_suit)):
-                if ns_len < 7 and i.South.hand.distributed[ns_suit[s]] < 6 and i.North.hand.distributed[nw_suit[s]] < 6 or ns_ddswin[s] < 7:
+                if ns_len < 7 and i.South.hand.distributed[ns_suit[s]] < 6 and i.North.hand.distributed[ns_suit[s]] < 6 or ns_ddswin[s] < 7:
                     tooshort += 1
                 else:
                     score.append(ns[ns_suit[s]])

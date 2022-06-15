@@ -78,15 +78,15 @@ int main(int argc, char* argv[]){
 			for(auto item:result){
 				check += item.second;
 				if(abs(item.first) < 3)
-					cout << "distance = " << item.first << ", occur " << item.second << " times" << ". Take up " << (double)item.second / validate.teams.size() * 100 << "\% of whole Data Set\n";
+					cout << "distance = " << item.first << ", occur " << item.second << " times" << ". Take up " << (double)round((double)item.second / validate.teams.size() * 10000) / 100 << "\% of whole Data Set\n";
 			}
 			cout << "There is " << check << " datas in Data Set\n";
 			cout << "--------------------------------------------------------------------------" << endl;
-			cout << "distance = " << 0 << ", totally occured " << result[0] << "times" << ". Take up " << (double)result[0] / check * 100 << "\% of whole Data Set\n";
+			cout << "distance = " << 0 << ", totally occured " << result[0] << "times" << ". Take up " << (double)round((double)result[0] / check * 10000) / 100 << "\% of whole Data Set\n";
 			int total = result[0];
 			for(int i = 1;i < 3;i++){
 				total += result[i] + result[-i];
-				cout << "distance <= " << i << ", totally occured " << total << "times" << ". Take up " << (double)(total) / check * 100 << "\% of whole Data Set\n";
+				cout << "distance <= " << i << ", totally occured " << total << "times" << ". Take up " << (double)round((double)(total) / check * 10000) / 100 << "\% of whole Data Set\n";
 			}
 			cout << "--------------------------------------------------------------------------" << endl;
 //			makeGapEPS(cTT, "ana.py");

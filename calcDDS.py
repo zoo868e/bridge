@@ -281,7 +281,7 @@ class corrobj():
             we_suit = we_maxlong[0]
             we_len = i.longgest[1][1]
             we_ddswin = we_maxlong[1]
-            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[nw_suit] < 6 or ns_ddswin < 7:
+            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[ns_suit] < 6 or ns_ddswin < 7:
                 tooshort += 1
             elif board_is_list != True or board_size[ns_ddswin] > board_size_ret[ns_ddswin]:
                 self.board.append(i)
@@ -526,10 +526,11 @@ def main():
         sample = temp[0] + " " + temp[1]
         suit = temp[3]
         windeal = temp[2]
-        print(suit)
-        print(windeal)
-        print(sample)
-        gensample = Popen(['./BANLY/BANLY', "1", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+        E_use_suit = [1, 1, 1, 1]
+#        print(suit)
+#        print(windeal)
+#        print(sample)
+        gensample = Popen(['./BANLY/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
         gensample.wait()
         print("Success: generate samples")
         ddscalculator = Popen(['./dds/examples/calcPboard', "./files/banlz_.boards"], stdin=PIPE, stdout=PIPE)
@@ -539,21 +540,34 @@ def main():
         C.loader("./cache_result")
         if len(C.data) == 0:
             continue
-        data = []
-        data.append(C.data[0].SouthDDS[int(suit)])
-        data.append(C.data[0].NorthDDS[int(suit)])
-        E_s = 4
-        for i in range(4):
-            if C.data[0].East.hand.distributed[i] >= 5:
-                E_s = i
+        for Edata in C.data:
+            if E_use_suit[0] == E_use_suit[1] == E_use_suit[2] == E_use_suit[3] == 0:
                 break
-        s_mean = statistics.mean(data)
-        print("mean: ", s_mean)
+            E_s = 4
+            E = Edata.East.hand.getcard()
+            dist = Edata.East.hand.distributed
+            E_hcp = C.p_HCP(Edata.East, 4)
+            E_len_sorted = sorted(range(4), key = lambda k:dist[k], reverse = True)
+            if E_hcp >= 16:
+                E_s = E_len_sorted[0]
+            else:
+                for i in E_len_sorted:
+                    if dist[i] >= 4 and (1 in E[i] or 12 in E[i] or 13 in E[i]):
+                        E_s = i
+                        break
+            if E_s != 4 and E_use_suit[E_s] != 0:
+                data = []
+                data.append(C.data[0].SouthDDS[int(suit)])
+                data.append(C.data[0].NorthDDS[int(suit)])
+                s_mean = statistics.mean(data)
 #        print("middle: ", s_mid)
 #        print("std: ", s_std)
-        output = sample + " " + suit + " " + str(s_mean) + " " + str(E_s) + "\n"
-        f.write(output)
-        del(data)
+                output = sample + " " + suit + " " + str(s_mean) + " " + str(E_s) + "\n"
+                print(output)
+                if str(s_mean) != str(windeal):
+                    E_use_suit[E_s] = 0
+                    f.write(output)
+                del(data)
         del(C)
         gc.collect()
     f.close()

@@ -281,7 +281,7 @@ class corrobj():
             we_suit = we_maxlong[0]
             we_len = i.longgest[1][1]
             we_ddswin = we_maxlong[1]
-            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[nw_suit] < 6 or ns_ddswin < 7:
+            if ns_len < 7 and i.South.hand.distributed[ns_suit] < 6 and i.North.hand.distributed[ns_suit] < 6 or ns_ddswin < 7:
                 tooshort += 1
             elif board_is_list != True or board_size[ns_ddswin] > board_size_ret[ns_ddswin]:
                 self.board.append(i)
@@ -535,7 +535,10 @@ def one(lb, ub):
 
 def main():
     import Gameinfo.GA_dis as GA
+    import Gameinfo.PTd as PSO
+    import Gameinfo.PSOTLBOd as PTd
     import Gameinfo.parser as ps
+    import Gameinfo.problem_lib as plib
     import numpy
     from subprocess import Popen, PIPE
 #    C = corrobj()
@@ -547,12 +550,16 @@ def main():
         sys.stderr.write("python StaticO.py Formula_ID DataSet\n")
         sys.exit("Need more argument to train the parameters")
     formulaID = int(sys.argv[1])
-    formulaPara = [26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10]
+    formulaPara = [26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10, 32, 32, 12, 12, 12, 16, 13]
     checkerProcess = Popen(['./accuracyChecker', "./data/wholeStaticForC", str(formulaID)], stdin=PIPE, stdout=PIPE)
     exitProcess = 'END'
     filename = "dataForC";
     data = read(sys.argv[2])
-    b = [quarter(0, 4) for i in range(formulaPara[formulaID - 1])]
+    b = [quarter(0, 4) for i in range(5)]
+    b.append(one_tenth(0, 4))
+    b.append(one(0, 7))
+    for i in range(formulaPara[formulaID - 1] - 7):
+        b.append(quarter(0, 8))
 #    b = [quarter(0, 4) for i in range(5)]
 #    b = b + [one_tenth(0, 4)]
 #    b = b + [one(0, 4)]
@@ -568,7 +575,9 @@ def main():
             best = 0
             print("Turn: ", j, "\nHave", i * 1000, "datas")
             # tmp = [bestScore, [individuals of best score]]
-            tmp = GA.GA(GA.ObjfCorr, b, formulaPara[formulaID - 1], 50, 1000, True, best, formulaID)
+            tmp = GA.GA(GA.ObjfCorr, b, formulaPara[formulaID - 1], 50, 1000, True, best, formulaID, False, i * 1000)
+#           tmp = PTd.PSOTLBO(plib.ObjfCorr, b, formulaPara[formulaID - 1], 50, 101, True, best, formulaID, True, i * 1000, False)
+#            tmp =  PTd.PSO(PSO.ObjfCorr, b, formulaPara[formulaID - 1], 50, 100, True, best, formulaID, False, i * 1000, True)
             if tmp[0] > best:
                 best = tmp[0]
 #            runSubprocess(process, tmp[1])

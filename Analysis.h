@@ -1,4 +1,4 @@
-#include"Bridge.h"
+#include"DataSetReader.h"
 
 vector<vector<Team>> classifyByDoubleDummyResult(const vector<Team> &teams);
 vector<vector<PartialGame>> classifyByDoubleDummyResult(const vector<PartialGame> &games);

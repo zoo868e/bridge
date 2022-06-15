@@ -6,6 +6,8 @@ using namespace std;
 
 static const double basicHCP[14] = {0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3};
 static const double basiclen[14] = {3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+static const unsigned int Winner = 0x3002;
+int SetBits(uint32_t i);
 class Hand{
 	public:
 		vector<int> spade;
@@ -157,7 +159,7 @@ class Experiment{
 		int formulaid;
 		int Fixformulaid;
 		const vector<int> FixFormulaArgumentSize = {0, 2, 4, 10};
-		const vector<int> FormulaArgumentSize = {0, 26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10, 32};
+		const vector<int> FormulaArgumentSize = {0, 26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10, 32, 32, 12, 12, 12, 16, 13};
 		vector<vector<double>> FormulaArgumentList;
 		double HCPlist[2][14];
 		double lenlist[2][14];
@@ -274,6 +276,19 @@ class Experiment{
 		double pformula13(Player &p, int suit, int pos, int E_suit);
 		double formula14(Team &t);
 		double pformula14(Player &p, int suit, int pos, int E_suit);
+		double formula15(Team &t);
+		double pformula15(Player &p, int suit);
+		double formula16(Team &t);
+		double pformula16(Player &p, int suit);
+		double formula17(Team &t);
+		double pformula17(Player &p, int suit);
+		double formula18(Team &t);
+		double pformula18(Player &p, int suit);
+		double formula19(Team &t);
+		double pformula19(Player &p, int suit);
+		int loser(Team &t);
+		int ploser(Player &p, int suit);
+		unsigned int cardtobit(vector<int> card);
 //		double distributedistance(Team &t);
 		double distributedistance_v2(Team &t);
 		double suitHCP(Player p, int suit);
@@ -294,5 +309,6 @@ class Experiment{
 		double FixsuitHCP(Player, int, int, int);
 		double Fix_early_HCP(Player, int);
 		double Fix_late_HCP(Player, int);
+		bool have_honor(Player P, int suit);
 };
 #endif

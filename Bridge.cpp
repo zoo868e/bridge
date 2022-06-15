@@ -507,6 +507,162 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 			}
 		}
 	}
+	else if(s == 12 && this->formulaid == 15){
+		/*	The HCP only have the discrete card strength
+		 *	We get bonus strength from trump suit in long formula
+		 *	HCP[1][1]	=	4, it is real number
+		 *	HCP[1][2-8]	=	0
+		 *	HCP[1][9-T]	=	1
+		 *	HCP[1][J]	=	2
+		 *	HCP[1][Q]	=	3
+		 *	HCP[1][K]	=	4
+		 *	f_long		=	fixed long
+		 *				=	5, 6(trump), 7, 8(non-trump)
+		 *	tf_short	=	training fixed short
+		 *				=	9, 10, 11
+		 **/
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->f_long[0][0] = scorematrix[5];
+		this->f_long[0][1] = scorematrix[6];
+		this->f_long[1][0] = scorematrix[7];
+		this->f_long[1][1] = scorematrix[8];
+		this->tf_short[0][0] = scorematrix[9];
+		this->tf_short[0][1] = scorematrix[10];
+		this->tf_short[0][2] = scorematrix[11];
+	}
+	else if(s == 12 && this->formulaid == 16){
+		/*	The HCP only have the discrete card strength
+		 *	We get bonus strength from trump suit in long formula
+		 *	HCP[1][1]	=	4, it is real number
+		 *	HCP[1][2-8]	=	0
+		 *	HCP[1][9-T]	=	1
+		 *	HCP[1][J]	=	2
+		 *	HCP[1][Q]	=	3
+		 *	HCP[1][K]	=	4
+		 *	f_long		=	fixed long
+		 *				=	5, 6(trump), 7, 8(non-trump)
+		 *	tf_short	=	training fixed short
+		 *				=	9, 10, 11
+		 **/
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->f_long[0][0] = scorematrix[5];
+		this->f_long[0][1] = scorematrix[6];
+		this->f_long[1][0] = scorematrix[7];
+		this->f_long[1][1] = scorematrix[8];
+		this->tf_short[0][0] = scorematrix[9];
+		this->tf_short[0][1] = scorematrix[10];
+		this->tf_short[0][2] = scorematrix[11];
+	}
+	else if(s == 12 && this->formulaid == 17){
+		/*	The HCP only have the discrete card strength
+		 *	We get bonus strength from trump suit in long formula
+		 *	HCP[1][1]	=	4, it is real number
+		 *	HCP[1][2-8]	=	0
+		 *	HCP[1][9-T]	=	1
+		 *	HCP[1][J]	=	2
+		 *	HCP[1][Q]	=	3
+		 *	HCP[1][K]	=	4
+		 *	f_long		=	fixed long
+		 *				=	a, b
+		 *	tf_short	=	training fixed short
+		 *		Loser	=	c, d, e
+		 *		Winner	=	f, g
+		 **/
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->f_long[0][0] = scorematrix[5];
+		this->f_long[0][1] = scorematrix[6];
+		this->tf_short[0][0] = scorematrix[7];
+		this->tf_short[0][1] = scorematrix[8];
+		this->tf_short[0][2] = scorematrix[9];
+		this->tf_short[1][1] = scorematrix[10];
+		this->tf_short[1][2] = scorematrix[11];
+	}
+	else if(s == 16 && this->formulaid == 18){
+		/*	The HCP only have the discrete card strength
+		 *	We get bonus strength from trump suit in long formula
+		 *	HCP[1][1]	=	4, it is real number
+		 *	HCP[1][2-8]	=	0
+		 *	HCP[1][9-T]	=	1
+		 *	HCP[1][J]	=	2
+		 *	HCP[1][Q]	=	3
+		 *	HCP[1][K]	=	4
+		 *	f_long		=	fixed long
+		 *				=	a, b
+		 *	tf_short	=	training fixed short
+		 *		Loser	=	c, d, e
+		 *		With A	=	f, g		f1list[0][0], f1list[1][0]
+		 *		With K	=	h, i		f1list[0][1], f1list[1][1]
+		 *		With Q	=	j, k		f1list[0][2], f1list[1][2]
+		 **/
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->f_long[0][0] = scorematrix[5];
+		this->f_long[0][1] = scorematrix[6];
+		this->tf_short[0][0] = scorematrix[7];
+		this->tf_short[0][1] = scorematrix[8];
+		this->tf_short[0][2] = scorematrix[9];
+		for(int i = 0;i < 3;i++){
+			this->f1list[0][i] = scorematrix[9 + i * 2+ 1];
+			this->f1list[1][i] = scorematrix[9 + i * 2+ 2];
+		}
+	}
+	else if(s == 13 && this->formulaid == 19){
+		/*	The HCP only have the discrete card strength
+		 *	We get bonus strength from trump suit in long formula
+		 *	We decrease the short score if we have honor
+		 *	HCP[1][1]	=	4, it is real number
+		 *	HCP[1][2-8]	=	0
+		 *	HCP[1][9-T]	=	1
+		 *	HCP[1][J]	=	2
+		 *	HCP[1][Q]	=	3
+		 *	HCP[1][K]	=	4
+		 *	f_long		=	fixed long
+		 *				=	a, b
+		 *	tf_short	=	training fixed short
+		 *		Loser	=	c, d, e
+		 *		With A	=	f
+		 *		With K	=	g
+		 *		With Q	=	h
+		 **/
+		this->HCPlist[1][1] = 4;
+		this->HCPlist[1][9] = scorematrix[1];
+		this->HCPlist[1][10] = scorematrix[1];
+		this->HCPlist[1][11] = scorematrix[2];
+		this->HCPlist[1][12] = scorematrix[3];
+		this->HCPlist[1][13] = scorematrix[4];
+		for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+		this->f_long[0][0] = scorematrix[5];
+		this->f_long[0][1] = scorematrix[6];
+		for(int j = 0;j < 2;j++){
+			for(int i = 0;i < 3;i++){
+				this->tf_short[j][i] = scorematrix[7 + i + j * 3];
+			}
+		}
+	}
+
 	else{
 		cerr << "--Wrong size of scorematrix--" << endl;
 		return s;
@@ -660,8 +816,53 @@ void Experiment::scorer(){
 			this->teams[i].score = result;
 		}
 		break;
+	case 15:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula15(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+	case 16:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula16(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+	case 17:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula17(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+
+
+	case 18:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula18(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+
+
+	case 19:
+		for(int i = 0;i < (int)this->teams.size();i++){
+			double result;
+			result = this->formula19(this->teams[i]);
+			this->score.push_back(result);
+			this->teams[i].score = result;
+		}
+		break;
+
 	default:
-		cerr << "The formula number haven't implement. Check your argument again!\n";
+		cerr << "The formula number haven't complete. Check your argument again!\n";
 		break;
 	}
 }
@@ -1107,6 +1308,190 @@ double Experiment::pformula14(Player &p, int suit, int pos, int E_suit){
 	else{
 		ret += (p.hand.distributed[E_suit] > 2 ? 0:called_len[pos][p.hand.distributed[E_suit]]);
 	}
+	return ret;
+}
+double Experiment::formula15(Team &t){
+	/*	This formula is like formula12, but the long non-trump have extra point
+	 * */
+	double ret = 0;
+	ret += pformula15(t.player[0], t.suit);
+	ret += pformula15(t.player[1], t.suit);
+	return ret;
+}
+double Experiment::pformula15(Player &p, int suit){
+	/*	ret = HCP + long + short
+	 *	the feature long and short are not like the previous one, they don't have the exponential
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	for(int i = 0;i < 4;i++){
+		if(i == suit){
+			if(p.hand.distributed[i] > this->f_long[0][1]){
+				ret += this->f_long[0][0] * (p.hand.distributed[i] - this->f_long[0][1]);
+			}
+		}
+		else{
+			if(p.hand.distributed[i] < 3){
+				ret += this->tf_short[0][p.hand.distributed[i]];
+			}
+			if(p.hand.distributed[i] > this->f_long[1][1]){
+				ret += this->f_long[1][0] * (p.hand.distributed[i] - this->f_long[1][1]);
+			}
+		}
+	}
+	return ret;
+}
+double Experiment::formula16(Team &t){
+	/*	This formula is like formula12, but the long non-trump that with honor have extra point
+	 * */
+	double ret = 0;
+	ret += pformula16(t.player[0], t.suit);
+	ret += pformula16(t.player[1], t.suit);
+	return ret;
+}
+double Experiment::pformula16(Player &p, int suit){
+	/*	ret = HCP + long + short
+	 *	the feature long and short are not like the previous one, they don't have the exponential
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	for(int i = 0;i < 4;i++){
+		if(i == suit){
+			if(p.hand.distributed[i] > this->f_long[0][1]){
+				ret += this->f_long[0][0] * (p.hand.distributed[i] - this->f_long[0][1]);
+			}
+		}
+		else{
+			if(p.hand.distributed[i] < 3){
+				ret += this->tf_short[0][p.hand.distributed[i]];
+			}
+			if(p.hand.distributed[i] > this->f_long[1][1] && this->have_honor(p, i)){
+				ret += this->f_long[1][0] * (p.hand.distributed[i] - this->f_long[1][1]);
+			}
+		}
+	}
+	return ret;
+}
+double Experiment::formula17(Team &t){
+	double ret = 0;
+	ret += pformula17(t.player[0], t.suit);
+	ret += pformula17(t.player[1], t.suit);
+	return ret;
+}
+double Experiment::pformula17(Player &p, int suit){
+	/*	ret = HCP + long + short
+	 *	The short with honor and without honor have different scorematrix
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	for(int i = 0;i < 4;i++){
+		if(i == suit){
+			if(p.hand.distributed[i] > this->f_long[0][1]){
+				ret += this->f_long[0][0] * (p.hand.distributed[i] - this->f_long[0][1]);
+			}
+		}
+		else{
+			if(p.hand.distributed[i] == 0)
+				ret += this->tf_short[0][0];
+			else if(p.hand.distributed[i] < 3){
+				unsigned int card = cardtobit(p.hand.getcard()[i]);
+				if(SetBits(card & Winner))
+					ret += this->tf_short[1][p.hand.distributed[i]];
+				else
+					ret += this->tf_short[0][p.hand.distributed[i]];
+			}
+		}
+	}
+	return ret;
+}
+double Experiment::formula18(Team &t){
+	double ret = 0;
+	ret += pformula18(t.player[0], t.suit);
+	ret += pformula18(t.player[1], t.suit);
+	return ret;
+}
+double Experiment::pformula18(Player &p, int suit){
+	/*	ret = HCP + long + short
+	 *	The short with honor and without honor have different scorematrix
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	for(int i = 0;i < 4;i++){
+		if(i == suit){
+			if(p.hand.distributed[i] > this->f_long[0][1]){
+				ret += this->f_long[0][0] * (p.hand.distributed[i] - this->f_long[0][1]);
+			}
+		}
+		else{
+			if(p.hand.distributed[i] == 0)
+				ret += this->tf_short[0][0];
+			else if(p.hand.distributed[i] < 3){
+				unsigned int card = cardtobit(p.hand.getcard()[i]);
+				if(card & 0x2)
+					ret += this->f1list[p.hand.distributed[i] - 1][0];
+				else if(card & 0x2000)
+					ret += this->f1list[p.hand.distributed[i] - 1][1];
+				else if(card & 0x1000)
+					ret += this->f1list[p.hand.distributed[i] - 1][2];
+				else ret += this->tf_short[0][p.hand.distributed[i]];
+			}
+		}
+	}
+	return ret;
+}
+double Experiment::formula19(Team &t){
+	double ret = 0;
+	ret += pformula19(t.player[0], t.suit);
+	ret += pformula19(t.player[1], t.suit);
+	return ret;
+}
+double Experiment::pformula19(Player &p, int suit){
+	/*	ret = HCP + long + short
+	 *	the feature long and short are not like the previous one, they don't have the exponential
+	 * */
+	double ret = 0;
+	ret += this->pHCP(p, 4);
+	for(int i = 0;i < 4;i++){
+		if(i == suit){
+			if(p.hand.distributed[i] > this->f_long[0][1]){
+				ret += this->f_long[0][0] * (p.hand.distributed[i] - this->f_long[0][1]);
+			}
+		}
+		else{
+			if(p.hand.distributed[i] < 3){
+				ret += this->tf_short[0][p.hand.distributed[i]];
+				unsigned int card = cardtobit(p.hand.getcard()[i]);
+				if(card & 0x2)
+					ret -= this->tf_short[1][0];
+				if(card & 0x2000)
+					ret -= this->tf_short[1][1];
+				if(card & 0x1000)
+					ret -= this->tf_short[1][2];
+			}
+		}
+	}
+	return ret;
+
+}
+int Experiment::loser(Team &t){
+	int ret = 24;
+	for(int i = 0;i < 4;i++){
+		ret -= ploser(t.player[0], i);
+		ret -= ploser(t.player[1], i);
+	}
+	return ret;
+}
+int Experiment::ploser(Player &p, int suit){
+	unsigned int card = cardtobit(p.hand.getcard()[suit]);
+	int ret = SetBits(card);
+	ret = ret > 3 ? 3:ret;
+	ret -= SetBits(card & Winner);
+	return ret;
+}
+unsigned int Experiment::cardtobit(vector<int> card){
+	unsigned int ret = 0;
+	for(auto i:card)
+		ret = ret | (1 << i);
 	return ret;
 }
 double Experiment::Editinglongformula(Player p, int suit){
@@ -1573,4 +1958,19 @@ void Team::ShowHand(){
 			else cout << " ";
 		}
 	}
+}
+bool Experiment::have_honor(Player P, int suit){
+	bool ret = false;
+	auto hand = P.hand.getcard();
+	for(auto card:hand[suit]){
+		if(card == 1 || card == 12 || card == 13)
+			ret = true;
+	}
+	return ret;
+}
+int SetBits(uint32_t i){
+	i = i - ((i >> 1) & 0x55555555);
+	i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+	i = (i + (i >> 4)) & 0x0F0F0F0F;
+	return (i * 0x01010101) >> 24;
 }
