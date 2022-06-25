@@ -1498,6 +1498,7 @@ double Experiment::Editinglongformula(Player p, int suit){
 	/*	If the length is less than 4, ret += 0
 	 *	else if the length is equal to 4, ret += a fixed value
 	 *	else ret += a * pow(length - 4, b)
+	 *	3.6
 	 * */
 	double ret = 0;
 	vector<int> distributed = p.hand.distributed;
@@ -1527,6 +1528,7 @@ double Experiment::FASTsuitHCP(Player p, int suit){
 double Experiment::distributeformula(Player p, int suit){
 	/* ret = sum of a * pow(abs(length - base), b)
 	 * a, base and b are the trained argument
+	 * 3.3
 	 * */
 	double ret = 0;
 	vector<int> h = p.hand.distributed;
@@ -1563,6 +1565,7 @@ double Experiment::longformula(Player p, int suit){
 	 * score = a * pow(suit length - 4, b)
 	 * 4 also can be an argument but we will fix it now
 	 * a and b are the argument that be trained
+	 * 3.4
 	 * */
 	double ret = 0;
 	vector<int> distributed = p.hand.distributed;
@@ -1582,6 +1585,7 @@ double Experiment::shortformula(Player p, int suit){
 	 * score = a * pow(3 - suit length, b)
 	 * 3 also can be an argument but we will fix it now
 	 * a and b are the argument that be trained
+	 * 3.7
 	 * */
 	double ret = 0;
 	vector<int> distributed = p.hand.distributed;
@@ -1599,6 +1603,7 @@ double Experiment::shortformula(Player p, int suit){
 double Experiment::discreteshort(Player p, int suit){
 	/*	Return the sum of the score that each length in a suit can get
 	 *	the score is discrete value
+	 *	haven't put into thesis
 	 * */
 	double ret = 0;
 	int id;
@@ -1614,6 +1619,7 @@ double Experiment::discreteshort(Player p, int suit){
 double Experiment::TrainLong(Player p, int suit){
 	/* Return the sum of the score that each length in a suit can get
 	 * score = a * pow(suit length - b, c)
+	 * 3.5
 	 * */
 	double ret = 0;
 	vector<int> distributed = p.hand.distributed;
@@ -1631,6 +1637,7 @@ double Experiment::TrainLong(Player p, int suit){
 double Experiment::TrainShort(Player p, int suit){
 	/* Return the sum of the score that each length in a suit can get
 	 * score = a * pow(b - suit length, c)
+	 * 3.8
 	 * */
 	double ret = 0;
 	vector<int> distributed = p.hand.distributed;
@@ -1645,10 +1652,49 @@ double Experiment::TrainShort(Player p, int suit){
 	return ret;
 }
 
+
+double Experiment::TrumpLong(Team t){
+	/*	3.10
+	 * */
+	double ret = 0;
+	double p0l = t.player[0].hand.distributed[t.suit], p1l = t.player[1].hand.distributed[t.suit];
+	if(p0l > f_long[0][1])
+		ret += f_long[0][0] * (p0l - f_long[0][1]);
+	if(p1l > f_long[0][1])
+		ret += f_long[0][0] * (p1l - f_long[0][1]);
+	return ret;
+}
+
+double Experiment::Nontrumpshort(Team t){
+	/*	3.11
+	 * */
+	int s = t.suit;
+	double ret = 0;
+	for(int i = 0;i < 4;i++){
+		if(s == i)continue;
+		if(t.player[0].hand.distributed[i] < 3)
+			ret += tf_short[0][t.player[0].hand.distributed[i]];
+		if(t.player[1].hand.distributed[i] < 3)
+			ret += tf_short[0][t.player[1].hand.distributed[i]];
+	}
+	return ret;
+}
+
 double Experiment::HCP(Team t){
+	/*	3.2
+	 * */
 	double ret = 0;
 	ret += pHCP(t.player[0], t.suit);
 	ret += pHCP(t.player[1], t.suit);
+	return ret;
+}
+
+double Experiment::HCP_notrump(Team t){
+	/*	Haven't put it into thesis
+	 * */
+	double ret = 0;
+	ret += pHCP(t.player[0], 4);
+	ret += pHCP(t.player[1], 4);
 	return ret;
 }
 
@@ -1666,6 +1712,8 @@ double Experiment::pHCP(Player &p, int suit){
 }
 
 double Experiment::LongShort(Team t){
+	/*	Haven't put into thesis
+	 * */
 	double ret = 0;
 	ret += pLongShort(t.player[0], t.suit);
 	ret += pLongShort(t.player[1], t.suit);
@@ -1973,4 +2021,22 @@ int SetBits(uint32_t i){
 	i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
 	i = (i + (i >> 4)) & 0x0F0F0F0F;
 	return (i * 0x01010101) >> 24;
+}
+
+void Experiment::nScorer(){
+	int id = this->formulaid;
+	this->score.clear();
+	for(int i = 0;i < (int)this->teams.size();i++){
+		teams[i].score = 0;
+		if(i & 1)
+			teams[i].score += HCP(teams[i]);
+		this->score.push_back(teams[i].score);
+	}
+}
+
+void Experiment::nSet_scorematrix(vector<double> scorematrix){
+	int id = this->formulaid;
+	int para_size = 0;
+	int i = 0;
+	for(;;i++)
 }
