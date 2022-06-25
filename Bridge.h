@@ -183,6 +183,8 @@ class Experiment{
 		vector<double> long4card;
 		map<vector<vector<int>>, double> Honor;
 		double distributedistance(Team &t);
+		void nScorer();
+		void nSet_scorematrix(vector<double> scorematrix);
 		Experiment(vector<Team> teams, int formulaid = 0){
 			this->teams = teams;
 			this->formulaid = formulaid;
@@ -243,6 +245,7 @@ class Experiment{
 		double PlusValue(Player p, int suit);
 	private:
 		double HCP(Team t);
+		double HCP_notrump(Team t);
 		double pHCP(Player &p, int suit);
 		double LongShort(Team t);
 		double pLongShort(Player p, int suit);
@@ -300,6 +303,8 @@ class Experiment{
 		double discreteshort(Player p, int suit);
 		double TrainLong(Player p, int suit);
 		double TrainShort(Player p, int suit);
+		double TrumpLong(Team t);
+		double Nontrumpshort(Team t);
 		double singleshortformula(Player p, int suit);
 		double distributeformula(Player p, int suit);
 		double FixFormula1(PartialGame game);
