@@ -2,7 +2,7 @@
 echo "Setting training formula"
 # the formula id 13 and 14 is for east called situation
 # the remain formula are without any information of opponents
-formulaID=( 2 3 4 5 7 8 9 10 11 12 15 16 17 18 19 )
+formulaID=( 2 )
 called_formulaID=(  )
 year=$(date +"%F" | cut -d - -f 1)
 month=$(date +"%F" | cut -d - -f 2)
