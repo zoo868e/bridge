@@ -78,3 +78,4 @@ random_validate/validate/*
 tempforoutput
 tempforinput
 nohup.out
+__pycache__/
