@@ -2027,16 +2027,212 @@ void Experiment::nScorer(){
 	int id = this->formulaid;
 	this->score.clear();
 	for(int i = 0;i < (int)this->teams.size();i++){
-		teams[i].score = 0;
-		if(i & 1)
-			teams[i].score += HCP(teams[i]);
-		this->score.push_back(teams[i].score);
+		double _score = 0;
+		switch(id % 10){
+			case 1:
+				_score += HCP(teams[i]);
+				break;
+			case 2:
+				_score += HCP_notrump(teams[i]);
+				break;
+			default:
+				break;
+		}
+		switch((id / 10) % 10){
+			case 1:
+				_score += suitHCP(teams[i].player[0], teams[i].suit);
+				_score += suitHCP(teams[i].player[1], teams[i].suit);
+				break;
+			default:
+				break;
+		}
+		switch((id / 100) % 10){
+			case 1:
+				_score += LongShort(teams[i]);
+				break;
+			case 2:
+				_score += distributeformula(teams[i].player[0], teams[i].suit);
+				_score += distributeformula(teams[i].player[1], teams[i].suit);
+				break;
+			default:
+				break;
+		}
+		switch((id / 1000) % 10){
+			case 1:
+				_score += longformula(teams[i].player[0], teams[i].suit);
+				_score += longformula(teams[i].player[1], teams[i].suit);
+				break;
+			case 2:
+				_score += Editinglongformula(teams[i].player[0], teams[i].suit);
+				_score += Editinglongformula(teams[i].player[1], teams[i].suit);
+				break;
+			case 3:
+				_score += TrainLong(teams[i].player[0], teams[i].suit);
+				_score += TrainLong(teams[i].player[1], teams[i].suit);
+				break;
+			case 4:
+				_score += TrumpLong(teams[i]);
+				break;
+			default:
+				break;
+		}
+		switch((id / 10000) % 10){
+			case 1:
+				_score += shortformula(teams[i].player[0], teams[i].suit);
+				_score += shortformula(teams[i].player[1], teams[i].suit);
+				break;
+			case 2:
+				_score += discreteshort(teams[i].player[0], teams[i].suit);
+				_score += discreteshort(teams[i].player[1], teams[i].suit);
+				break;
+			case 3:
+				_score += TrainShort(teams[i].player[0], teams[i].suit);
+				_score += TrainShort(teams[i].player[1], teams[i].suit);
+				break;
+			case 4:
+				_score += Nontrumpshort(teams[i]);
+				break;
+			default:
+				break;
+		}
+		teams[i].score = _score;
+		this->score.push_back(_score);
 	}
 }
 
-void Experiment::nSet_scorematrix(vector<double> scorematrix){
+int Experiment::nSet_scorematrix(vector<double> scorematrix){
+	if(scorematrix.size() != this->needed_para){
+		cerr << "You give me wrong size of score matrix!" << endl;
+		cerr << "You give me " << scorematrix.size() << ", but I need " << this->needed_para << endl;
+		return scorematrix.size();
+	}
 	int id = this->formulaid;
 	int para_size = 0;
-	int i = 0;
-	for(;;i++)
+	switch(id % 10){
+		case 1:
+			para_size += 11;
+			this->HCPlist[0][1] = 4;
+			for(int i = 2;i < 9;i++)this->HCPlist[0][i] = scorematrix[0];
+			this->HCPlist[0][9] = scorematrix[1];
+			this->HCPlist[0][10] = scorematrix[1];
+			this->HCPlist[0][11] = scorematrix[2];
+			this->HCPlist[0][12] = scorematrix[3];
+			this->HCPlist[0][13] = scorematrix[4];
+			for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[5];
+			this->HCPlist[1][9] = scorematrix[6];
+			this->HCPlist[1][10] = scorematrix[6];
+			this->HCPlist[1][11] = scorematrix[7];
+			this->HCPlist[1][12] = scorematrix[8];
+			this->HCPlist[1][13] = scorematrix[9];
+			this->HCPlist[1][1] = scorematrix[10];
+			break;
+		case 2:
+			para_size += 5;
+			this->HCPlist[0][1] = 4;
+			this->HCPlist[0][9] = scorematrix[1];
+			this->HCPlist[0][10] = scorematrix[1];
+			this->HCPlist[0][11] = scorematrix[2];
+			this->HCPlist[0][12] = scorematrix[3];
+			this->HCPlist[0][13] = scorematrix[4];
+			for(int i = 2;i < 9;i++)this->HCPlist[0][i] = scorematrix[0];
+			this->HCPlist[1][1] = 4;
+			this->HCPlist[1][9] = scorematrix[1];
+			this->HCPlist[1][10] = scorematrix[1];
+			this->HCPlist[1][11] = scorematrix[2];
+			this->HCPlist[1][12] = scorematrix[3];
+			this->HCPlist[1][13] = scorematrix[4];
+			for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+			break;
+		default:
+			break;
+	}
+	switch((id / 10) % 10){
+		case 1:
+			this->f_suitHCP[0][0] = scorematrix[para_size++];
+			this->f_suitHCP[0][1] = scorematrix[para_size++];
+			this->f_suitHCP[1][0] = scorematrix[para_size++];
+			this->f_suitHCP[1][1] = scorematrix[para_size++];
+			break;
+		default:
+			break;
+	}
+	switch((id / 100) % 10){
+		case 1:
+			for(int i = 0;i < 14;i++){
+				this->lenlist[0][i] = scorematrix[para_size + i];
+				this->lenlist[1][i] = scorematrix[para_size + 14 + i];
+			}
+			para_size += 28;
+			break;
+		case 2:
+			for(int i = 0;i < 3;i++){
+				this->f_dist[0][i] = scorematrix[para_size + i];
+				this->f_dist[1][i] = scorematrix[para_size + i + 3];
+			}
+			para_size += 6;
+			break;
+		default:
+			break;
+	}
+	switch((id / 1000) % 10){
+		case 1:
+			for(int i = 0;i < 2;i++){
+				this->f_long[0][i] = scorematrix[para_size + i];
+				this->f_long[1][i] = scorematrix[para_size + i + 2];
+			}
+			para_size += 4;
+			break;
+		case 2:
+			for(int i = 0;i < 2;i++){
+				this->f_long[0][i] = scorematrix[para_size + i];
+				this->f_long[1][i] = scorematrix[para_size + i + 2];
+			}
+			para_size += 4;
+			this->long4card[0] = scorematrix[para_size++];
+			this->long4card[1] = scorematrix[para_size++];
+			break;
+		case 3:
+			for(int i = 0;i < 3;i++){
+				this->tf_long[0][i] = scorematrix[para_size + i];
+				this->tf_long[1][i] = scorematrix[para_size + i + 3];
+			}
+			para_size += 6;
+			break;
+		case 4:
+			this->f_long[0][0] = scorematrix[para_size++];
+			this->f_long[0][1] = scorematrix[para_size++];
+			break;
+		default:
+			break;
+	}
+	switch((id / 10000) % 10){
+		case 1:
+			for(int i = 0;i < 2;i++){
+				this->f_short[0][i] = scorematrix[para_size + i];
+				this->f_short[1][i] = scorematrix[para_size + i + 2];
+			}
+			para_size += 4;
+			break;
+		case 2:
+		case 3:
+			for(int i = 0;i < 3;i++){
+				this->tf_short[0][i] = scorematrix[para_size + i];
+				this->tf_short[1][i] = scorematrix[para_size + i + 3];
+			}
+			para_size += 6;
+			break;
+		case 4:
+			for(int i = 0;i < 3;i++)
+				this->tf_short[0][i] = scorematrix[para_size++];
+			break;
+		default:
+			break;
+	}
+	if(para_size != (int)this->needed_para){
+		cerr << "You give me " << this->needed_para << " parameters, but I only use the first " << para_size << " parameters." << endl;
+		cerr << "There is bug in when you set the scorematrix!" << endl;
+		cerr << "FIX IT!!!!" << endl;
+		return para_size;
+	}
+	return 0;
 }
