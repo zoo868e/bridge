@@ -469,16 +469,37 @@ def listtostdin(l):
     s += "\n"
     return s
 
+def shufflelist(l):
+    import random
+    random.shuffle(l)
+def makeDATASET(l, size = 1000):
+    shufflelist(l)
+    f = open("./data/dataForC", "w")
+    for i in range(min(size, len(l))):
+        f.write(l[i] + '\n')
+    f.close()
+def read(filename):
+    l = []
+    file = open(filename)
+    for line in file.readlines():
+        line = line.strip()
+        l.append(line)
+    file.close()
+    return l
+
+
 
 def main():
     import Gameinfo.parser as ps
     import numpy
-    C = corrobj()
-    filename = "wholedataForC";
-    C.loader("data/ALLDDSresult.txt")
-    C.filter(10000000000)
-    C.makedatasetforC(filename)
-    print("down")
+    data = read("data/wholeStaticForC")
+    makeDATASET(data, 5000)
+#    C = corrobj()
+#    filename = "wholedataForC";
+#    C.loader("data/ALLDDSresult.txt")
+#    C.filter(10000000000)
+#    C.makedatasetforC(filename)
+#    print("down")
 
 
 
