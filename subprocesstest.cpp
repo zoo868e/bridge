@@ -4,7 +4,8 @@
 
 using namespace std;
 int main(int argc, char* argv[]){
-	string filename = "./data/dataForC";
+	string filename = "./data/dataForCofsection42";
+	if(argc > 2)filename = argv[2];
 	vector<Team> team;
 	loadTeam(filename, team);
 
@@ -21,10 +22,10 @@ int main(int argc, char* argv[]){
 		for(int i = 0;i < (int)scorematrixb.size();i++){
 			scorematrix.push_back(stod(scorematrixb[i]));
 		}
-		int ercode = E.Set_scorematrix(scorematrix);
+		int ercode = E.nSet_scorematrix(scorematrix);
 		if(ercode != 0)cout << "--Wrong size of scorematrix--Size = " << ercode << endl;
 		else{
-			E.scorer();
+			E.nScorer();
 			double ans = getcorr(E);
 			cout << ans << endl;
 			if(ans == -2){
