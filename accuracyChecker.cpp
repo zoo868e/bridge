@@ -59,13 +59,13 @@ int main(int argc, char* argv[]){
 		for(int i = 0;i < (int)scorematrix_string.size();i++){
 			scorematrix.push_back(stod(scorematrix_string[i]));
 		}
-		int ercode = validate.Set_scorematrix(scorematrix);
+		int ercode = validate.nSet_scorematrix(scorematrix);
 		if(ercode != 0){
 			cerr << "--Wrong size of scorematrix--Size = " << ercode << endl;
 			return 2;
 		}
 		else{
-			validate.scorer();
+			validate.nScorer();
 			// Find the gap of continuous win tricks
 			cout << "The correlation coefficient is " << getcorr(validate) << endl;
 			dividedTeam = classifyByDoubleDummyResult(validate.teams);
