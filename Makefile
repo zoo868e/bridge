@@ -5,7 +5,7 @@ LDFLAGS= -Wl,-rpath,$(pwd)
 LIBS = -L /usr/lib/x86_64-linux-gnu
 pwd = `pwd -P`
 Tools = libBridge.so libAnalysis.so libDataSetReader.so libepsMaker.so
-target := analysisSubprocess subprocesstest accuracyChecker ValidateRichard check_whole_corr analysisByFourHand TraversFourPlayersEST TimesOfHCPScore HandCalculator check_whole_corr_Fixed test DistributionOfScoreAndDDSresult testFunc ScoreCalculator accuracyCheckerwithinterval TeamScorer accuracyCheckergen accuracyCheckerGdata test1
+target := analysisSubprocess subprocesstest accuracyChecker ValidateRichard check_whole_corr analysisByFourHand TraversFourPlayersEST TimesOfHCPScore HandCalculator check_whole_corr_Fixed test DistributionOfScoreAndDDSresult testFunc ScoreCalculator accuracyCheckerwithinterval TeamScorer accuracyCheckergen accuracyCheckerGdata 
 OBJECTS = analysisSubprocess.o  subprocesstest.o  accuracyChecker.o  ValidateRichard.o  check_whole_corr.o analysisByFourHand.o  TraversFourPlayersEST.o  TimesOfHCPScore.o  HandCalculator.o  check_whole_corr_Fixed.o test.o  DistributionOfScoreAndDDSresult.o  testFunc.o ScoreCalculator.o accuracyCheckerwithinterval.o TeamScorer.o accuracyCheckergen.o
 
 dep:
