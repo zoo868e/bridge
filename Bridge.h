@@ -157,9 +157,26 @@ class Experiment{
 		vector<double> DDS;
 		vector<double> FixFormulaArgumentList;
 		int formulaid;
+		unsigned int needed_para;
 		int Fixformulaid;
 		const vector<int> FixFormulaArgumentSize = {0, 2, 4, 10};
 		const vector<int> FormulaArgumentSize = {0, 26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10, 32, 32, 12, 12, 12, 16, 13};
+		//	HCP, HCP_notrump, 
+		//	suitHCP, LongShort, 
+		//	longformula, Editinglongformula, TrainLong,
+		//	shortformula, discreteshort, TrainShort,
+		//	TrumpLong, Nontrumpshort, distributeformula
+		const vector<int> FeatureSize = {11, 5, 4, 28, 4, 6, 6, 4, 6, 6, 2, 3, 6};
+		//	HCP, HCP_notrump, 
+		const vector<int> HCPSize = {0, 11, 5};
+		//	suitHCP
+		const vector<int> suitHCPSize = {0, 4};
+		//	LongShort, distributeformula
+		const vector<int> distriSize = {0, 28, 6};
+		//	longformula, Editinglongformula, TrainLong, TrumpLong
+		const vector<int> longSize = {0, 4, 6, 6, 2};
+		//	shortformula, discreteshort, TrainShort, Nontrumpshort
+		const vector<int> shortSize = {0, 4, 6, 6, 3};
 		vector<vector<double>> FormulaArgumentList;
 		double HCPlist[2][14];
 		double lenlist[2][14];
@@ -184,10 +201,11 @@ class Experiment{
 		map<vector<vector<int>>, double> Honor;
 		double distributedistance(Team &t);
 		void nScorer();
-		void nSet_scorematrix(vector<double> scorematrix);
-		Experiment(vector<Team> teams, int formulaid = 0){
+		int nSet_scorematrix(vector<double> scorematrix);
+		Experiment(vector<Team> teams, int _formulaid = 0){
 			this->teams = teams;
-			this->formulaid = formulaid;
+			this->formulaid = _formulaid;
+			this->needed_para = this->HCPSize[_formulaid % 10] + this->suitHCPSize[(_formulaid / 10) % 10] + this->distriSize[(_formulaid / 100) % 10] + this->longSize[(_formulaid / 1000) % 10] + this->shortSize[(_formulaid / 10000) % 10];
 			this->Fixformulaid = 1;
 			this->long4card.clear();
 			this->long4card.resize(2);
@@ -226,8 +244,9 @@ class Experiment{
 		void GameScorer();
 		void PartialGamePreScorer();
 		void PartialGameTrainScorer();
-		void setformulaid(int formulaid){
-			this->formulaid = formulaid;
+		void setformulaid(int _formulaid){
+			this->formulaid = _formulaid;
+			this->needed_para = this->HCPSize[_formulaid % 10] + this->suitHCPSize[(_formulaid / 10) % 10] + this->distriSize[(_formulaid / 100) % 10] + this->longSize[(_formulaid / 1000) % 10] + this->shortSize[(_formulaid / 10000) % 10];
 		}
 		void setFixformulaid(int Fixformulaid){
 			this->Fixformulaid = Fixformulaid;
