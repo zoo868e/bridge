@@ -472,11 +472,11 @@ def listtostdin(l):
 def shufflelist(l):
     import random
     random.shuffle(l)
-def makeDATASET(l, size = 1000):
-    shufflelist(l)
+def makeDATASET(data, size = 1000):
+    shufflelist(data)
     f = open("./data/dataForC", "w")
-    for i in range(min(size, len(l))):
-        f.write(l[i] + '\n')
+    for i in range(min(size, len(data))):
+        f.write(data[i] + '\n')
     f.close()
 def read(filename):
     l = []
@@ -487,13 +487,35 @@ def read(filename):
     file.close()
     return l
 
+def makeDATASETwithList(data, l):
+    import numpy as np
+    shufflelist(data)
+    count = [0 for x in range(14)]
+    f = open("./data/dataForC", "w")
+    size = 0
+    needed = sum(l)
+    for line in range(len(data)):
+        d = data[line].split(" ")
+        precission = d[2].split(".")
+        winTricks = round(float(d[2]))
+        if len(precission) > 1 and winTricks < 13 and d[2].split(".")[1][0] == '5' and len(d[2].split(".")[1]) == 1 and winTricks == int(float(d[2])):
+            winTricks += 1
+        if count[winTricks] < l[winTricks]:
+            print(data[line], winTricks)
+            count[winTricks] += 1
+            size += 1
+            f.write(data[line] + '\n')
+            if size >= needed:
+                break
+    f.close()
 
 
 def main():
     import Gameinfo.parser as ps
     import numpy
     data = read("data/wholeStaticForC")
-    makeDATASET(data, 5000)
+    l = [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 1000, 1000]
+    makeDATASETwithList(data, l)
 #    C = corrobj()
 #    filename = "wholedataForC";
 #    C.loader("data/ALLDDSresult.txt")
