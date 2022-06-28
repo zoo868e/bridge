@@ -535,6 +535,7 @@ def main():
     import Gameinfo.parser as ps
     import numpy
     from subprocess import Popen, PIPE
+    import statistics as stat
 #    C = corrobj()
 #    C.loader("data/ALLDDSresult.txt")
 #    test = [0, 0, 0, 0, 0, 0, 0, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
@@ -542,15 +543,31 @@ def main():
 #    C.makedatasetforC_showdata("test_list")
     formulaPara = [26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10]
     HCPSize = [0, 11, 5]
+    HCP_name = ['', 'HCP with trump', 'HCP with no trump']
     suitHCPSize = [0, 4]
+    suitHCP_name = ['', 'suitHCP']
     distriSize = [0, 28, 6]
+    distri_name = ['', 'LongShort', 'Distribute']
     longSize = [0, 4, 6, 6, 2]
+    long_name = ['', 'Long', 'Long_4', 'Long*', 'Trump Long']
     shortSize = [0, 4, 6, 6, 3]
-    Original_HCP = [3, 2, 1, 0, 0]
+    short_name = ['', 'Short', 'Discrete Short', 'Short*', 'Non-trump short']
+    Original_HCP = [0, 0, 1, 2, 3]
     Original_long = [1, 4]
     Original_short = [3, 2, 1, 3, 2, 1]
     Original_dis = [3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     ub = 4
+    validate_id = "00102"
+    validate_para = Original_HCP + Original_dis
+    validate_para_size = 28 + 5
+    checkerProcess_validate = Popen(['./subprocesstest', validate_id, "./data/dataForC"], stdin=PIPE, stdout=PIPE)
+    validate_corr = objf(checkerProcess_validate, validate_para)
+    print("The validate formula =", validate_id)
+    print("The validate para_size =", validate_para_size)
+    print("The validate corr =", validate_corr)
+    checkerProcess_validate.terminate()
+
+    data = read("./data/dataForC")
     for H in range(len(HCPSize)):
         for sH in range(len(suitHCPSize)):
             for D in range(len(distriSize)):
@@ -563,6 +580,23 @@ def main():
                         else:
                             formulaid = str(S) + str(L) + str(D) + str(sH) + str(H)
                             para_size = HCPSize[H] + suitHCPSize[sH] + distriSize[D] + longSize[L] + shortSize[S]
+                            para_name = HCP_name[H]
+                            if sH > 0:
+                                if len(para_name) > 0:
+                                    para_name += " + "
+                                para_name += suitHCP_name[1]
+                            if D > 0:
+                                if len(para_name) > 0:
+                                    para_name += " + "
+                                para_name += distri_name[D]
+                            if L > 0:
+                                if len(para_name) > 0:
+                                    para_name += " + "
+                                para_name += long_name[L]
+                            if S > 0:
+                                if len(para_name) > 0:
+                                    para_name += " + "
+                                para_name += short_name[S]
                             validate_id = ""
                             validate_para = []
                             validate_para_size = 0
@@ -584,46 +618,42 @@ def main():
                                 validate_id += "00"
                             if H > 0:
                                 validate_para += Original_HCP
-                            if L > 0 and S > 0:
+                            if (L > 0 and S > 0) or D > 0:
                                 validate_para += Original_dis
                             elif L > 0:
                                 validate_para += Original_long
                             elif S > 0:
                                 validate_para += Original_short
-                            checkerProcess_validate = Popen(['./subprocesstest', validate_id, "./data/dataForC"], stdin=PIPE, stdout=PIPE)
-                            validate_corr = objf(checkerProcess_validate, validate_para)
-                            print("The validate formula =", validate_id)
-                            print("The validate para_size =", validate_para_size)
-                            print("The validate corr =", validate_corr)
-                            checkerProcess_validate.terminate()
                             checkerProcess_train = Popen(['./subprocesstest', formulaid, "./data/dataForC"], stdin=PIPE, stdout=PIPE)
-                            exitProcess = 'END'
-                            filename = "dataForC";
-                            data = read("./data/dataForC")
                         #   for train the argument
                             best = 0
-                            sum_trained_corr = 0
+                            worst = 1
+                            trained_corr = []
                             for i in range(1, 11):
                                 makeDATASET(data, i * 100)
-                                print("--------------------------------")
+#                                print("--------------------------------")
                         #        process = Popen(['./analysisSubprocess', "./data/" + filename, str(formulaID), str(i * 1000) + "dataExperimentFormula6.eps"], stdin=PIPE, stdout=PIPE)
                                 best = 0
-                                print("Have", i * 100, "datas")
+#                                print("Have", i * 100, "datas")
                                 # tmp = [bestScore, [individuals of best score]]
-                                tmp = GA.GA(GA.ObjfCorr, 0, ub, para_size, 50, 1000, True, best, formulaid)
+                                tmp = GA.GA(GA.ObjfCorr, 0, ub, para_size, 50, 100, True, best, formulaid)
                                 if tmp[0] > best:
                                     best = tmp[0]
+                                if tmp[0] < worst:
+                                    worst = tmp[0]
                     #            runSubprocess(process, tmp[1])
                                 tmp_corr = objf(checkerProcess_train, tmp[1])
-                                sum_trained_corr += tmp_corr
-                                print("Trained corr =", tmp_corr)
-                            print("Validate corr =", validate_corr)
-                            print("Average trained corr =", sum_trained_corr / 10)
-                            if sum_trained_corr / 10 > validate_corr:
-                                print("It's good combination")
-                            else:
-                                print("It's bad combination")
-                            print("=======================================================")
+                                trained_corr.append(tmp_corr)
+                            print(para_name, round(max(trained_corr), 3), round(min(trained_corr), 3), round(stat.mean(trained_corr), 3), round(stat.median(trained_corr), 3), round(stat.stdev(trained_corr), 3), sep=" & ", end="\\\\\hline\n")
+                            checkerProcess_train.terminate()
+
+#                                print("Trained corr =", tmp_corr)
+#                            print("Average trained corr =", sum_trained_corr / 10)
+#                            if sum_trained_corr / 10 > validate_corr:
+#                                print("It's good combination")
+#                            else:
+#                                print("It's bad combination")
+#                            print("=======================================================")
                         #        process.stdin.write(exitProcess.encode())
                         #        process.stdin.flush()
                         #        process.terminate()
