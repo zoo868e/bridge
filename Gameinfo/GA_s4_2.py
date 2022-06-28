@@ -380,7 +380,7 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID):
     cp = 1  # crossover Probability
     mp = 0.01  # Mutation Probability
     keep = 2  # elitism parameter: how many of the best individuals to keep from one generation to the next
-    print("keep = ", keep, "dim = ", dim, "formulaID = ", formulaID)
+#    print("keep = ", keep, "dim = ", dim, "formulaID = ", formulaID)
     process = Popen(['./subprocesstest', str(formulaID)], stdin=PIPE, stdout=PIPE)
 
     if not isinstance(lb, list):
@@ -435,20 +435,20 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID):
 #            print(['At iteration ' + str(l+1) +
 #                   ' the best fitness is ' + str(bestScore)])
 
-    print("bestScore =", 1 - bestScore)
-    for i in ga[0]:
-        print("{:.4g}".format(i), end = " ")
+#    print("bestScore =", 1 - bestScore)
+#    for i in ga[0]:
+#        print("{:.4g}".format(i), end = " ")
 #    if 1 - bestScore > best:
 #        print("bestIndividual=")
 #        for i in ga[0]:
 #            print("{:.4g}".format(i), end = " ")
 #    else:
 #        print("not better, ignore it")
-    print("")
+#    print("")
 #    printbestIndividual(ga[0])
 #    print("bestScore:{:.4g}".format(1 - bestScore))
-    print("Cost", time.time() - start_time, "seconds")
-    print("----------------------------------------------")
+#    print("Cost", time.time() - start_time, "seconds")
+#    print("----------------------------------------------")
     process.terminate()
     return [1 - bestScore, ga[0]]
 
