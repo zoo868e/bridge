@@ -2029,6 +2029,8 @@ void Experiment::nScorer(){
 	for(int i = 0;i < (int)this->teams.size();i++){
 		double _score = 0;
 		switch(id % 10){
+			case 0:
+				break;
 			case 1:
 				_score += HCP(teams[i]);
 				break;
@@ -2039,6 +2041,8 @@ void Experiment::nScorer(){
 				break;
 		}
 		switch((id / 10) % 10){
+			case 0:
+				break;
 			case 1:
 				_score += suitHCP(teams[i].player[0], teams[i].suit);
 				_score += suitHCP(teams[i].player[1], teams[i].suit);
@@ -2047,6 +2051,8 @@ void Experiment::nScorer(){
 				break;
 		}
 		switch((id / 100) % 10){
+			case 0:
+				break;
 			case 1:
 				_score += LongShort(teams[i]);
 				break;
@@ -2058,6 +2064,8 @@ void Experiment::nScorer(){
 				break;
 		}
 		switch((id / 1000) % 10){
+			case 0:
+				break;
 			case 1:
 				_score += longformula(teams[i].player[0], teams[i].suit);
 				_score += longformula(teams[i].player[1], teams[i].suit);
@@ -2077,6 +2085,8 @@ void Experiment::nScorer(){
 				break;
 		}
 		switch((id / 10000) % 10){
+			case 0:
+				break;
 			case 1:
 				_score += shortformula(teams[i].player[0], teams[i].suit);
 				_score += shortformula(teams[i].player[1], teams[i].suit);
@@ -2095,6 +2105,51 @@ void Experiment::nScorer(){
 			default:
 				break;
 		}
+		if(!(id / 100000)){
+			teams[i].score = _score;
+			this->score.push_back(_score);
+			continue;
+		}
+		switch((id / 100000) % 10){
+			case 0:
+				break;
+			case 1:
+				_score += E_called_HCP(teams[i].player[0], teams[i].suit, 0, teams[i].E_suit);
+				_score += E_called_HCP(teams[i].player[1], teams[i].suit, 1, teams[i].E_suit);
+				break;
+			default:
+				break;
+		}
+		switch((id / 1000000) % 10){
+			case 0:
+				break;
+			case 1:
+				_score += E_called_short(teams[i].player[0], teams[i].suit, 0, teams[i].E_suit);
+				_score += E_called_short(teams[i].player[1], teams[i].suit, 1, teams[i].E_suit);
+				break;
+			default:
+				break;
+		}
+		switch((id / 10000000) % 10){
+			case 0:
+				break;
+			case 1:
+				_score += E_called_dis(teams[i].player[0], teams[i].suit, 0, teams[i].E_suit);
+				_score += E_called_dis(teams[i].player[1], teams[i].suit, 1, teams[i].E_suit);
+				break;
+			default:
+				break;
+		}
+		switch((id / 100000000) % 10){
+			case 0:
+				break;
+			case 1:
+				_score += E_called_long(teams[i].player[0], teams[i].suit, 0, teams[i].E_suit);
+				_score += E_called_long(teams[i].player[1], teams[i].suit, 1, teams[i].E_suit);
+				break;
+			default:
+				break;
+		}
 		teams[i].score = _score;
 		this->score.push_back(_score);
 	}
@@ -2109,6 +2164,8 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 	int id = this->formulaid;
 	int para_size = 0;
 	switch(id % 10){
+		case 0:
+			break;
 		case 1:
 			para_size += 11;
 			this->HCPlist[0][1] = 4;
@@ -2147,6 +2204,8 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 			break;
 	}
 	switch((id / 10) % 10){
+		case 0:
+			break;
 		case 1:
 			this->f_suitHCP[0][0] = scorematrix[para_size++];
 			this->f_suitHCP[0][1] = scorematrix[para_size++];
@@ -2157,6 +2216,8 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 			break;
 	}
 	switch((id / 100) % 10){
+		case 0:
+			break;
 		case 1:
 			for(int i = 0;i < 14;i++){
 				this->lenlist[0][i] = scorematrix[para_size + i];
@@ -2175,6 +2236,8 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 			break;
 	}
 	switch((id / 1000) % 10){
+		case 0:
+			break;
 		case 1:
 			for(int i = 0;i < 2;i++){
 				this->f_long[0][i] = scorematrix[para_size + i];
@@ -2206,6 +2269,8 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 			break;
 	}
 	switch((id / 10000) % 10){
+		case 0:
+			break;
 		case 1:
 			for(int i = 0;i < 2;i++){
 				this->f_short[0][i] = scorematrix[para_size + i];
@@ -2228,6 +2293,78 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 		default:
 			break;
 	}
+	switch((id / 100000) % 10){
+		case 0:
+			break;
+		case 1:
+			for(int i = 0;i < 2;i++){
+				for(int j = 0;j < 2;j++){
+					for(int k = 0;k < 6;k++)
+						this->called[i][j][k] = scorematrix[para_size++];
+				}
+			}
+			for(int i = 0;i < 2;i++){
+				for(int j = 0;j < 2;j++){
+					for(int k = 2;k < 9;k++){
+						called_HCP[i][j][k] = called[i][j][0];
+					}
+					called_HCP[i][j][9] = called[i][j][1];
+					called_HCP[i][j][10] = called[i][j][1];
+					called_HCP[i][j][11] = called[i][j][2];
+					called_HCP[i][j][12] = called[i][j][3];
+					called_HCP[i][j][13] = called[i][j][4];
+					called_HCP[i][j][1] = called[i][j][5];
+				}
+			}
+			break;
+		default:
+			break;
+	}
+	switch((id / 1000000) % 10){
+		case 0:
+			break;
+		case 1:
+			for(int i = 0;i < 2;i++){
+				for(int j = 0;j < 2;j++){
+					for(int k = 0;k < 3;k++){
+						called_short[i][j][k] = scorematrix[para_size++];
+					}
+				}
+			}
+			break;
+		default:
+			break;
+	}
+	switch((id / 10000000) % 10){
+		case 0:
+			break;
+		case 1:
+			for(int i = 0;i < 2;i++){
+				for(int j = 0;j < 2;j++){
+					for(int k = 0;k < 3;k++){
+						called_dis[i][j][k] = scorematrix[para_size++];
+					}
+				}
+			}
+			break;
+		default:
+			break;
+	}
+	switch((id / 100000000) % 10){
+		case 0:
+			break;
+		case 1:
+			for(int i = 0;i < 2;i++){
+				for(int j = 0;j < 2;j++){
+					for(int k = 0;k < 2;k++){
+						called_long[i][j][k] = scorematrix[para_size++];
+					}
+				}
+			}
+			break;
+		default:
+			break;
+	}
 	if(para_size != (int)this->needed_para){
 		cerr << "You give me " << this->needed_para << " parameters, but I only use the first " << para_size << " parameters." << endl;
 		cerr << "There is bug in when you set the scorematrix!" << endl;
@@ -2235,4 +2372,49 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 		return para_size;
 	}
 	return 0;
+}
+double Experiment::E_called_HCP(Player P, int suit, int position, int E_suit){
+	double ret = 0;
+	int same_suit = (suit == E_suit);
+	auto hand = P.hand.getcard();
+	for(auto suit:hand){
+		for(auto card:suit){
+			ret += called_HCP[same_suit][position][card];
+		}
+	}
+	return ret;
+}
+double Experiment::E_called_short(Player P, int suit, int position, int E_suit){
+
+	double ret = 0;
+	int same_suit = (suit == E_suit);
+	auto hand = P.hand;
+	for(auto len:hand.distributed){
+		if(len < 3){
+			ret += called_short[same_suit][position][len];
+		}
+	}
+	return ret;
+}
+double Experiment::E_called_dis(Player P, int suit, int position, int E_suit){
+
+	double ret = 0;
+	int same_suit = (suit == E_suit);
+	auto hand = P.hand;
+	for(auto len:hand.distributed){
+		ret += called_dis[same_suit][position][0] * pow(fabs(len - called_dis[same_suit][position][1]), called_dis[same_suit][position][2]);
+	}
+	return ret;
+}
+double Experiment::E_called_long(Player P, int suit, int position, int E_suit){
+
+	double ret = 0;
+	auto hand = P.hand;
+	int same_suit = (suit == E_suit);
+	for(auto len:hand.distributed){
+		if(len > called_long[same_suit][position][1]){
+			ret += called_long[same_suit][position][0] * (len - called_long[same_suit][position][1]);
+		}
+	}
+	return ret;
 }

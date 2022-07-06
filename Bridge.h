@@ -195,10 +195,13 @@ class Experiment{
 		double late_hand[14];
 		double f_distributedistance[3];
 		double called[2][2][6];
+		double called_HCP[2][2][14];
+		double called_short[2][2][3];
+		double called_long[2][2][2];
+		double called_dis[2][2][3];
 		double called_len[2][4];
 		double AssestScore[14];
 		vector<double> long4card;
-		map<vector<vector<int>>, double> Honor;
 		double distributedistance(Team &t);
 		void nScorer();
 		int nSet_scorematrix(vector<double> scorematrix);
@@ -334,5 +337,9 @@ class Experiment{
 		double Fix_early_HCP(Player, int);
 		double Fix_late_HCP(Player, int);
 		bool have_honor(Player P, int suit);
+		double E_called_HCP(Player P, int suit, int position, int E_suit);
+		double E_called_short(Player P, int suit, int position, int E_suit);
+		double E_called_dis(Player P, int suit, int position, int E_suit);
+		double E_called_long(Player P, int suit, int position, int E_suit);
 };
 #endif
