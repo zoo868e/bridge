@@ -17,22 +17,6 @@ int main(int argc, char* argv[]){
 	loadTeam(filename, teams);
 	Experiment validate(teams);
 	validate.setformulaid(stoi(argv[2]));
-	if(validate.formulaid == 6){
-		int size = validate.teams.size();
-		for(int i = 0;i < size;i++){
-			for(int j = 0;j < 2;j++){
-				int ps = 0;
-				auto hand = validate.teams[i].player[j].hand.getcard();
-				for(int k = 0;k < 4;k++){
-					int a = 0;
-					for(int c:hand[k])a += basicHCP[c];
-					ps += a;
-					validate.teams[i].player[j].HCP_suit[k] = a;
-				}
-				validate.teams[i].player[j].HCP = ps;
-			}
-		}
-	}
 	for(int i = 0;i < (int)validate.teams.size();i++){
 		if((int)round(validate.teams[i].DDSwin) >= 7)continue;
 		validate.teams.erase(validate.teams.begin() + i);
