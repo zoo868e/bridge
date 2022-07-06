@@ -2105,7 +2105,7 @@ void Experiment::nScorer(){
 			default:
 				break;
 		}
-		if(!(id / 100000)){
+		if(!(id / 100000) || teams[i].E_suit == 4){
 			teams[i].score = _score;
 			this->score.push_back(_score);
 			continue;
