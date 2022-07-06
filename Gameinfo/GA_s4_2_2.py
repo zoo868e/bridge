@@ -3,6 +3,8 @@ import random
 import sys
 
 
+times = 0
+
 def crossoverPopulaton(population, scores, popSize, crossoverProbability, keep):
     """
     The crossover of all individuals
@@ -395,6 +397,7 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
     bestIndividual = numpy.zeros(dim)
     scores = numpy.random.uniform(0.0, 1.0, popSize)
     bestScore = float("inf")
+    pre = bestScore
 
     ga = numpy.zeros((popSize, dim))
     z = [0 for x in range(dim - 28)]
@@ -410,6 +413,7 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
 
         # crossover
 #        start_time = time.time()
+        pre = bestScore
         ga = crossoverPopulaton(ga, scores, popSize, cp, keep)
 #        print("Cost", time.time() - start_time, "seconds to crossover")
 
@@ -454,6 +458,7 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
 #    print("Cost", time.time() - start_time, "seconds")
 #    print("----------------------------------------------")
     process.terminate()
+#    return [1 - bestScore, ga[0], l, convergence_curve]
     return [1 - bestScore, ga[0]]
 
 def printbestIndividual(ans):
@@ -492,6 +497,13 @@ def ObjfCorr(P, l):
     P.stdin.flush()
     return stdoutreadint(P)
 
+def stop_condition(s, pre):
+    global times
+    if s >= pre:
+        times += 1
+    else:
+        times = 0
+    return times
 
 if __name__ == "__main__":
     import parser as ps
