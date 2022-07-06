@@ -502,100 +502,71 @@ def listtostdin(l):
 
 
 def main():
-    import Gameinfo.GA_v01 as GA
     import Gameinfo.parser as ps
     import numpy
     from subprocess import Popen, PIPE
     import statistics
     import gc
-#    C = corrobj()
-#    C.loader("data/ALLDDSresult.txt")
-#    test = [0, 0, 0, 0, 0, 0, 0, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
-#    C.filter(test)
-#    C.makedatasetforC_showdata("test_list")
+
     samples = []
+    generatedFILE = ['S', 'H', 'D', 'C']
     with open("data/wholedataForC", "r") as f:
         samples = [line.rstrip() for line in f]
-#    because we had calculated the DDS before, so we don't need these samples
-#    del samples[2:]
+
     f = open("./data/EastOpened.txt", "w", buffering=1)
     f.write("//N, S, suit, DDS, E_called_suit\n")
-#    f.write("//N, S, suit, mean, median, std\n")
+
+    f_suit = [open("./data/EastOpened_Spade.txt", "w", buffering=1), open("./data/EastOpened_Heart.txt", "w", buffering=1), open("./data/EastOpened_Diamond.txt", "w", buffering=1), open("./data/EastOpened_Club.txt", "w", buffering=1)]
     for S in samples:
         temp = S.split(" ")
         sample = temp[0] + " " + temp[1]
         suit = temp[3]
         windeal = temp[2]
         E_use_suit = [1, 1, 1, 1]
-#        print(suit)
-#        print(windeal)
-#        print(sample)
-        gensample = Popen(['./BANLY/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
-        gensample.wait()
+        gensampleS = Popen(['./BANLY_S/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+        gensampleH = Popen(['./BANLY_H/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+        gensampleD = Popen(['./BANLY_D/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+        gensampleC = Popen(['./BANLY_C/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+        gensampleS.wait()
+        gensampleH.wait()
+        gensampleD.wait()
+        gensampleC.wait()
         print("Success: generate samples")
-        ddscalculator = Popen(['./dds/examples/calcPboard', "./files/banlz_.boards"], stdin=PIPE, stdout=PIPE)
-        ddscalculator.wait()
-        print("Success: DDS done")
-        C = corrobj()
-        C.loader("./cache_result")
-        if len(C.data) == 0:
-            continue
-        for Edata in C.data:
-            if E_use_suit[0] == E_use_suit[1] == E_use_suit[2] == E_use_suit[3] == 0:
-                break
-            E_s = 4
-            E = Edata.East.hand.getcard()
-            dist = Edata.East.hand.distributed
-            E_hcp = C.p_HCP(Edata.East, 4)
-            E_len_sorted = sorted(range(4), key = lambda k:dist[k], reverse = True)
-            if E_hcp >= 16:
-                E_s = E_len_sorted[0]
-            else:
-                for i in E_len_sorted:
-                    if dist[i] >= 4 and (1 in E[i] or 12 in E[i] or 13 in E[i]):
-                        E_s = i
-                        break
-            if E_s != 4 and E_use_suit[E_s] != 0:
-                data = []
-                data.append(C.data[0].SouthDDS[int(suit)])
-                data.append(C.data[0].NorthDDS[int(suit)])
-                s_mean = statistics.mean(data)
-#        print("middle: ", s_mid)
-#        print("std: ", s_std)
-                output = sample + " " + suit + " " + str(s_mean) + " " + str(E_s) + "\n"
-                print(output)
-                if str(s_mean) != str(windeal):
-                    E_use_suit[E_s] = 0
-                    f.write(output)
-                del(data)
-        del(C)
-        gc.collect()
+        for F in range(len(generatedFILE)):
+            ddscalculator = Popen(['./dds/examples/calcPboard', "./files/banlz_." + generatedFILE[F] + "boards"], stdin=PIPE, stdout=PIPE)
+            ddscalculator.wait()
+            print("Success: DDS done for", generatedFILE[F])
+            result = [[0 for x in range(4)] for y in range(5)]
+            with open("cache_result", "r") as result_file:
+                data = [line.rstrip() for line in result_file]
+            if len(data) == 0:
+                continue
+            hand = data[0].split("|")[0]
+            N = hand.split(" ")[0].split(":")[1]
+            S = hand.split(" ")[2]
+            output = N + " " + S + " " + suit + " "
+            output_f_suit = N + " " + S + " " + suit + " "
+            for DATA in data:
+                DDS_result = DATA.split("|")[1].split("@")
+                i = 0
+                for _s in DDS_result:
+                    _w = _s.split(",")
+                    for j in range(4):
+                        result[i][j] += int(_w[j])
+                    i += 1
+            mean = np.array(result) / 100
+            output += str((mean[int(suit)][0] + mean[int(suit)][2]) / 2) + " " + str(F) + "\n"
+            f.write(output)
+            for i in range(5):
+                output_f_suit += str(mean[i][0])
+                for j in range(1, 4):
+                    output_f_suit += "," + str(mean[i][j])
+                output_f_suit += "@"
+            output_f_suit += "\n"
+            f_suit[F].write(output_f_suit)
+    for F in f_suit:
+        F.close()
     f.close()
-#    mean = [[[] for x in range(5)] for y in range(4)]
-#    for boardid in range(len(C.data)):
-#        for x in range(5):
-#            for y in range(4):
-#                mean[y][x].append(C.data[boardid].DDSresult[y][x])
-#    print("mean")
-#    for x in range(4):
-#        for y in range(5):
-#            print(statistics.mean(mean[x][y]), end=' ')
-#        print()
-#    print("mode")
-#    for x in range(4):
-#        for y in range(5):
-#            print(statistics.mode(mean[x][y]), end=' ')
-#        print()
-#    print("median")
-#    for x in range(4):
-#        for y in range(5):
-#            print(statistics.median(mean[x][y]), end=' ')
-#        print()
-#    print("standard deviation")
-#    for x in range(4):
-#        for y in range(5):
-#            print(statistics.pstdev(mean[x][y]), end=' ')
-#        print()
 
 def listtostdin(l):
     s = str(round(l[0], 4))
