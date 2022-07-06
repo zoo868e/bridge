@@ -549,7 +549,7 @@ def main():
     distriSize = [0, 28, 6]
     distri_name = ['', 'LongShort', 'Distribute']
     longSize = [0, 4, 6, 6, 2]
-    long_name = ['', 'Long', 'Long_4', 'Long*', 'Trump Long']
+    long_name = ['', 'Long', '$\\textrm{Long}_4$', 'Long*', 'Trump Long']
     shortSize = [0, 4, 6, 6, 3]
     short_name = ['', 'Short', 'Discrete Short', 'Short*', 'Non-trump short']
     Original_HCP = [0, 0, 1, 2, 3]
@@ -629,8 +629,8 @@ def main():
                             best = 0
                             worst = 1
                             trained_corr = []
-                            for i in range(1, 11):
-                                makeDATASET(data, i * 100)
+                            for i in range(1, 31):
+                                makeDATASET(data, 100)
 #                                print("--------------------------------")
                         #        process = Popen(['./analysisSubprocess', "./data/" + filename, str(formulaID), str(i * 1000) + "dataExperimentFormula6.eps"], stdin=PIPE, stdout=PIPE)
                                 best = 0
