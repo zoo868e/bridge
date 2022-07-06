@@ -543,15 +543,15 @@ def main():
 #    C.makedatasetforC_showdata("test_list")
     formulaPara = [26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10]
     HCPSize = [0, 11, 5]
-    HCP_name = ['', 'HCP with trump', 'HCP with no trump']
+    HCP_name = ['', 'HCP with trump', 'HCP without trump']
     suitHCPSize = [0, 4]
-    suitHCP_name = ['', 'suitHCP']
+    suitHCP_name = ['', '$suitHCP$']
     distriSize = [0, 28, 6]
-    distri_name = ['', 'LongShort', 'Distribute']
+    distri_name = ['', '$LongShort$', '$Distribute$']
     longSize = [0, 4, 6, 6, 2]
-    long_name = ['', 'Long', 'Long_4', 'Long*', 'Trump Long']
+    long_name = ['', '$Long$', '$\\textrm{Long}_4$', '$Long^*$', 'Trump length']
     shortSize = [0, 4, 6, 6, 3]
-    short_name = ['', 'Short', 'Discrete Short', 'Short*', 'Non-trump short']
+    short_name = ['', '$Short$', 'Discrete $Short$', '$Short^*$', 'Non-trump length']
     Original_HCP = [0, 0, 1, 2, 3]
     Original_long = [1, 4]
     Original_short = [3, 2, 1, 3, 2, 1]
@@ -559,7 +559,7 @@ def main():
     ub = 4
 
     data = read("./data/dataForC")
-    Train_target = ["00001", "00002", "01001", "02001", "03001", "04001", "01002", "02002", "03002", "04002"]
+    Train_target = ["44002", "34002", "24002", "14002", "04202", "00202", "44202", "03002", "14012", "40202", "40001", "24012", "34012", "43002", "13002", "44012", "34202", "20202", "30202", "10202", "03202", "23002", "33002", "44001", "04212"]
 
     for formulaid in Train_target:
         checkerProcess_train = Popen(['./subprocesstest', formulaid, "./data/dataForC"], stdin=PIPE, stdout=PIPE)
@@ -599,17 +599,17 @@ def main():
                     print("Training", para_name, "\ncp =", cp, ", mp =", mp, ", keep =", keep, file=sys.stderr)
                     trained_corr = []
                     trained_para = []
-                    for i in range(1, 11):
-                        makeDATASET(data, i * 100)
+                    for i in range(30):
+                        makeDATASET(data, 100)
                         tmp = GA.GA(GA.ObjfCorr, 0, ub, para_size, 50, 100, True, best, formulaid, cp, mp, keep)
                         tmp_corr = objf(checkerProcess_train, tmp[1])
                         trained_corr.append(tmp_corr)
                         trained_para.append(tmp[1])
-                    if sum(trained_corr) > best_corr[2] * 10:
+                    if sum(trained_corr) > best_corr[2] * 30:
                         best_hyper = [cp, mp, keep]
                         best_corr = [max(trained_corr), min(trained_corr), stat.mean(trained_corr), stat.median(trained_corr), stat.stdev(trained_corr)]
                         best_para = trained_para[trained_corr.index(best_corr[0])]
-        print(para_name, best_corr[0], best_corr[1], best_corr[2], best_corr[3], best_corr[4], "cp = " + str(best_hyper[0]), "mp = " + str(best_hyper[1]), "keep = " + str(best_hyper[2]), sep=" & ", end="\\\\\hline\n")
+        print(para_name, round(best_corr[0], 3), round(best_corr[1], 3), round(best_corr[2], 3), round(best_corr[3], 3), round(best_corr[4], 3), best_hyper[0], best_hyper[1], best_hyper[2], sep=" & ", end="\\\\\hline\n")
         checkerProcess_train.terminate()
 
 
