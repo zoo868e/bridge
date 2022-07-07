@@ -558,7 +558,7 @@ def main():
             output += str(round((mean[int(suit)][0] + mean[int(suit)][2]) / 2, 3)) + " " + suit + " 0 " + str(F) + "\n"
             f.write(output)
             for i in range(5):
-                output_f_suit += str(mean[i][0])
+                output_f_suit += str(round(mean[i][0], 3))
                 for j in range(1, 4):
                     output_f_suit += "," + str(round(mean[i][j], 3))
                 output_f_suit += "@"
