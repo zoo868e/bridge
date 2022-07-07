@@ -594,14 +594,14 @@ def main():
         for _i in range(1, 6):
             print("Turn: ", _i, "\nHave", _i * 1000, "datas")
             makeDATASET(data, _i * 1000)
-            bestScore, best_para, iters, curve = GA.GA(GA.ObjfCorr, 0, ub, para_size, 50, 1000, True, formulaid, Trained_cp[_formulaid], Trained_mp[_formulaid], Trained_keep[_formulaid])
+            bestScore, best_para, iters, curve = GA.GA(GA.ObjfCorr, 0, ub, para_size, 50, 100, True, formulaid, Trained_cp[_formulaid], Trained_mp[_formulaid], Trained_keep[_formulaid])
             runSubprocess(checkerProcess, best_para)
             convergence_curve[_i].append(curve.copy())
         checkerProcess.terminate()
 
     for _i in range(1, 6):
-        f = open("./result/2022/thesis/fig_data/Section4.3_" + str((_i)), "w", buffering=1)
-        for _j in range(1000):
+        f = open("./result/2022/thesis/fig_data/0707_Section4.3_" + str((_i)), "w", buffering=1)
+        for _j in range(100):
             output = ""
             for _c in range(len(convergence_curve[_i])):
                 output += str(convergence_curve[_i][_c][_j]) + " "
