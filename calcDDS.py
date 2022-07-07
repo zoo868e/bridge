@@ -514,7 +514,7 @@ def main():
         samples = [line.rstrip() for line in f]
 
     f = open("./data/EastOpened.txt", "w", buffering=1)
-    f.write("//N, S, suit, DDS, E_called_suit\n")
+    f.write("//N, S, DDS, suit, maker, E_called_suit\n")
 
     f_suit = [open("./data/EastOpened_Spade.txt", "w", buffering=1), open("./data/EastOpened_Heart.txt", "w", buffering=1), open("./data/EastOpened_Diamond.txt", "w", buffering=1), open("./data/EastOpened_Club.txt", "w", buffering=1)]
     for S in samples:
@@ -544,7 +544,7 @@ def main():
             hand = data[0].split("|")[0]
             N = hand.split(" ")[0].split(":")[1]
             S = hand.split(" ")[2]
-            output = N + " " + S + " " + suit + " "
+            output = N + " " + S + " "
             output_f_suit = N + " " + S + " " + suit + " "
             for DATA in data:
                 DDS_result = DATA.split("|")[1].split("@")
@@ -554,13 +554,13 @@ def main():
                     for j in range(4):
                         result[i][j] += int(_w[j])
                     i += 1
-            mean = np.array(result) / 100
-            output += str((mean[int(suit)][0] + mean[int(suit)][2]) / 2) + " " + str(F) + "\n"
+            mean = np.array(result) / len(data)
+            output += str(round((mean[int(suit)][0] + mean[int(suit)][2]) / 2, 3)) + " " + suit + " 0 " + str(F) + "\n"
             f.write(output)
             for i in range(5):
                 output_f_suit += str(mean[i][0])
                 for j in range(1, 4):
-                    output_f_suit += "," + str(mean[i][j])
+                    output_f_suit += "," + str(round(mean[i][j], 3))
                 output_f_suit += "@"
             output_f_suit += "\n"
             f_suit[F].write(output_f_suit)
