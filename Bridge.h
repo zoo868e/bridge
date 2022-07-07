@@ -177,6 +177,14 @@ class Experiment{
 		const vector<int> longSize = {0, 4, 6, 6, 2};
 		//	shortformula, discreteshort, TrainShort, Nontrumpshort
 		const vector<int> shortSize = {0, 4, 6, 6, 3};
+		//	Called_HCP
+		const vector<int> CHCPSize = {0, 24};
+		//	Called_short
+		const vector<int> CShortSize = {0, 12};
+		//	Called_dis
+		const vector<int> CDisSize = {0, 12};
+		//	Called_long
+		const vector<int> CLongSize = {0, 8};
 		vector<vector<double>> FormulaArgumentList;
 		double HCPlist[2][14];
 		double lenlist[2][14];
@@ -205,32 +213,7 @@ class Experiment{
 		double distributedistance(Team &t);
 		void nScorer();
 		int nSet_scorematrix(vector<double> scorematrix);
-		Experiment(vector<Team> teams, int _formulaid = 0){
-			this->teams = teams;
-			this->formulaid = _formulaid;
-			this->needed_para = this->HCPSize[_formulaid % 10] + this->suitHCPSize[(_formulaid / 10) % 10] + this->distriSize[(_formulaid / 100) % 10] + this->longSize[(_formulaid / 1000) % 10] + this->shortSize[(_formulaid / 10000) % 10];
-			this->Fixformulaid = 1;
-			this->long4card.clear();
-			this->long4card.resize(2);
-			for(int i = 0;i < 14;i++){
-				this->HCPlist[0][i] = basicHCP[i];
-				this->HCPlist[1][i] = basicHCP[i];
-				this->lenlist[0][i] = basiclen[i];
-				this->lenlist[1][i] = basiclen[i];
-				this->Hlenlist[0][i] = 0;
-				this->Hlenlist[1][i] = 0;
-				this->Dlenlist[0][i] = 0;
-				this->Dlenlist[1][i] = 0;
-			}
-			for(int i = 0;i < (int)teams.size();i++){
-				DDS.push_back(teams[i].DDSwin);
-			}
-			memset(this->AssestScore, 0, sizeof(this->AssestScore));
-			this->AssestScore[0] = 2;
-			this->AssestScore[1] = 1;
-			for(int i = 5;i < (int)(sizeof(this->AssestScore) / sizeof(double));i++)
-				this->AssestScore[i] = 1;
-		}
+		Experiment(vector<Team> teams, int _formulaid = 0);
 		Experiment(vector<PartialGame> partialgames, int formulaid = 0){
 			this->Partialgames = partialgames;
 			this->formulaid = formulaid;
@@ -247,10 +230,8 @@ class Experiment{
 		void GameScorer();
 		void PartialGamePreScorer();
 		void PartialGameTrainScorer();
-		void setformulaid(int _formulaid){
-			this->formulaid = _formulaid;
-			this->needed_para = this->HCPSize[_formulaid % 10] + this->suitHCPSize[(_formulaid / 10) % 10] + this->distriSize[(_formulaid / 100) % 10] + this->longSize[(_formulaid / 1000) % 10] + this->shortSize[(_formulaid / 10000) % 10];
-		}
+		
+		void setformulaid(int _formulaid);
 		void setFixformulaid(int Fixformulaid){
 			this->Fixformulaid = Fixformulaid;
 		}

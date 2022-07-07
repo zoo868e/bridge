@@ -1,5 +1,34 @@
 #include"Bridge.h"
-
+Experiment::Experiment(vector<Team> teams, int _formulaid){
+			this->teams = teams;
+			this->formulaid = _formulaid;
+			this->needed_para = this->HCPSize[_formulaid % 10] + this->suitHCPSize[(_formulaid / 10) % 10] + this->distriSize[(_formulaid / 100) % 10] + this->longSize[(_formulaid / 1000) % 10] + this->shortSize[(_formulaid / 10000) % 10] + this->CHCPSize[(_formulaid / 100000) % 10] + this->CShortSize[(_formulaid / 1000000) % 10] + this->CDisSize[(_formulaid / 10000000) % 10] + this->CLongSize[(_formulaid / 100000000) % 10];
+			this->Fixformulaid = 1;
+			this->long4card.clear();
+			this->long4card.resize(2);
+			for(int i = 0;i < 14;i++){
+				this->HCPlist[0][i] = basicHCP[i];
+				this->HCPlist[1][i] = basicHCP[i];
+				this->lenlist[0][i] = basiclen[i];
+				this->lenlist[1][i] = basiclen[i];
+				this->Hlenlist[0][i] = 0;
+				this->Hlenlist[1][i] = 0;
+				this->Dlenlist[0][i] = 0;
+				this->Dlenlist[1][i] = 0;
+			}
+			for(int i = 0;i < (int)teams.size();i++){
+				DDS.push_back(teams[i].DDSwin);
+			}
+			memset(this->AssestScore, 0, sizeof(this->AssestScore));
+			this->AssestScore[0] = 2;
+			this->AssestScore[1] = 1;
+			for(int i = 5;i < (int)(sizeof(this->AssestScore) / sizeof(double));i++)
+				this->AssestScore[i] = 1;
+		}
+void Experiment::setformulaid(int _formulaid){
+			this->formulaid = _formulaid;
+			this->needed_para = this->HCPSize[_formulaid % 10] + this->suitHCPSize[(_formulaid / 10) % 10] + this->distriSize[(_formulaid / 100) % 10] + this->longSize[(_formulaid / 1000) % 10] + this->shortSize[(_formulaid / 10000) % 10] + this->CHCPSize[(_formulaid / 100000) % 10] + this->CShortSize[(_formulaid / 1000000) % 10] + this->CDisSize[(_formulaid / 10000000) % 10] + this->CLongSize[(_formulaid / 100000000) % 10];
+		}
 void Experiment::foo(){
 	cout << "You don't need re-link it" << endl;
 	vector<int> b;
