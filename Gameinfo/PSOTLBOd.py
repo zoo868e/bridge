@@ -10,9 +10,10 @@ import Gameinfo.problem_lib as problem_lib
 from time import time
 from datetime import date
 from os.path import exists
+import sys
 
 
-def PSOTLBO(objf, b, dim, population, era, CORNOT, best, formulaID, record = False, dataset_size = 0, SHOWBEST = False):
+def PSOTLBO(objf, lb, ub, dim, population, era, CORNOT, formulaID, fitness_process, record = False, dataset_size = 0, SHOWBEST = False):
 
     start_time = time()
     PSO_time = 0
@@ -25,7 +26,7 @@ def PSOTLBO(objf, b, dim, population, era, CORNOT, best, formulaID, record = Fal
     pBest_sm = [[0 for x in range(dim)] for y in range(population)]
     vel = [[0 for x in range(dim)] for y in range(population)]
 
-    process = Popen(['./test', str(formulaID)], stdin=PIPE, stdout=PIPE)
+    process = fitness_process
 
     c1_max = 2.5
     c2_max = 2.5
@@ -36,12 +37,12 @@ def PSOTLBO(objf, b, dim, population, era, CORNOT, best, formulaID, record = Fal
     wMin = 0.4
     Vmax = 4
 
-    lb = [min(x) for x in b]
-    ub = [max(x) for x in b]
-    print("upper bound :", ub)
-    print("lower bound :", lb)
+    convergence_curve = []
 
-    print("PTd is optimizing formula" + str(formulaID))
+    print("upper bound :", ub, file=sys.stderr)
+    print("lower bound :", lb, file=sys.stderr)
+
+    print("PTd is optimizing formula" + str(formulaID), file=sys.stderr)
 
     P = np.zeros((population, dim))
     tmp_P = np.zeros((population, dim))
@@ -53,11 +54,11 @@ def PSOTLBO(objf, b, dim, population, era, CORNOT, best, formulaID, record = Fal
             record_filename = "result/" + year + "/" + month + day + "_formula" + str(formulaID) + "_size_" + str(dataset_size) + "_" + str(i)
             i = i + 1
         f = open(record_filename, "w")
-        print("Record to " + record_filename)
+        print("Record to " + record_filename, file=sys.stderr)
     for i in range(dim):
         P[:, i] = np.random.uniform(
             0, 1, population) * (ub[i] - lb[i]) + lb[i]
-#    print("init: ", time() - start_time)
+#    print("init: ", time() - start_time, file=sys.stderr)
     start_time = time()
     # calculate the fitness
     pfitness = problem_lib.fitness_cal(objf, P, population, lb, ub, process, CORNOT)
@@ -189,7 +190,7 @@ def PSOTLBO(objf, b, dim, population, era, CORNOT, best, formulaID, record = Fal
         TLBO_time += time() - s_time
         s_time = time()
         # diversity-guided
-        div = problem_lib.diversity_guided(P, dim, b)
+        div = problem_lib.diversity_guided(P, dim, ub, lb)
 
 
         # start mutation
@@ -230,24 +231,25 @@ def PSOTLBO(objf, b, dim, population, era, CORNOT, best, formulaID, record = Fal
                 f.write(str(pfitness[i]) + '\n')
         # show best
         if SHOWBEST == True:
-            print(['At iteration ' + str(generation + 1) + ' the best fitness is ' + str(gBest_coverage)])
+            print(['At iteration ' + str(generation + 1) + ' the best fitness is ' + str(gBest_coverage)], file=sys.stderr)
+        convergence_curve.append(max(pfitness))
 
         mutation_time += time() - s_time
     # close record file if exist
     if record == True:
         f.close()
 
-    print("bestScore =", gBest_coverage)
+    print("bestScore =", gBest_coverage, file=sys.stderr)
     for i in gBest_sm:
-        print("{:.4g}".format(i), end = " ")
-    print("")
-    print("Cost", time() - start_time, "seconds")
-    print("----------------------------------------------")
+        print("{:.4g}".format(i), end = " ", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("Cost", time() - start_time, "seconds", file=sys.stderr)
+    print("----------------------------------------------", file=sys.stderr)
     process.terminate()
     if record == True:
         f.close()
-#    print("all time : ", time() - start_time)
-#    print("PSO time :", PSO_time)
-#    print("TLBO time :", TLBO_time)
-#    print("mutation time :", mutation_time)
-    return [gBest_coverage, gBest_sm]
+#    print("all time : ", time() - start_time, file=sys.stderr)
+#    print("PSO time :", PSO_time, file=sys.stderr)
+#    print("TLBO time :", TLBO_time, file=sys.stderr)
+#    print("mutation time :", mutation_time, file=sys.stderr)
+    return [gBest_coverage, [round(x, 3) for x in gBest_sm], era, [round(x, 3) for x in convergence_curve]]

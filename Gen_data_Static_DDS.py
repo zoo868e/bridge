@@ -500,6 +500,15 @@ def listtostdin(l):
     s += "\n"
     return s
 
+def Maybe_NT(hand1, hand2):
+    hand1_l = hand1.split(".")
+    hand2_l = hand2.split(".")
+    hand_distr = [len(hand1_l[i]) + len(hand2_l[i]) for i in range(4)]
+    if hand_distr[0] <= 8 and hand_distr[1] <= 8 and hand_distr[2] <= 9 and hand_distr[3] <= 9:
+        return True
+    else:
+        return False
+
 
 def main():
     import Gameinfo.parser as ps
@@ -509,66 +518,45 @@ def main():
     import gc
 
     samples = []
-    generatedFILE = ['S', 'H', 'D', 'C']
     with open("data/wholedataForC", "r") as f:
         samples = [line.rstrip() for line in f]
 
-    f = open("./data/EastOpened.txt", "a", buffering=1)
-    f.write("//N, S, DDS, suit, maker, E_called_suit\n")
+    f = open("./data/Static_NT_DDS_forC.txt", "a", buffering=1)
+    FULL = open("./data/Static_DDS.txt", "a", buffering=1)
+    f_count = open("./data/Static_DDS_count", "a", buffering=1)
 
-    f_suit = [open("./data/EastOpened_Spade.txt", "a", buffering=1), open("./data/EastOpened_Heart.txt", "a", buffering=1), open("./data/EastOpened_Diamond.txt", "a", buffering=1), open("./data/EastOpened_Club.txt", "a", buffering=1)]
-    # 0722, 停止生成資料，跑到wholedataForC的第29703筆，第29703筆僅僅生成牌局，尚未計算雙夢家
-    for _S in samples[29703:]:
-        temp = _S.split(" ")
+    for S in range(19896, len(samples)):
+        print("Data:", S, file=f_count)
+        temp = samples[S].split(" ")
         sample = temp[0] + " " + temp[1]
         suit = temp[3]
         windeal = temp[2]
-        E_use_suit = [1, 1, 1, 1]
-        gensampleS = Popen(['./BANLY_S/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
-        gensampleH = Popen(['./BANLY_H/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
-        gensampleD = Popen(['./BANLY_D/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
-        gensampleC = Popen(['./BANLY_C/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
-        gensampleS.wait()
-        gensampleH.wait()
-        gensampleD.wait()
-        gensampleC.wait()
+        if Maybe_NT(temp[0], temp[1]) == False:
+            continue
+        gensample = Popen(['./BANLY/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+        gensample.wait()
         print("Success: generate samples")
-        for F in range(len(generatedFILE)):
-            if F == int(suit):
-                continue
-            ddscalculator = Popen(['./dds/examples/calcPboard', "./files/banlz_." + generatedFILE[F] + "boards"], stdin=PIPE, stdout=PIPE)
-            ddscalculator.wait()
-            print("Success: DDS done for", generatedFILE[F])
-            result = [[0 for x in range(4)] for y in range(5)]
-            with open("cache_result", "r") as result_file:
-                data = [line.rstrip() for line in result_file]
-            if len(data) == 0:
-                continue
-            hand = data[0].split("|")[0]
-            N = hand.split(" ")[0].split(":")[1]
-            S = hand.split(" ")[2]
-            output = N + " " + S + " "
-            output_f_suit = N + " " + S + " " + suit + " "
-            for DATA in data:
-                DDS_result = DATA.split("|")[1].split("@")
-                i = 0
-                for _s in DDS_result:
-                    _w = _s.split(",")
-                    for j in range(4):
-                        result[i][j] += int(_w[j])
-                    i += 1
-            mean = np.array(result) / len(data)
-            output += str(round((mean[int(suit)][0] + mean[int(suit)][2]) / 2, 3)) + " " + suit + " 0 " + str(F) + "\n"
-            f.write(output)
-            for i in range(5):
-                output_f_suit += str(round(mean[i][0], 3))
-                for j in range(1, 4):
-                    output_f_suit += "," + str(round(mean[i][j], 3))
-                output_f_suit += "@"
-            output_f_suit += "\n"
-            f_suit[F].write(output_f_suit)
-    for F in f_suit:
-        F.close()
+        ddscalculator = Popen(["./dds/examples/calc2Pboard", "./files/banlz_.boards"], stdin=PIPE, stdout=PIPE)
+        ddscalculator.wait()
+        print("Success: calculate the dds")
+        with open("cache_result_2", "r") as result_file:
+            data = [line.rstrip() for line in result_file]
+        result = np.mean([[[int(i) for i in suit.split(",")] for suit in D.split("|")[1].split("@")] for D in data], axis = 0)
+        FULL_output = temp[0] + " " + temp[1] + "|"
+        f_output = temp[0] + " " + temp[1] + " "
+        for _s in result:
+            FULL_output += str(_s[0]) + "," + str(_s[1]) + "," + str(_s[2]) + "," + str(_s[3]) + "@"
+        FULL_output += "\n"
+        FULL.write(FULL_output)
+        NT_DDS = round((result[4][0] + result[4][2]) / 2, 3)
+        print(FULL_output)
+        if (round(result[int(suit)][0] + result[int(suit)][2]) / 2) >= 12 or round(NT_DDS) < 7:
+            continue
+        else:
+            f_output += str(NT_DDS) + " 4 0\n"
+            f.write(f_output)
+            print(f_output)
+    FULL.close()
     f.close()
 
 def listtostdin(l):

@@ -29,6 +29,10 @@ void Experiment::setformulaid(int _formulaid){
 			this->formulaid = _formulaid;
 			this->needed_para = this->HCPSize[_formulaid % 10] + this->suitHCPSize[(_formulaid / 10) % 10] + this->distriSize[(_formulaid / 100) % 10] + this->longSize[(_formulaid / 1000) % 10] + this->shortSize[(_formulaid / 10000) % 10] + this->CHCPSize[(_formulaid / 100000) % 10] + this->CShortSize[(_formulaid / 1000000) % 10] + this->CDisSize[(_formulaid / 10000000) % 10] + this->CLongSize[(_formulaid / 100000000) % 10];
 		}
+void Experiment::setNTformulaid(int _formulaid){
+			this->NT_formulaid = _formulaid;
+			this->needed_para = this->NT_HCP_size[_formulaid % 10] + this->NT_long_size[(_formulaid / 10) % 10] + this->NT_short_size[(_formulaid / 100) % 10];
+		}
 void Experiment::foo(){
 	cout << "You don't need re-link it" << endl;
 	vector<int> b;
@@ -523,18 +527,18 @@ int Experiment::Set_scorematrix(vector<double> scorematrix){
 		this->tf_short[0][0] = 3;
 		this->tf_short[0][1] = 1.5;
 		this->tf_short[0][2] = 0.5;
-		for(int i = 0;i < 2;i++){
-			for(int j = 0;j < 2;j++){
-				for(int k = 0;k < 6;k++){
-					this->called[i][j][k] = scorematrix[i * 12 + j * 6 + k];
-				}
-			}
-		}
-		for(int i = 0;i < 2;i++){
-			for(int j = 0;j < 4;j++){
-				this->called_len[i][j] = scorematrix[i * 4 + j + 24];
-			}
-		}
+//		for(int i = 0;i < 2;i++){
+//			for(int j = 0;j < 2;j++){
+//				for(int k = 0;k < 6;k++){
+//					this->called[i][j][k] = scorematrix[i * 12 + j * 6 + k];
+//				}
+//			}
+//		}
+//		for(int i = 0;i < 2;i++){
+//			for(int j = 0;j < 4;j++){
+//				this->called_len[i][j] = scorematrix[i * 4 + j + 24];
+//			}
+//		}
 	}
 	else if(s == 12 && this->formulaid == 15){
 		/*	The HCP only have the discrete card strength
@@ -1292,7 +1296,7 @@ double Experiment::pformula13(Player &p, int suit, int pos, int E_suit){
 		else if(card == 12)
 			i = 3;
 		else i = 4;
-		ret += called[same][pos][i];
+		//ret += called[same][pos][i];
 	}
 	if(same){
 		ret += called_len[pos][0] * p.hand.distributed[suit];
@@ -1328,7 +1332,7 @@ double Experiment::pformula14(Player &p, int suit, int pos, int E_suit){
 	for(auto suit:p.hand.getcard()){
 		for(auto card:suit){
 			i = card == 1 ? 5:(card < 9 ? 0:(card < 11 ? 1:(card - 9)));
-			ret += called[pos][same][i];
+		//	ret += called[pos][same][i];
 		}
 	}
 	if(same){
@@ -2037,13 +2041,12 @@ void Team::ShowHand(){
 	}
 }
 bool Experiment::have_honor(Player P, int suit){
-	bool ret = false;
 	auto hand = P.hand.getcard();
 	for(auto card:hand[suit]){
 		if(card == 1 || card == 12 || card == 13)
-			ret = true;
+			return true;
 	}
-	return ret;
+	return false;
 }
 int SetBits(uint32_t i){
 	i = i - ((i >> 1) & 0x55555555);
@@ -2064,6 +2067,7 @@ void Experiment::nScorer(){
 				_score += HCP(teams[i]);
 				break;
 			case 2:
+			case 3:
 				_score += HCP_notrump(teams[i]);
 				break;
 			default:
@@ -2229,6 +2233,19 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 			this->HCPlist[1][13] = scorematrix[4];
 			for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
 			break;
+		case 3:
+			para_size += 5;
+			this->HCPlist[0][1] = scorematrix[4];
+			this->HCPlist[1][1] = scorematrix[4];
+			for(int i = 2;i < 10;i++){
+				this->HCPlist[0][i] = 0;
+				this->HCPlist[1][i] = 0;
+			}
+			for(int i = 10;i < 14;i++){
+				this->HCPlist[0][i] = scorematrix[i - 10];
+				this->HCPlist[1][i] = scorematrix[i - 10];
+			}
+			break;
 		default:
 			break;
 	}
@@ -2327,23 +2344,18 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 			break;
 		case 1:
 			for(int i = 0;i < 2;i++){
-				for(int j = 0;j < 2;j++){
-					for(int k = 0;k < 6;k++)
-						this->called[i][j][k] = scorematrix[para_size++];
-				}
+				for(int k = 0;k < 6;k++)
+					this->called[i][k] = scorematrix[para_size++];
 			}
 			for(int i = 0;i < 2;i++){
-				for(int j = 0;j < 2;j++){
-					for(int k = 2;k < 9;k++){
-						called_HCP[i][j][k] = called[i][j][0];
-					}
-					called_HCP[i][j][9] = called[i][j][1];
-					called_HCP[i][j][10] = called[i][j][1];
-					called_HCP[i][j][11] = called[i][j][2];
-					called_HCP[i][j][12] = called[i][j][3];
-					called_HCP[i][j][13] = called[i][j][4];
-					called_HCP[i][j][1] = called[i][j][5];
-				}
+				for(int k = 2;k < 9;k++)
+					called_HCP[i][k] = called[i][0];
+				called_HCP[i][9] = called[i][1];
+				called_HCP[i][10] = called[i][1];
+				called_HCP[i][11] = called[i][2];
+				called_HCP[i][12] = called[i][3];
+				called_HCP[i][13] = called[i][4];
+				called_HCP[i][1] = called[i][5];
 			}
 			break;
 		default:
@@ -2353,12 +2365,8 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 		case 0:
 			break;
 		case 1:
-			for(int i = 0;i < 2;i++){
-				for(int j = 0;j < 2;j++){
-					for(int k = 0;k < 3;k++){
-						called_short[i][j][k] = scorematrix[para_size++];
-					}
-				}
+			for(int k = 0;k < 3;k++){
+				called_short[k] = scorematrix[para_size++];
 			}
 			break;
 		default:
@@ -2368,12 +2376,8 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 		case 0:
 			break;
 		case 1:
-			for(int i = 0;i < 2;i++){
-				for(int j = 0;j < 2;j++){
-					for(int k = 0;k < 3;k++){
-						called_dis[i][j][k] = scorematrix[para_size++];
-					}
-				}
+			for(int k = 0;k < 3;k++){
+				called_dis[k] = scorematrix[para_size++];
 			}
 			break;
 		default:
@@ -2383,12 +2387,8 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 		case 0:
 			break;
 		case 1:
-			for(int i = 0;i < 2;i++){
-				for(int j = 0;j < 2;j++){
-					for(int k = 0;k < 2;k++){
-						called_long[i][j][k] = scorematrix[para_size++];
-					}
-				}
+			for(int k = 0;k < 2;k++){
+				called_long[k] = scorematrix[para_size++];
 			}
 			break;
 		default:
@@ -2404,46 +2404,160 @@ int Experiment::nSet_scorematrix(vector<double> scorematrix){
 }
 double Experiment::E_called_HCP(Player P, int suit, int position, int E_suit){
 	double ret = 0;
-	int same_suit = (suit == E_suit);
+	if(E_suit < 0)
+		return ret;
 	auto hand = P.hand.getcard();
-	for(auto suit:hand){
-		for(auto card:suit){
-			ret += called_HCP[same_suit][position][card];
-		}
+	for(auto card:hand[E_suit]){
+		ret += called_HCP[position][card];
 	}
 	return ret;
 }
 double Experiment::E_called_short(Player P, int suit, int position, int E_suit){
 
 	double ret = 0;
-	int same_suit = (suit == E_suit);
-	auto hand = P.hand;
-	for(auto len:hand.distributed){
-		if(len < 3){
-			ret += called_short[same_suit][position][len];
-		}
-	}
+	if(E_suit < 0)
+		return ret;
+	int E_suit_length = P.hand.distributed[E_suit];
+	if(E_suit_length < 3)
+		ret += called_short[E_suit_length];
 	return ret;
 }
 double Experiment::E_called_dis(Player P, int suit, int position, int E_suit){
 
 	double ret = 0;
-	int same_suit = (suit == E_suit);
-	auto hand = P.hand;
-	for(auto len:hand.distributed){
-		ret += called_dis[same_suit][position][0] * pow(fabs(len - called_dis[same_suit][position][1]), called_dis[same_suit][position][2]);
-	}
+	if(E_suit < 0)
+		return ret;
+	double E_suit_length = P.hand.distributed[E_suit];
+	ret += called_dis[0] * pow(fabs(E_suit_length - called_dis[1]), called_dis[2]);
 	return ret;
 }
 double Experiment::E_called_long(Player P, int suit, int position, int E_suit){
 
 	double ret = 0;
+	if(E_suit < 0)
+		return ret;
 	auto hand = P.hand;
-	int same_suit = (suit == E_suit);
-	for(auto len:hand.distributed){
-		if(len > called_long[same_suit][position][1]){
-			ret += called_long[same_suit][position][0] * (len - called_long[same_suit][position][1]);
+	double E_suit_length = P.hand.distributed[E_suit];
+	if(E_suit_length > called_long[1])
+		ret += called_long[0] * (E_suit_length - called_long[1]);
+	return ret;
+}
+double Experiment::NT_long(Team &team){
+	return NT_long(team.player[0]) + NT_long(team.player[1]);
+}
+double Experiment::NT_long(Player &P){
+	double ret = 0;
+	Hand hand = P.hand;
+	for(int i = 0;i < 4;i++){
+		if(have_honor(P, i) && hand.distributed[i] > f_long[0][1]){
+			ret += f_long[0][0] * (hand.distributed[i] - f_long[0][1]);
 		}
 	}
 	return ret;
+}
+double Experiment::NT_short(Team &team){
+	return NT_short(team.player[0]) + NT_short(team.player[1]);
+}
+double Experiment::NT_short(Player &P){
+	double ret = 0;
+	Hand hand = P.hand;
+	for(int i = 0;i < 4;i++){
+		if(have_honor(P, i) && hand.distributed[i] < 3){
+			ret += tf_short[0][hand.distributed[i]];
+		}
+	}
+	return ret;
+}
+int Experiment::NT_set_scorematrix(vector<double> scorematrix){
+	if(scorematrix.size() != this->needed_para){
+		cerr << "You give me wrong size of score matrix!" << endl;
+		cerr << "You give me " << scorematrix.size() << ", but I need " << this->needed_para << endl;
+		return scorematrix.size();
+	}
+	int formulaid = this->NT_formulaid;
+	int para_size = 0;
+	switch(formulaid % 10){
+		case 0:
+			break;
+		case 1:
+			para_size += 5;
+			this->HCPlist[0][1] = 4;
+			this->HCPlist[0][9] = scorematrix[1];
+			this->HCPlist[0][10] = scorematrix[1];
+			this->HCPlist[0][11] = scorematrix[2];
+			this->HCPlist[0][12] = scorematrix[3];
+			this->HCPlist[0][13] = scorematrix[4];
+			for(int i = 2;i < 9;i++)this->HCPlist[0][i] = scorematrix[0];
+			this->HCPlist[1][1] = 4;
+			this->HCPlist[1][9] = scorematrix[1];
+			this->HCPlist[1][10] = scorematrix[1];
+			this->HCPlist[1][11] = scorematrix[2];
+			this->HCPlist[1][12] = scorematrix[3];
+			this->HCPlist[1][13] = scorematrix[4];
+			for(int i = 2;i < 9;i++)this->HCPlist[1][i] = scorematrix[0];
+			break;
+		default:
+			break;
+	}
+	switch((formulaid / 10) % 10){
+		case 0:
+			break;
+		case 1:
+			for(int i = 0;i < 2;i++){
+				this->f_long[0][i] = scorematrix[para_size++];
+			}
+		default:
+			break;
+	}
+	switch((formulaid / 100) % 10){
+		case 0:
+			break;
+		case 1:
+			for(int i = 0;i < 2;i++){
+				this->tf_short[0][i + 1] = scorematrix[para_size++];
+			}
+		default:
+			break;
+	}
+	if(para_size != (int)this->needed_para){
+		cerr << "You give me " << this->needed_para << " parameters, but I only use the first " << para_size << " parameters." << endl;
+		cerr << "There is bug in when you set the scorematrix!" << endl;
+		cerr << "FIX IT!!!!" << endl;
+		return para_size;
+	}
+	return 0;
+}
+void Experiment::NT_scorer(){
+	int id = this->NT_formulaid;
+	this->score.clear();
+	for(int i = 0;i < (int)this->teams.size();i++){
+		double _score = 0;
+		switch(id % 10){
+			case 0:
+				break;
+			case 1:
+				_score += this->HCP_notrump(this->teams[i]);
+			default:
+				break;
+		}
+		switch((id / 10) % 10){
+			case 0:
+				break;
+			case 1:
+				_score += this->NT_long(this->teams[i]);
+			default:
+				break;
+		}
+		switch((id / 100) % 10){
+			case 0:
+				break;
+			case 1:
+				_score += this->NT_short(this->teams[i]);
+			default:
+				break;
+		}
+		this->score.push_back(_score);
+		this->teams[i].score = _score;
+	}
+
 }

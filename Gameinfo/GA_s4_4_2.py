@@ -30,10 +30,19 @@ def crossoverPopulaton(population, scores, popSize, crossoverProbability, keep):
     # initialize a new population
     newPopulation = numpy.empty_like(population)
     newPopulation[0:keep] = population[0:keep]
+#    for i in range(len(population)):
+#        for j in population[i]:
+#            print(j, end = " ", file=sys.stderr)
+#        print("", file=sys.stderr)
+#        print(scores[i], file=sys.stderr)
+#    print("---------------------", file=sys.stderr)
     # Create pairs of parents. The number of pairs equals the number of individuals divided by 2
     for i in range(keep, popSize, 2):
         # pair of parents selection
         parent1, parent2 = pairSelection(population, scores, popSize)
+        if len(parent1) != len(newPopulation[i]) or len(parent2) != len(newPopulation[i]):
+            print("Error", file=sys.stderr)
+            continue
         crossoverLength = min(len(parent1), len(parent2))
         parentsCrossoverProbability = random.uniform(0.0, 1.0)
         if parentsCrossoverProbability < crossoverProbability:
@@ -347,7 +356,7 @@ def sortPopulation(population, scores):
     return population, scores
 
 
-def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep):
+def GA(objf, lb, ub, dim, popSize, iters, CORNOT, formulaID, cp, mp, keep):
     """
     This is the main method which implements GA
 
@@ -368,8 +377,6 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
     CORNOT: bool
         True for use C++ subprocess
         False for not use
-    best: float
-        The best score during the whole experiment
     formulaID: int
         The formula ID will enter in C subprocess
     cp: float
@@ -387,13 +394,16 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
     start_time = time.time()
     scorematrix = ps.parse_score_matrix_file("data/GA_init_score_matrix.txt")
 #    print("keep = ", keep, "dim = ", dim, "formulaID = ", formulaID)
-    process = Popen(['./subprocesstest', str(formulaID)], stdin=PIPE, stdout=PIPE)
+    process = Popen(['./Called_train', 'data/dataForCofsection42', str(formulaID)], stdin=PIPE, stdout=PIPE)
+#    print("keep = ", keep, "dim = ", dim, "formulaID = ", formulaID)
 
     if not isinstance(lb, list):
         lb = [lb] * dim
     if not isinstance(ub, list):
         ub = [ub] * dim
 
+#    print("upper bound:", ub)
+#    print("lower bound:", lb)
     bestIndividual = numpy.zeros(dim)
     scores = numpy.random.uniform(0.0, 1.0, popSize)
     bestScore = float("inf")
@@ -408,12 +418,13 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
             0, 1, popSize) * (ub[i] - lb[i]) + lb[i]
     convergence_curve = numpy.zeros(iters)
 
+    pre = 100
+    global times
 
     for l in range(iters):
 
         # crossover
 #        start_time = time.time()
-        pre = bestScore
         ga = crossoverPopulaton(ga, scores, popSize, cp, keep)
 #        print("Cost", time.time() - start_time, "seconds to crossover")
 
@@ -437,7 +448,12 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
         ga, scores = sortPopulation(ga, scores)
 #        print("Cost", time.time() - start_time, "seconds to sort the population")
 
-        convergence_curve[l] = bestScore
+        convergence_curve[l] = 1 - bestScore
+        # the stop condition
+        stop_condition(bestScore, pre)
+        if times >= 100:
+            break
+        pre = bestScore
 
 #        if (l % 1 == 0):
 #            print(['At iteration ' + str(l+1) +
@@ -446,19 +462,11 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
 #    print("bestScore =", 1 - bestScore)
 #    for i in ga[0]:
 #        print("{:.4g}".format(i), end = " ")
-#    if 1 - bestScore > best:
-#        print("bestIndividual=")
-#        for i in ga[0]:
-#            print("{:.4g}".format(i), end = " ")
-#    else:
-#        print("not better, ignore it")
 #    print("")
-#    printbestIndividual(ga[0])
-#    print("bestScore:{:.4g}".format(1 - bestScore))
 #    print("Cost", time.time() - start_time, "seconds")
 #    print("----------------------------------------------")
     process.terminate()
-    return [1 - bestScore, [round(num, 3) for num in ga[0]], l, convergence_curve]
+    return [1 - bestScore, [round(x, 3) for x in ga[0]], l, convergence_curve]
 #    return [1 - bestScore, ga[0]]
 
 def printbestIndividual(ans):

@@ -135,19 +135,19 @@ def record_population(score_table, gap, num, generation, popu, a, b, new_populat
     f.write(text1)
     f.close()
 
-def diversity_guided(population, dim, b):
+def diversity_guided(population, dim, ub, lb):
 #   P = population size
-#   L = the length of the diagonal in the search space
+#   L = the longest length of the diagonal in the search space
 #   length of the diagonal = sqrt(a1*a1 + a2*a2 + a3*a3 + ... an * an)
     mean_p = np.mean(population, axis = 0)
     P = len(population)
-    L = pow(sum(len(x) * len(x) for x in b), 0.5)
+    L = pow(sum(pow(ub[i] - lb[i], 2) for i in range(len(ub))), 0.5)
     D = 1 / (P * L)
     dis_all_pop = 0
     for pop in population:
         dis_all_pop = dis_all_pop + pow(sum(pow(pop[x] - mean_p[x], 2) for x in range(len(pop))), 0.5)
-    D = D * dis_all_pop
-    return D
+    return D * dis_all_pop
+
 
 def mutationP(score, mp):
     avg = np.mean(score)

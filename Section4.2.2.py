@@ -1,6 +1,7 @@
 import unittest
 import sys
 import numpy as np
+from lib import *
 HCPlist = [0,4,0,0,0,0,0,0,0,0,0,1,2,3]
 Longlist = [0,0,0,0,0,1,2,3,4,5,6,7,8,9]
 Shortlist = [3,2,1,0,0,0,0,0,0,0,0,0,0,0]
@@ -544,25 +545,38 @@ def main():
     formulaPara = [26, 17, 9, 11, 15, 12, 19, 21, 21, 24, 23, 10]
     HCPSize = [0, 11, 5]
     HCP_name = ['', 'HCP with trump', 'HCP without trump']
+    HCP_ub = [[], [1, 2, 3, 4, 5, 0.5, 1, 2, 3, 4, 5], [0.5, 4, 4, 4, 4]]
+    HCP_lb = [[], [0 for x in range(11)], [0 for x in range(5)]]
     suitHCPSize = [0, 4]
     suitHCP_name = ['', '$suitHCP$']
+    suitHCP_ub = [[], [4 for x in range(4)]]
+    suitHCP_lb = [[], [0 for x in range(4)]]
     distriSize = [0, 28, 6]
     distri_name = ['', '$LongShort$', '$Distribute$']
+    distri_ub = [[], [4 for x in range(28)], [4 for x in range(6)]]
+    distri_lb = [[], [0 for x in range(28)], [0 for x in range(6)]]
     longSize = [0, 4, 6, 6, 2]
     long_name = ['', '$Long$', '$\\textrm{Long}_4$', '$Long^*$', 'Trump length']
+    long_ub = [[], [4 for x in range(4)], [4 for x in range(6)], [4 for x in range(6)], [4 for x in range(2)]]
+    long_lb = [[], [0 for x in range(4)], [0 for x in range(6)], [0 for x in range(6)], [0 for x in range(2)]]
     shortSize = [0, 4, 6, 6, 3]
+    short_ub = [[], [4 for x in range(4)], [4 for x in range(6)], [4 for x in range(6)], [4 for x in range(3)]]
+    short_lb = [[], [0 for x in range(4)], [0 for x in range(6)], [0 for x in range(6)], [0 for x in range(3)]]
     short_name = ['', '$Short$', 'Discrete $Short$', '$Short^*$', 'Non-trump length']
     Original_HCP = [0, 0, 1, 2, 3]
     Original_long = [1, 4]
     Original_short = [3, 2, 1, 3, 2, 1]
     Original_dis = [3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    ub = 4
+    ub = []
 
-    data = read("./data/dataForC")
-    Train_target = ["44002", "34002", "24002", "14002", "04202", "00202", "44202", "03002", "14012", "40202", "40001", "24012", "34012", "43002", "13002", "44012", "34202", "20202", "30202", "10202", "03202", "23002", "33002", "44001", "04212"]
+#    data = read("./data/dataForC")
+    Train_target = ["44002"]
+    data = read("./data/wholeStaticForC")
+#    Train_target = ["44002", "34002", "24002", "14002", "04202", "00202", "44202", "03002", "14012", "40202", "40001", "24012", "34012", "43002", "13002", "44012", "34202", "20202", "30202", "10202", "03202", "23002", "33002", "44001", "04212"]
 
     for formulaid in Train_target:
-        checkerProcess_train = Popen(['./subprocesstest', formulaid, "./data/dataForC"], stdin=PIPE, stdout=PIPE)
+        checkerProcess_train = Popen(['./subprocesstest', formulaid, "./data/wholeStaticForC"], stdin=PIPE, stdout=PIPE)
+#        checkerProcess_train = Popen(['./subprocesstest', formulaid, "./data/dataForC"], stdin=PIPE, stdout=PIPE)
         best_para = []
         best_hyper = [0, 0, 0]
         # best_corr = [Best, Worse, Mean, Median, Stdev]
@@ -575,6 +589,8 @@ def main():
         S = int(formulaid) // 10000 % 10
         para_size = HCPSize[H] + suitHCPSize[sH] + distriSize[D] + longSize[L] + shortSize[S]
         para_name = HCP_name[H]
+        ub = HCP_ub[H] + suitHCP_ub[sH] + distri_ub[D] + long_ub[L] + short_ub[S]
+        lb = HCP_lb[H] + suitHCP_lb[sH] + distri_lb[D] + long_lb[L] + short_lb[S]
         if sH > 0:
             if len(para_name) > 0:
                 para_name += " + "
@@ -591,25 +607,54 @@ def main():
             if len(para_name) > 0:
                 para_name += " + "
             para_name += short_name[S]
-        for _cp in range(0, 11, 2):
-            for _mp in range(1, 6):
-                for keep in range(5):
-                    cp = _cp / 10
-                    mp = _mp / 100
-                    print("Training", para_name, "\ncp =", cp, ", mp =", mp, ", keep =", keep, file=sys.stderr)
-                    trained_corr = []
-                    trained_para = []
-                    for i in range(30):
-                        makeDATASET(data, 100)
-                        tmp = GA.GA(GA.ObjfCorr, 0, ub, para_size, 50, 100, True, best, formulaid, cp, mp, keep)
-                        tmp_corr = objf(checkerProcess_train, tmp[1])
-                        trained_corr.append(tmp_corr)
-                        trained_para.append(tmp[1])
-                    if sum(trained_corr) > best_corr[2] * 30:
-                        best_hyper = [cp, mp, keep]
-                        best_corr = [max(trained_corr), min(trained_corr), stat.mean(trained_corr), stat.median(trained_corr), stat.stdev(trained_corr)]
-                        best_para = trained_para[trained_corr.index(best_corr[0])]
-        print(para_name, round(best_corr[0], 3), round(best_corr[1], 3), round(best_corr[2], 3), round(best_corr[3], 3), round(best_corr[4], 3), best_hyper[0], best_hyper[1], best_hyper[2], sep=" & ", end="\\\\\hline\n")
+        for i in range(30):
+            makeDATASET(data, 5000);
+            tmp = GA.GA(GA.ObjfCorr, lb, ub, para_size, 50, 1000, True, best, formulaid, 1, 0.03, 3)
+            best_para.append(tmp[1].copy())
+            for para in tmp[1]:
+                print(para, end = " ")
+            print(round(tmp[0], 3), round(objf(checkerProcess_train, tmp[1]), 3))
+        distance_para = [[p[n + 1] - p[n] for n in range(len(p) - 1)] for p in best_para]
+        print("========Max==========")
+        print(np.max(best_para, axis = 0))
+        print("========Min==========")
+        print(np.min(best_para, axis = 0))
+        print("========Mean==========")
+        print(np.mean(best_para, axis = 0))
+        print("========Median==========")
+        print(np.median(best_para, axis = 0))
+        print("========Std.==========")
+        print(np.std(best_para, axis = 0))
+
+        print("========Dis Max==========")
+        print(np.max(distance_para, axis = 0))
+        print("========Dis Min==========")
+        print(np.min(distance_para, axis = 0))
+        print("========Dis Mean==========")
+        print(np.mean(distance_para, axis = 0))
+        print("========Dis Median==========")
+        print(np.median(distance_para, axis = 0))
+        print("========Dis Std.==========")
+        print(np.std(distance_para, axis = 0))
+#        for _cp in range(0, 11, 2):
+#            for _mp in range(1, 6):
+#                for keep in range(5):
+#                    cp = _cp / 10
+#                    mp = _mp / 100
+#                    print("Training", para_name, "\ncp =", cp, ", mp =", mp, ", keep =", keep, file=sys.stderr)
+#                    trained_corr = []
+#                    trained_para = []
+#                    for i in range(30):
+#                        makeDATASET(data, 100)
+#                        tmp = GA.GA(GA.ObjfCorr, 0, ub, para_size, 50, 100, True, best, formulaid, cp, mp, keep)
+#                        tmp_corr = objf(checkerProcess_train, tmp[1])
+#                        trained_corr.append(tmp_corr)
+#                        trained_para.append(tmp[1])
+#                    if sum(trained_corr) > best_corr[2] * 30:
+#                        best_hyper = [cp, mp, keep]
+#                        best_corr = [max(trained_corr), min(trained_corr), stat.mean(trained_corr), stat.median(trained_corr), stat.stdev(trained_corr)]
+#                        best_para = trained_para[trained_corr.index(best_corr[0])]
+#        print(para_name, round(best_corr[0], 3), round(best_corr[1], 3), round(best_corr[2], 3), round(best_corr[3], 3), round(best_corr[4], 3), best_hyper[0], best_hyper[1], best_hyper[2], sep=" & ", end="\\\\\hline\n")
         checkerProcess_train.terminate()
 
 

@@ -510,67 +510,27 @@ def main():
 
     samples = []
     generatedFILE = ['S', 'H', 'D', 'C']
+    suit_name = ['Spade', 'Heart', 'Diamond', 'Club']
     with open("data/wholedataForC", "r") as f:
         samples = [line.rstrip() for line in f]
 
-    f = open("./data/EastOpened.txt", "a", buffering=1)
-    f.write("//N, S, DDS, suit, maker, E_called_suit\n")
-
-    f_suit = [open("./data/EastOpened_Spade.txt", "a", buffering=1), open("./data/EastOpened_Heart.txt", "a", buffering=1), open("./data/EastOpened_Diamond.txt", "a", buffering=1), open("./data/EastOpened_Club.txt", "a", buffering=1)]
-    # 0722, 停止生成資料，跑到wholedataForC的第29703筆，第29703筆僅僅生成牌局，尚未計算雙夢家
-    for _S in samples[29703:]:
-        temp = _S.split(" ")
-        sample = temp[0] + " " + temp[1]
-        suit = temp[3]
-        windeal = temp[2]
-        E_use_suit = [1, 1, 1, 1]
-        gensampleS = Popen(['./BANLY_S/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
-        gensampleH = Popen(['./BANLY_H/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
-        gensampleD = Popen(['./BANLY_D/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
-        gensampleC = Popen(['./BANLY_C/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+    f_suit = ["./files/banlz_.S2boards", "./files/banlz_.H2boards", "./files/banlz_.D2boards", "./files/banlz_.C2boards"]
+    f_result = [[] for x in range(4)]
+    for S in samples:
+        temp = S.split(" ")
+        gensampleS = Popen(['./BANLY2_S/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+        gensampleH = Popen(['./BANLY2_H/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+        gensampleD = Popen(['./BANLY2_D/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
+        gensampleC = Popen(['./BANLY2_C/BANLY', "100", temp[0], temp[1]], stdin=PIPE, stdout=PIPE)
         gensampleS.wait()
         gensampleH.wait()
         gensampleD.wait()
         gensampleC.wait()
-        print("Success: generate samples")
-        for F in range(len(generatedFILE)):
-            if F == int(suit):
-                continue
-            ddscalculator = Popen(['./dds/examples/calcPboard', "./files/banlz_." + generatedFILE[F] + "boards"], stdin=PIPE, stdout=PIPE)
-            ddscalculator.wait()
-            print("Success: DDS done for", generatedFILE[F])
-            result = [[0 for x in range(4)] for y in range(5)]
-            with open("cache_result", "r") as result_file:
-                data = [line.rstrip() for line in result_file]
-            if len(data) == 0:
-                continue
-            hand = data[0].split("|")[0]
-            N = hand.split(" ")[0].split(":")[1]
-            S = hand.split(" ")[2]
-            output = N + " " + S + " "
-            output_f_suit = N + " " + S + " " + suit + " "
-            for DATA in data:
-                DDS_result = DATA.split("|")[1].split("@")
-                i = 0
-                for _s in DDS_result:
-                    _w = _s.split(",")
-                    for j in range(4):
-                        result[i][j] += int(_w[j])
-                    i += 1
-            mean = np.array(result) / len(data)
-            output += str(round((mean[int(suit)][0] + mean[int(suit)][2]) / 2, 3)) + " " + suit + " 0 " + str(F) + "\n"
-            f.write(output)
-            for i in range(5):
-                output_f_suit += str(round(mean[i][0], 3))
-                for j in range(1, 4):
-                    output_f_suit += "," + str(round(mean[i][j], 3))
-                output_f_suit += "@"
-            output_f_suit += "\n"
-            f_suit[F].write(output_f_suit)
-    for F in f_suit:
-        F.close()
-    f.close()
-
+        print("Success: generate samples", file=sys.stderr)
+        for s in range(4):
+            f_result[s].append(sum(1 for _ in open(f_suit[s])) - 1)
+    for i in range(4):
+        print(suit_name[i], max(f_result[i]), min(f_result[i]), round(statistics.mean(f_result[i]), 3), round(statistics.median(f_result[i]), 3), round(statistics.stdev(f_result[i]), 3), sep = " & ", end = "\\\\\hline\n")
 def listtostdin(l):
     s = str(round(l[0], 4))
     for i in l[1:]:

@@ -113,7 +113,7 @@ class Team{
 		int maker;
 		double score;
 		int E_suit;
-		Team(Player North, Player South, double DDS = 0, int suit = 4, int maker = 0, int E_suit = 4){
+		Team(Player North, Player South, double DDS = 0, int suit = 4, int maker = 0, int E_suit = -1){
 			this->player[0] = North;
 			this->player[1] = South;
 			this->suit = suit;
@@ -157,6 +157,7 @@ class Experiment{
 		vector<double> DDS;
 		vector<double> FixFormulaArgumentList;
 		int formulaid;
+		int NT_formulaid;
 		unsigned int needed_para;
 		int Fixformulaid;
 		const vector<int> FixFormulaArgumentSize = {0, 2, 4, 10};
@@ -167,24 +168,38 @@ class Experiment{
 		//	shortformula, discreteshort, TrainShort,
 		//	TrumpLong, Nontrumpshort, distributeformula
 		const vector<int> FeatureSize = {11, 5, 4, 28, 4, 6, 6, 4, 6, 6, 2, 3, 6};
-		//	HCP, HCP_notrump, 
-		const vector<int> HCPSize = {0, 11, 5};
+		//	HCP, HCP_notrump, HCP_modern 
+		const vector<int> HCPSize = {0, 11, 5, 5};
+		const vector<string> HCP_name = {"", "$HT$", "$H$", "$HM$"};
 		//	suitHCP
 		const vector<int> suitHCPSize = {0, 4};
+		const vector<string> suitHCP_name = {"", "$sH$"};
 		//	LongShort, distributeformula
 		const vector<int> distriSize = {0, 28, 6};
+		const vector<string> dis_name = {"", "$LS$", "$D$"};
 		//	longformula, Editinglongformula, TrainLong, TrumpLong
 		const vector<int> longSize = {0, 4, 6, 6, 2};
+		const vector<string> long_name = {"", "$L$", "$L_4$", "$L^*$", "$TL$"};
 		//	shortformula, discreteshort, TrainShort, Nontrumpshort
 		const vector<int> shortSize = {0, 4, 6, 6, 3};
+		const vector<string> short_name = {"", "$S$", "$DS$", "$S^*$", "$NL$"};
 		//	Called_HCP
-		const vector<int> CHCPSize = {0, 24};
+		const vector<int> CHCPSize = {0, 12};
 		//	Called_short
-		const vector<int> CShortSize = {0, 12};
+		const vector<int> CShortSize = {0, 3};
 		//	Called_dis
-		const vector<int> CDisSize = {0, 12};
+		const vector<int> CDisSize = {0, 3};
 		//	Called_long
-		const vector<int> CLongSize = {0, 8};
+		const vector<int> CLongSize = {0, 2};
+		//	NT HCP
+		const vector<int> NT_HCP_size = {0, 5};
+		const vector<string> NT_HCP_name = {"", "$H$"};
+		//	NT long
+		const vector<int> NT_long_size = {0, 2};
+		const vector<string> NT_long_name = {"", "$L_{nt}$"};
+		//	NT short
+		const vector<int> NT_short_size = {0, 2};
+		const vector<string> NT_short_name = {"", "$S_{nt}$"};
 		vector<vector<double>> FormulaArgumentList;
 		double HCPlist[2][14];
 		double lenlist[2][14];
@@ -202,11 +217,11 @@ class Experiment{
 		double early_hand[14];
 		double late_hand[14];
 		double f_distributedistance[3];
-		double called[2][2][6];
-		double called_HCP[2][2][14];
-		double called_short[2][2][3];
-		double called_long[2][2][2];
-		double called_dis[2][2][3];
+		double called[2][6];
+		double called_HCP[2][14];
+		double called_short[3];
+		double called_long[2];
+		double called_dis[3];
 		double called_len[2][4];
 		double AssestScore[14];
 		vector<double> long4card;
@@ -232,6 +247,7 @@ class Experiment{
 		void PartialGameTrainScorer();
 		
 		void setformulaid(int _formulaid);
+		void setNTformulaid(int _formulaid);
 		void setFixformulaid(int Fixformulaid){
 			this->Fixformulaid = Fixformulaid;
 		}
@@ -246,6 +262,8 @@ class Experiment{
 		double RuleofThreeandFour(Player p, int suit);
 		double MoinsValue(Player p, int suit);
 		double PlusValue(Player p, int suit);
+		void NT_scorer();
+		int NT_set_scorematrix(vector<double> scorematrix);
 	private:
 		double HCP(Team t);
 		double HCP_notrump(Team t);
@@ -318,6 +336,10 @@ class Experiment{
 		double Fix_early_HCP(Player, int);
 		double Fix_late_HCP(Player, int);
 		bool have_honor(Player P, int suit);
+		double NT_long(Team &team);
+		double NT_long(Player &P);
+		double NT_short(Team &team);
+		double NT_short(Player &P);
 		double E_called_HCP(Player P, int suit, int position, int E_suit);
 		double E_called_short(Player P, int suit, int position, int E_suit);
 		double E_called_dis(Player P, int suit, int position, int E_suit);

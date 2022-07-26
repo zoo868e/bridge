@@ -543,37 +543,53 @@ def main():
     from subprocess import Popen, PIPE
     import statistics as stat
     HCPSize = [0, 11, 5]
-    HCP_name = ['', 'HCP with trump', 'HCP without trump']
+    HCP_name = ['', '$HT$', '$H$']
+    HCP_ub = [[], [4 for x in range(11)], [4 for x in range(5)]]
+    HCP_lb = [[], [0 for x in range(11)], [0 for x in range(5)]]
     suitHCPSize = [0, 4]
-    suitHCP_name = ['', '$suitHCP$']
+    suitHCP_name = ['', '$sH$']
+    suitHCP_ub = [[], [4 for x in range(4)]]
+    suitHCP_lb = [[], [0 for x in range(4)]]
     distriSize = [0, 28, 6]
-    distri_name = ['', '$LongShort$', '$Distribute$']
+    distri_name = ['', '$LS$', '$D$']
+    dis_ub = [[], [4 for x in range(28)], [4 for x in range(6)]]
+    dis_lb = [[], [0 for x in range(28)], [0 for x in range(6)]]
     longSize = [0, 4, 6, 6, 2]
-    long_name = ['', '$Long$', '$\\textrm{Long}_4$', '$Long^*$', 'Trump length']
+    long_name = ['', '$L$', '$L_4$', '$L^*$', '$TL$']
+    long_ub = [[], [4 for x in range(4)], [4 for x in range(6)], [4 for x in range(6)], [4 for x in range(2)]]
+    long_lb = [[], [0 for x in range(4)], [0 for x in range(6)], [0 for x in range(6)], [0 for x in range(2)]]
     shortSize = [0, 4, 6, 6, 3]
-    short_name = ['', '$Short$', 'Discrete $Short$', '$Short^*$', 'Non-trump length']
-    called_HCP = ['', 'Called HCP']
+    short_name = ['', '$S$', '$DS$', '$S^*$', '$NT$']
+    short_ub = [[], [4 for x in range(4)], [4 for x in range(6)], [4 for x in range(6)], [4 for x in range(3)]]
+    short_lb = [[], [0 for x in range(4)], [0 for x in range(6)], [0 for x in range(6)], [0 for x in range(3)]]
+    called_HCP = ['', '$cH$']
     called_HCP_size = [0, 24]
-    called_short = ['', 'Called $short$']
+    called_short = ['', '$cS$']
+    cH_ub = [[], [4 for x in range(24)]]
+    cH_lb = [[], [-4 for x in range(24)]]
     called_short_size = [0, 12]
-    called_dis = ['', 'Called $distribued$']
+    cS_ub = [[], [4 for x in range(12)]]
+    cS_lb = [[], [-4 for x in range(12)]]
+    called_dis = ['', '$cD$']
     called_dis_size = [0, 12]
-    called_long = ['', 'Called $long$']
+    cD_ub = [[], [4 for x in range(12)]]
+    cD_lb = [[], [-4 for x in range(12)]]
+    called_long = ['', '$cL$']
     called_long_size = [0, 8]
+    cL_ub = [[], [4 for x in range(8)]]
+    cL_lb = [[], [-4 for x in range(8)]]
     Original_HCP = [0, 0, 1, 2, 3]
     Original_long = [1, 4]
     Original_short = [3, 2, 1, 3, 2, 1]
     Original_dis = [3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    ub = 4
-    lb = -4
 
     data = read("./data/wholeStaticForC")
     data_called = read("./data/EastOpened.txt.tmp")
     Train_target = ["44002", "34002", "24002", "14002", "04202", "00202", "44202", "03002", "14012", "40202", "40001", "24012", "34012", "43002", "13002", "44012", "34202", "20202", "30202", "10202", "03202", "23002", "33002", "44001", "04212"]
+
     Trained_cp = [1, 1, 1, 0.8, 1, 0.8, 1, 1, 1, 1, 0.8, 1, 1, 0.8, 1, 0.8, 1, 0.8, 1, 0.8, 0.8, 0.8, 1, 1, 0.08]
     Trained_mp = [0.03, 0.02, 0.02, 0.05, 0.05, 0.04, 0.05, 0.01, 0.03, 0.05, 0.05, 0.04, 0.05, 0.05, 0.04, 0.01, 0.02, 0.03, 0.05, 0.03, 0.04, 0.03, 0.05, 0.05, 0.03]
     Trained_keep = [3, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 4, 3, 4, 3, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4]
-
     convergence_curve = [[] for x in range(6)]
 
     for _formulaid in range(len(Train_target)):
@@ -589,6 +605,8 @@ def main():
         L = int(formulaid) // 1000 % 10
         S = int(formulaid) // 10000 % 10
         para_size = HCPSize[H] + suitHCPSize[sH] + distriSize[D] + longSize[L] + shortSize[S]
+        ub = HCP_ub[H] + suitHCP_ub[sH] + dis_ub[D] + long_ub[L] + short_ub[S]
+        lb = HCP_lb[H] + suitHCP_lb[sH] + dis_lb[D] + long_lb[L] + short_lb[S]
         para_name = HCP_name[H]
         if sH > 0:
             if len(para_name) > 0:
@@ -610,24 +628,41 @@ def main():
             for _S in range(2):
                 for _D in range(2):
                     for _L in range(2):
+                        if _H == 0 and _S == 0 and _D == 0 and _L == 0:
+                            continue
                         final_formulaid = str(_L) + str(_D) + str(_S) + str(_H) + formulaid
-                        final_para_size = para_size + Called_HCP_size[_H] + Called_short_size[_S] + Called_dis_size[_D] + Called_long_size[_L]
+                        final_para_size = para_size + called_HCP_size[_H] + called_short_size[_S] + called_dis_size[_D] + called_long_size[_L]
                         final_para_name = para_name
+                        final_ub = ub.copy()
+                        final_lb = lb.copy()
                         trained_corr = []
                         if _H > 0:
-                            final_para_name += " + " + Called_HCP[_H]
+                            final_para_name += " + " + called_HCP[_H]
+                            final_ub += cH_ub[_H]
+                            final_lb += cH_lb[_H]
                         if _S > 0:
-                            final_para_name += " + " + Called_short[_S]
+                            final_para_name += " + " + called_short[_S]
+                            final_ub += cS_ub[_S]
+                            final_lb += cS_lb[_S]
                         if _D > 0:
-                            final_para_name += " + " + Called_dis[_D]
+                            final_para_name += " + " + called_dis[_D]
+                            final_ub += cD_ub[_D]
+                            final_lb += cD_lb[_D]
                         if _L > 0:
-                            final_para_name += " + " + Called_long[_L]
-                        checkerProcess_train = Popen(['./subprocesstest', "./data/EastOpened.txt.tmp", final_formulaid], stdin=PIPE, stdout=PIPE)
+                            final_para_name += " + " + called_long[_L]
+                            final_ub += cL_ub[_L]
+                            final_lb += cL_lb[_L]
+                        print("final para name:", final_para_name, file=sys.stderr)
+                        print("final formula id:", final_formulaid, file=sys.stderr)
+                        print("size of ub:", len(final_ub), file=sys.stderr)
+                        print("size of lb:", len(final_lb), file=sys.stderr)
+                        print("final para size:", final_para_size, file=sys.stderr)
+                        checkerProcess_train = Popen(['./test', final_formulaid, "./data/called_and_ignore_data"], stdin=PIPE, stdout=PIPE)
                         for _i in range(30):
                             makeDATASET(data, 100)
                             makeCalledDATASET(data_called, 100)
-                            bestScore, best_para, iters, curve = GA.GA(GA.ObjfCorr, lb, ub, para_size, 50, 100, True, final_formulaid, Trained_cp[_formulaid], Trained_mp[_formulaid], Trained_keep[_formulaid])
-                            tmp_corr = objf(checkerProcess_train, tmp[1])
+                            bestScore, best_para, iters, curve = GA.GA(GA.ObjfCorr, final_lb, final_ub, final_para_size, 50, 1000, True, final_formulaid, Trained_cp[_formulaid], Trained_mp[_formulaid], Trained_keep[_formulaid])
+                            tmp_corr = objf(checkerProcess_train, best_para)
                             trained_corr.append(tmp_corr)
                         print(final_para_name, round(max(trained_corr), 3), round(min(trained_corr), 3), round(stat.mean(trained_corr), 3), round(stat.median(trained_corr), 3), round(stat.stdev(trained_corr), 3), sep=" & ", end="\\\\\hline\n")
                         checkerProcess_train.terminate()

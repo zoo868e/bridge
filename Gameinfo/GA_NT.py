@@ -347,7 +347,7 @@ def sortPopulation(population, scores):
     return population, scores
 
 
-def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep):
+def GA(objf, lb, ub, dim, popSize, iters, CORNOT, formulaID, training_filename, cp, mp, keep):
     """
     This is the main method which implements GA
 
@@ -368,10 +368,10 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
     CORNOT: bool
         True for use C++ subprocess
         False for not use
-    best: float
-        The best score during the whole experiment
     formulaID: int
         The formula ID will enter in C subprocess
+    training_file: string
+        The training data set file
     cp: float
         The crossover Probability
     mp: float
@@ -385,9 +385,8 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
     from subprocess import Popen, PIPE
     import time
     start_time = time.time()
-    scorematrix = ps.parse_score_matrix_file("data/GA_init_score_matrix.txt")
 #    print("keep = ", keep, "dim = ", dim, "formulaID = ", formulaID)
-    process = Popen(['./subprocesstest', str(formulaID)], stdin=PIPE, stdout=PIPE)
+    process = Popen(['./NT_scorer', training_filename, str(formulaID)], stdin=PIPE, stdout=PIPE)
 
     if not isinstance(lb, list):
         lb = [lb] * dim
@@ -401,8 +400,6 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
 
     ga = numpy.zeros((popSize, dim))
     z = [0 for x in range(dim - 28)]
-#    for i in range(popSize):
-#        ga[i] = [*random.choice(scorematrix)[1][0], *random.choice(scorematrix)[2][0], *z]
     for i in range(dim):
         ga[:, i] = numpy.random.uniform(
             0, 1, popSize) * (ub[i] - lb[i]) + lb[i]
@@ -437,7 +434,7 @@ def GA(objf, lb, ub, dim, popSize, iters, CORNOT, best, formulaID, cp, mp, keep)
         ga, scores = sortPopulation(ga, scores)
 #        print("Cost", time.time() - start_time, "seconds to sort the population")
 
-        convergence_curve[l] = bestScore
+        convergence_curve[l] = 1 - bestScore
 
 #        if (l % 1 == 0):
 #            print(['At iteration ' + str(l+1) +
